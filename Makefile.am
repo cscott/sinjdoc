@@ -3,7 +3,8 @@ MAINTAINERCLEANFILES = Makefile.in configure aclocal.m4 \
 		       scripts/config.guess scripts/config.sub \
 		       scripts/install-sh scripts/ltmain.sh \
 		       scripts/missing scripts/mkinstalldirs
-EXTRA_DIST = autogen.sh $(wildcard lib/*.jar) lib/README classes/README
+EXTRA_DIST = autogen.sh $(wildcard lib/*.jar) lib/README classes/README \
+	overview.html
 
 SUBDIRS = src
 

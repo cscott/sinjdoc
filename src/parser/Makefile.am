@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 AM_JAVACFLAGS = -g -warnunchecked
+EXTRA_DIST := package.html Java15.cup
 
 JAVAROOT=$(top_builddir)/classes
 
@@ -51,5 +52,4 @@ Sym.java: Java15.java
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
-EXTRA_DIST := $(noinst_JAVA)
-EXTRA_DIST += Java15.cup
+EXTRA_DIST += $(noinst_JAVA)

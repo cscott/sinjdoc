@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = . parser lexer html main
+EXTRA_DIST := package.html
 
 AM_JAVACFLAGS = -g -warnunchecked
 # JAVAROOT directory must exist!
@@ -45,4 +46,4 @@ clean-local:
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
-EXTRA_DIST = $(noinst_JAVA)
+EXTRA_DIST += $(noinst_JAVA)

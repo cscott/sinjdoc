@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 AM_JAVACFLAGS = -g -warnunchecked
+EXTRA_DIST := package.html
 
 JAVAROOT=$(top_builddir)/classes
 
@@ -12,4 +13,4 @@ Version.java
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
-EXTRA_DIST := $(noinst_JAVA)
+EXTRA_DIST += $(noinst_JAVA)
