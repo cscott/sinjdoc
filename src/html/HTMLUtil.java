@@ -166,13 +166,18 @@ class HTMLUtil {
 	    f.getParentFile().mkdirs();
 	// now make a proper escaping-writer.
 	assert options.charSet!=null;
-	CharsetEncoder encoder = options.charSet.newEncoder();
+	CharsetEncoder encoder1 = options.charSet.newEncoder();
+	CharsetEncoder encoder2 = options.charSet.newEncoder();
+	// can't share these encoders or else we'll eventually get an
+	// IllegalStateException from the canEncode() method when we
+	// (in HTMLWriter.write) interrupt a coding operation in
+	// OutputStreamWriter.write().
 	try {
 	    return new PrintWriter
 		(new HTMLWriter
 		 (new BufferedWriter
 		  (new OutputStreamWriter
-		   (new FileOutputStream(f), encoder)), encoder));
+		   (new FileOutputStream(f), encoder1)), encoder2));
 	} catch (FileNotFoundException e) {
 	    reporter.printError("Couldn't open file "+f+": "+e.toString());
 	    return new PrintWriter(new NullWriter());
@@ -191,6 +196,7 @@ class HTMLUtil {
 	public void flush() throws IOException { delegate.flush(); }
 	public void write(char[] cbuf, int off, int len)
 	    throws IOException {
+	    if (len==0) return; // quickly done.
 	    CharSequence cs = new SimpleCharSequence(cbuf, off, len);
 	    if (encoder.canEncode(cs))
 		delegate.write(cbuf, off, len); // everything okie-dokie.
