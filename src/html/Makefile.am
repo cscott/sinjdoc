@@ -16,6 +16,7 @@ HTMLUtil.java \
 Pair.java \
 ReplayReader.java \
 SimpleCharSequence.java \
+TagEmitter.java \
 TemplateContext.java \
 TemplateWriter.java \
 URLContext.java \
