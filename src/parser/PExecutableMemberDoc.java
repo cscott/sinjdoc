@@ -22,8 +22,8 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     implements net.cscott.gjdoc.ExecutableMemberDoc {
     final String name;
     PExecutableMemberDoc(ParseControl pc, PClassDoc containingClass,
-			 int modifiers, String name) {
-	super(pc, containingClass, modifiers);
+			 int modifiers, String name, PSourcePosition position){
+	super(pc, containingClass, modifiers, position);
 	this.name = name;
     }
     public abstract List<MethodTypeVariable> typeParameters();

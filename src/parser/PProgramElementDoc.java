@@ -20,12 +20,15 @@ abstract class PProgramElementDoc extends PDoc
     final PPackageDoc containingPackage;
     final PClassDoc containingClass;
     final int modifiers;
+    final PSourcePosition position;
     PProgramElementDoc(ParseControl pc, PPackageDoc containingPackage,
-		       PClassDoc containingClass, int modifiers) {
+		       PClassDoc containingClass, int modifiers,
+		       PSourcePosition position) {
 	super(pc);
 	this.containingPackage = containingPackage;
 	this.containingClass = containingClass;
 	this.modifiers = modifiers;
+	this.position = position;
     }
     public PPackageDoc containingPackage() { return containingPackage; }
     public PClassDoc containingClass() { return containingClass; }
@@ -61,4 +64,5 @@ abstract class PProgramElementDoc extends PDoc
 	if (isPrivate() && pc.showPrivate()) return true;
 	return false;
     }
+    public final PSourcePosition position() { return position; }
 }

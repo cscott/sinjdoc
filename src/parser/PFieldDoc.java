@@ -19,8 +19,8 @@ abstract class PFieldDoc extends PMemberDoc
     final Type type;
     final String name;
     PFieldDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
-	      Type type, String name) {
-	super(pc, containingClass, modifiers);
+	      Type type, String name, PSourcePosition position) {
+	super(pc, containingClass, modifiers, position);
 	this.type = type;
 	this.name = name;
     }
@@ -36,5 +36,6 @@ abstract class PFieldDoc extends PMemberDoc
     public Type type() { return type; }
     // methods abstract in PDoc
     public String name() { return name; }
-    
+    // override methods from PDoc
+    public boolean isField() { return true; }
 }

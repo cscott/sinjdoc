@@ -17,9 +17,10 @@ import java.lang.reflect.Modifier;
 abstract class PMemberDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.MemberDoc {
     boolean isSynthetic = false;
-    PMemberDoc(ParseControl pc, PClassDoc containingClass, int modifiers) {
+    PMemberDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
+	       PSourcePosition position) {
 	super(pc, containingClass.containingPackage(), containingClass,
-	      modifiers);
+	      modifiers, position);
     }
     public boolean isSynthetic() { return isSynthetic; }
 }

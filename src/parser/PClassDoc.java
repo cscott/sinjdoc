@@ -38,7 +38,6 @@ class PClassDoc extends PProgramElementDoc
 	new ArrayList<ClassTypeVariable>();
     final String name;
     final boolean isInterface;
-    final PSourcePosition position;
     final List<ConstructorDoc> constructors = new ArrayList<ConstructorDoc>();
     boolean definesSerializableFields = false;
     final List<FieldDoc> fields = new ArrayList<FieldDoc>();
@@ -54,9 +53,8 @@ class PClassDoc extends PProgramElementDoc
 	      PClassDoc containingClass, int modifiers, String name,
 	      PSourcePosition position, boolean isInterface,
 	      String commentText, PSourcePosition commentPosition) {
-	super(pc, containingPackage, containingClass, modifiers);
+	super(pc, containingPackage, containingClass, modifiers, position);
 	this.name = name;
-	this.position = position;
 	this.isInterface = isInterface;
 	this.typeContext =
 	    new TypeContext(pc, containingPackage, compilationUnit,
@@ -171,5 +169,4 @@ class PClassDoc extends PProgramElementDoc
 	    (pc, "java.lang", "Exception",
 	     Arrays.asList(new ClassTypeVariable[0])));
     }
-    public PSourcePosition position() { return position; }
 }
