@@ -35,7 +35,7 @@
    </p>
    <p class="nav navbot">
       <span class="summary">Summary:
-       <span class="nested">Nested</span>
+       <span class="nested">@IF_NESTED@<a href="#nested_class_summary">@END@Nested@IF_NESTED@</a>@END@</span>
        <span class="field">@IF_FIELDS@<a href="#field_summary">@END@Field@IF_FIELDS@</a>@END@</span>
        <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_summary">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
        <span class="method">@IF_METHODS@<a href="#method_summary">@END@Method@IF_METHODS@</a>@END@</span>
@@ -100,6 +100,16 @@
    @TAGS@
    </div>
 
+@FORALL_NESTED@
+@IF_FIRST@
+   <table class="nested_class_summary summary">
+     <tr><th colspan="2"><a name="nested_class_summary" id="nested_class_summary">Nested Class Summary</a></th></tr>
+@END@
+     <tr><td>@MODIFIER_SUMMARY@ @IF_INTERFACE@interface@END@@IFNOT_INTERFACE@class@END@</td><td><span class="memberName">@CLASSLINK_P@</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
+@IF_LAST@
+   </table>
+@END@
+@END@
 @FORALL_FIELDS@
 @IF_FIRST@
    <table class="field_summary summary">
@@ -203,7 +213,7 @@
    </p>
    <p class="nav navbot">
       <span class="summary">Summary:
-       <span class="nested">Nested</span>
+       <span class="nested">@IF_NESTED@<a href="#nested_class_summary">@END@Nested@IF_NESTED@</a>@END@</span>
        <span class="field">@IF_FIELDS@<a href="#field_summary">@END@Field@IF_FIELDS@</a>@END@</span>
        <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_summary">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
        <span class="method">@IF_METHODS@<a href="#method_summary">@END@Method@IF_METHODS@</a>@END@</span>
