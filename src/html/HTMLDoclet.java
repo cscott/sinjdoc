@@ -34,7 +34,7 @@ public class HTMLDoclet extends Doclet {
 	}
 	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ){
 	    ClassDoc cd = it.next();
-	    System.out.println("CLASSDOC: "+cd.qualifiedName()+", super="+cd.superclass()+", interfaces="+cd.interfaces()+", comment="+cd.firstSentenceTags());
+	    System.out.println("CLASSDOC: "+cd.qualifiedName()+cd.type().typeParameters()+", super="+cd.superclass()+", interfaces="+cd.interfaces()+", comment="+cd.firstSentenceTags());
 	}
 	// create main index page
 	// for each package listed...
