@@ -109,13 +109,11 @@ class PClassDoc extends PProgramElementDoc
     }
     public final boolean isExternalizable() {
 	return instanceOf(new PEagerClassType
-	    (pc, "java.io", "Externalizable",
-	     Arrays.asList(new ClassTypeVariable[0])));
+	    (pc, "java.io", "Externalizable"));
     }
     public final boolean isSerializable() {
 	return instanceOf(new PEagerClassType
-	    (pc, "java.io", "Serializable",
-	     Arrays.asList(new ClassTypeVariable[0])));
+	    (pc, "java.io", "Serializable"));
     }
 
     public List<MethodDoc> methods() {
@@ -161,12 +159,10 @@ class PClassDoc extends PProgramElementDoc
     public boolean isInterface() { return isInterface; }
     public boolean isError() {
 	return instanceOf(new PEagerClassType
-	    (pc, "java.lang", "Error",
-	     Arrays.asList(new ClassTypeVariable[0])));
+	    (pc, "java.lang", "Error"));
     }
     public boolean isException() {
 	return instanceOf(new PEagerClassType
-	    (pc, "java.lang", "Exception",
-	     Arrays.asList(new ClassTypeVariable[0])));
+	    (pc, "java.lang", "Exception"));
     }
 }

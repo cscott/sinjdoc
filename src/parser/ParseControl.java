@@ -110,4 +110,14 @@ public class ParseControl {
 	// we're done!
 	return rootDoc;
     }
+
+    // convenience fields for primitive types.
+    final PClassType BYTE = new PEagerClassType(this, "", "byte");
+    final PClassType SHORT = new PEagerClassType(this, "", "short");
+    final PClassType INT = new PEagerClassType(this, "", "int");
+    final PClassType LONG = new PEagerClassType(this, "", "long");
+    final PClassType CHAR = new PEagerClassType(this, "", "char");
+    final PClassType FLOAT = new PEagerClassType(this, "", "float");
+    final PClassType DOUBLE = new PEagerClassType(this, "", "double");
+    final PClassType BOOLEAN = new PEagerClassType(this, "", "boolean");
 }

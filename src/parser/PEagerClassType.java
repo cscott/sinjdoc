@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassTypeVariable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 /**
@@ -25,6 +26,13 @@ public class PEagerClassType extends PClassType {
 	this.className = className.intern();
 	this.typeParameters = typeParameters;
     }
+    PEagerClassType(ParseControl pc,
+		    String packageName, String className) {
+	this(pc, packageName, className, NO_VARS);
+    }
+    private static final List<ClassTypeVariable> NO_VARS =
+	Arrays.asList(new ClassTypeVariable[0]);
+
     public List<ClassTypeVariable> typeParameters() {
 	return Collections.unmodifiableList(typeParameters);
     }

@@ -118,8 +118,7 @@ class TypeContext {
 	// 6. Otherwise, undefined; if not error then it could be in
 	//    same package or in an opaque type-import-on-demand.
 	//    we'll just make it opaque.
-	return new PEagerClassType(pc, "<unknown>", id,
-				   Arrays.asList(new ClassTypeVariable[0]));
+	return new PEagerClassType(pc, "<unknown>", id);
     }
     private Type lookupQualifiedTypeName(String Q, String id) {
 	// recursively determine whether Q is a package or type name.
@@ -146,7 +145,6 @@ class TypeContext {
 	//      XXX try this using reflection.
 	// give up; assume is fully qualified.
 	// XXX should add to pkg if pkg!=null?  should create package?
-	return new PEagerClassType(pc, Q, id,
-				   Arrays.asList(new ClassTypeVariable[0]));
+	return new PEagerClassType(pc, Q, id);
     }
 }// TypeContext
