@@ -9,6 +9,7 @@ JAVAROOT=$(top_builddir)/classes
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
+DocComparator.java \
 HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \

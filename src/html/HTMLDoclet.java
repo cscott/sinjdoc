@@ -54,8 +54,9 @@ public class HTMLDoclet extends Doclet {
 	String mainURL;
 
 	if (numPackages==0)
-	    mainURL=HTMLUtil.toURL((ClassDoc)Collections.min
-				   ((List)root.specifiedClasses()));
+	    mainURL=HTMLUtil.toURL(Collections.min
+				   (root.specifiedClasses(),
+				    new DocComparator<ClassDoc>()));
 	else if (numPackages==1 && root.specifiedClasses().size()==0)
 	    mainURL=HTMLUtil.toURL(root.specifiedPackages().get(0));
 	else
@@ -85,7 +86,7 @@ public class HTMLDoclet extends Doclet {
 	}
 	// now sort them.
 	List<PackageDoc> pkgList = new ArrayList<PackageDoc>(pkgMap.values());
-	Collections.sort((List)pkgList);
+	Collections.sort(pkgList, new DocComparator<PackageDoc>());
 	// okay, emit the overview-frame header:
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("overview-frame.html"), null, null);
@@ -106,7 +107,7 @@ public class HTMLDoclet extends Doclet {
     void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
 	// create sorted list of all documented classes.
 	List<ClassDoc> clsList = new ArrayList<ClassDoc>(root.classes());
-	Collections.sort((List)clsList);
+	Collections.sort(clsList, new DocComparator<ClassDoc>());
 	// now emit!
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("allclasses-frame.html"),null,null);
