@@ -17,6 +17,6 @@ public interface MethodDoc extends ExecutableMemberDoc {
     /** Return the method that this method overrides, or <code>null</code>
      *  if there is no such method. */
     public MethodDoc overriddenMethod();
-    /** Return the return type of this method. */
+    /** Return the return type of this method, null if it is void. */
     public Type returnType();
 }
