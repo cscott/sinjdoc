@@ -5,14 +5,14 @@
  */
 package net.cscott.sinjdoc.lexer;
 
+import java.io.BufferedReader;
 import java.io.Reader;
-import java.io.LineNumberReader;
 
 /** Java lexer.
  *  @author C. Scott Ananian (cscott@cscott.net)
  */
 public class Lexer {
-  LineNumberReader reader;
+  BufferedReader reader;
   boolean isJava12;
   boolean isJava14;
   boolean isJava15;
@@ -25,7 +25,7 @@ public class Lexer {
     this(reader, 2); // by default, use a Java 1.2-compatible lexer.
   }
   public Lexer(Reader reader, int java_minor_version) {
-    this.reader = new LineNumberReader(new EscapedUnicodeReader(reader));
+    this.reader = new BufferedReader(new EscapedUnicodeReader(reader));
     this.isJava12 = java_minor_version >= 2;
     this.isJava14 = java_minor_version >= 4;
     this.isJava15 = java_minor_version >= 5;
@@ -200,7 +200,7 @@ public class Lexer {
       if (line.charAt(line_pos+1)=='/') { // safe because line ends with '\n'
 	c.appendLine(text.toString()); line_pos+=2; return c;
       }
-      text.append(line.charAt(line_pos++)); // add the '*'
+      text.append(consume()); // add the '*'
     }
   }
 
