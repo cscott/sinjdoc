@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * The <code>PPackageDoc</code> class represents a java package.  It
  * provides access to information about the package, the package's
- * comment and tags (!), and the classes in the package.  It does *not*
+ * comment and tags, and the classes in the package.  It does *not*
  * necessarily represent a package included in the current GJDoc run.
  * 
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
