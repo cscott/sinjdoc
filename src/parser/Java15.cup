@@ -57,17 +57,29 @@ action code {:
   private static String combineWithDot(String a, String b) {
       return (a==null)?b:(b==null)?a:(a+"."+b);
   }
-  private void doTypeDeclaration(int modifiers, String name,
+  private void startTypeDeclaration(int modifiers, String name,
 				 boolean isInterface) {
-	System.out.println("New type: "+name);
-	// XXX should create an eager class type for this.
-	// if outerClasses.empty(), then add this to the package; else
-	// add it to its enclosing class.
-	// outerClasses.push(this)
-	// also open a new environment scope for type variables?
+      // Create classDoc object.
+      PClassDoc outer = parser.outerClasses.empty() ?
+	  null : parser.outerClasses.peek();
+      PClassDoc cd = new PClassDoc(parser.rootDoc.pc, parser.expectedPackage,
+				   parser.compilationUnit, outer, modifiers,
+				   name, parser.lexer.lastComment(),
+				   sp(parser.lexer.lastCommentPos()));
+      parser.lexer.clearComment();
+      // add to enclosing objects (package/class/compilation unit)
+      if (outer!=null)
+	  outer.innerClasses.add(cd);
+      parser.expectedPackage.classes.add(cd.type());
+      parser.compilationUnit.classes.add(cd);
+      // this is new outer class.
+      parser.outerClasses.push(cd);
+      // XXX new environment scope for type variables?
   }
-  // when done with typeDeclaration, outerClasses.pop() and close the
-  // type variable environment scope.
+  private void endTypeDeclaration() {
+      parser.outerClasses.pop();
+      // XXX close type variable environment scope?
+  }
 :};
 
 scan with {: return lexer.nextToken(); :};
@@ -507,8 +519,9 @@ modifier ::=	PUBLIC
 // 19.8.1) Class Declaration:
 class_declaration ::= 
 	modifiers_opt:m CLASS IDENTIFIER:id
-		{: doTypeDeclaration(m.intValue(), id, false); :}
+		{: startTypeDeclaration(m.intValue(), id, false); :}
           type_parameters_opt super_opt interfaces_opt class_body
+		{: endTypeDeclaration(); :}
 	;
 super ::=	EXTENDS class_type
 	;
@@ -543,8 +556,9 @@ class_member_declaration ::=
 	|	method_declaration
 	/* repeat the prod for 'class_declaration' here: */
 	|	modifiers_opt:m CLASS IDENTIFIER:id
-		{: doTypeDeclaration(m.intValue(), id, false); :}
+		{: startTypeDeclaration(m.intValue(), id, false); :}
 		 type_parameters_opt super_opt interfaces_opt class_body
+		{: endTypeDeclaration(); :}
 	|	interface_declaration
 	|	SEMICOLON
 	;
@@ -650,8 +664,9 @@ explicit_constructor_invocation ::=
 // 19.9.1) Interface Declarations
 interface_declaration ::=
 		modifiers_opt:m INTERFACE IDENTIFIER:id
-		{: doTypeDeclaration(m.intValue(), id, true); :}
+		{: startTypeDeclaration(m.intValue(), id, true); :}
 		 type_parameters_opt extends_interfaces_opt interface_body
+		{: endTypeDeclaration(); :}
 	;
 extends_interfaces_opt ::=
 	|	extends_interfaces
