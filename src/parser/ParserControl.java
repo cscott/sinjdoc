@@ -41,6 +41,8 @@ public class ParserControl {
     File overview=null;
     /** Locale to use. */
     Locale locale = Locale.getDefault();
+    /** Encapsulation of sourcePath-related file utilities. */
+    FileUtil sourcePath;
 
     public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
@@ -76,8 +78,13 @@ public class ParserControl {
 				       access!=Modifier.PROTECTED; }
     public boolean showPrivate() { return access==Modifier.PRIVATE; }
 
+    public void setSourcePath(String sourcePath) {
+	assert this.sourcePath==null : "multiple calls to setSourcePath()";
+	this.sourcePath = new FileUtil(sourcePath, sourceVersion);
+    }
+    public FileUtil getSourcePath() { return sourcePath; }
 
-    public PRootDoc parse(FileUtil fu) {
+    public PRootDoc parse() {
 	return new PRootDoc(this);
     }
 }

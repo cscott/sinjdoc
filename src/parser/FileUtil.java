@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class FileUtil {
     final List<File> sourcePath = new ArrayList<File>();
     final int sourceVersion;
-    public FileUtil(String sourcePath, int sourceVersion) {
+    FileUtil(String sourcePath, int sourceVersion) {
 	assert sourceVersion>=1 && sourceVersion<=5;
 	this.sourceVersion = sourceVersion;
 	for (Iterator<String> it=splitPath(sourcePath).iterator();

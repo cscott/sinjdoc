@@ -156,8 +156,8 @@ public class Main {
 		    (runData.classPath!=null) ? runData.classPath : ".";
 	    if (runData.classPath==null)
 		runData.classPath = System.getProperty("java.class.path");
-	    FileUtil fu = new FileUtil
-		(runData.sourcePath, runData.parseControl.getSourceVersion());
+	    runData.parseControl.setSourcePath(runData.sourcePath);
+	    FileUtil fu = runData.parseControl.getSourcePath();
 
 	    // check doclet options.
 	    boolean success=false;
@@ -193,7 +193,7 @@ public class Main {
 		// okay.  have parsed all options.
 		runData.parseControl.setSourceFiles(sourcefiles);
 		runData.parseControl.setPackages(packages);
-		PRootDoc rootDoc = runData.parseControl.parse(fu);
+		PRootDoc rootDoc = runData.parseControl.parse();
 		if (rootDoc!=null) rootDoc.setOptions(docletOptions);
 		success = doclet.start(rootDoc);
 	    }
