@@ -115,8 +115,10 @@ abstract class TagEmitter {
 		Tag t = it.next();
 		assert t.isTrailing();
 		if (desc==null) desc = t.name();
-		if (first)
+		if (first) {
 		    pw.print("<span class=\"tagName\">"+desc+":</span> ");
+		    first=false;
+		}
 		pw.print("<span class=\"tagContents\">");
 		emitInline(pw, t.contents(), context);
 		pw.print("</span> ");
@@ -202,7 +204,7 @@ abstract class TagEmitter {
 	inlineActions.put(".text", new InlineTagAction() {
 		void emit(PrintWriter pw, Tag t, TemplateContext context) {
 		    assert t.isText();
-		    pw.print(t.text());
+		    pw.print(t.text().trim());
 		}
 	    });
 	inlineActions.put("docRoot", new InlineTagAction() {

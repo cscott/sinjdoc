@@ -84,5 +84,7 @@ div.bottom {  font-size: 8pt; margin-top: 1em; }
 
 /* tag formatting */
 p.tag *.tagName { font-weight: bold; }
+p.tag *.tagContents:after { content: ", " }
+p.tag *.tagContents:last-child:after { content: "" }
 p.tag { margin-top: .5em; margin-bottom: 0; }
 p.tag + p.tag { margin-top: 0; } /* compress tags */
