@@ -67,10 +67,14 @@ class PClassDoc extends PProgramElementDoc
 	return Collections.unmodifiableList(typeParameters);
     }
     public ClassType type() {
-	String outerClass = (containingClass()==null) ? "" :
-	    containingClass().name()+".";
+	StringBuffer className = new StringBuffer(name());
+	for (PClassDoc outerClass = this.containingClass(); outerClass != null;
+	     outerClass = outerClass.containingClass()) {
+	    className.insert(0, '.');
+	    className.insert(0, outerClass.name());
+	}
 	return new PEagerClassType(pc, containingPackage().name(),
-				   outerClass+name());
+				   className.toString());
     }
     public List<ConstructorDoc> constructors() {
 	return Collections.unmodifiableList(constructors);
