@@ -41,7 +41,8 @@ class TypeContext {
     }
 
     // type resolution methods.
-    /** Look up the given type name in this type context. */
+    /** Look up the given type name in this type context. The result can
+     *  be a type variable in the methodScope or classScope. */
     Type lookupTypeName(String typeName,
 			List<ClassTypeVariable> typeParameters) {
 	int idx = typeName.lastIndexOf('.');
