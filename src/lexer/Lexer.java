@@ -4,7 +4,7 @@ import java.io.Reader;
 import java.io.LineNumberReader;
 
 /* Java lexer.
- * Copyright (C) 2002 C. Scott Ananian (cscott@cscott.net)
+ * Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */
@@ -90,8 +90,10 @@ public class Lexer {
     do {
       startpos = lineL.head + line_pos;
       ie = getInputElement();
-      if (ie instanceof DocumentationComment)
+      if (ie instanceof DocumentationComment) {
 	comment = ((Comment)ie).getComment();
+	comment_start = startpos;
+      }
     } while (!(ie instanceof Token));
     endpos = lineL.head + line_pos - 1;
 
@@ -108,8 +110,9 @@ public class Lexer {
     return !(ie instanceof EOF);
   }
 
-  String comment;
+  String comment; int comment_start;
   public String lastComment() { return comment; }
+  public int lastCommentPos() { return comment_start; }
   public void clearComment() { comment=""; }
   
   InputElement getInputElement() throws java.io.IOException {
