@@ -45,7 +45,7 @@
      "\" */\" 'n>" 
      "\"public class \"" 
      "(file-name-sans-extension (file-name-nondirectory buffer-file-name))" 
-     "(jde-gen-get-extend-class) \" {\" 'n> 'n>"
+     "\" \" (jde-gen-get-extend-class) \"{\" 'n> 'n>"
      "\"/** Creates a <code>\" " 
      "(file-name-sans-extension (file-name-nondirectory buffer-file-name))" 
      "\"</code>. */\" 'n" 
