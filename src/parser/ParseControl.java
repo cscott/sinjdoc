@@ -95,6 +95,9 @@ public class ParseControl {
 
     public PRootDoc parse() {
 	rootDoc = new PRootDoc(this);
+	// make PPackage objects for every included package first.
+	for (Iterator<String> it=packages.iterator(); it.hasNext(); )
+	    rootDoc.findOrCreatePackage(it.next(), true);
 	// parse every source file in specified packages.
 	for (Iterator<String> it=packages.iterator(); it.hasNext(); ) {
 	    PPackageDoc ppd = rootDoc.findOrCreatePackage(it.next(), true);

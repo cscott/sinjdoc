@@ -663,10 +663,16 @@ import_declaration ::=
 	|	type_import_on_demand_declaration
 	;
 single_type_import_declaration ::= 
-		IMPORT name SEMICOLON
+		IMPORT name:n SEMICOLON
+		{: parser.compilationUnit.singleTypeImport.add(n); :}
 	;
 type_import_on_demand_declaration ::=
-		IMPORT name DOT MULT SEMICOLON
+		IMPORT name:pkgName DOT MULT SEMICOLON
+		{:
+		 PPackageDoc pkg =
+		     parser.rootDoc.findOrCreatePackage(pkgName, false);
+		 parser.compilationUnit.onDemandImport.add(pkg);
+		:}
 	;
 type_declaration ::=
 		class_declaration
