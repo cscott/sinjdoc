@@ -89,7 +89,8 @@ class TemplateWriter extends PrintWriter  {
 		r = templateReader.read();
 		if (r<0) { eof=true; write(tag.toString()); break; }
 		tag.append((char)r);
-		if (Character.isLetter((char)r) && r!='@') continue;
+		if (Character.isJavaIdentifierPart((char)r) && r!='@')
+		    continue; // part of the tag, keep going.
 		// saw closing '@'.  is this a valid tag?
 		String tagName = tag.toString();
 		if (tagName.equals("@SPLIT@"))
