@@ -24,7 +24,7 @@ public interface FieldDoc extends MemberDoc {
     /** Return true if this field is transient. */
     public boolean isTransient();
     /** Return true if this field is volatile. */
-    public boolean isVolatiile();
+    public boolean isVolatile();
     /** Return the @serialField tags for this item. */
     public List<SerialFieldTag> serialFieldTags();
     /** Return the type of this field. */
