@@ -272,9 +272,16 @@ public class Main {
     static {
 	// options will be printed for help in the order in which they
 	// are created here.
-	addOption(new IgnoreOption
+	addOption(new Option
 		  ("-overview", "<file>", 2,
 		   "Read overview documentation from HTML file") {
+		void process(RunData rd, List<String> args) {
+		    File f = new File(args.get(1));
+		    if (f.exists() && f.isFile())
+			rd.parseControl.setOverviewFile(f);
+		    else
+			rd.reporter.printError("Can't find overview file: "+f);
+		}
 	    });
 	addOption(new Option
 		  ("-public", "", 1, 
@@ -351,9 +358,10 @@ public class Main {
 		    rd.subpackages.addAll(FileUtil.splitColon(args.get(1)));
 		}
 	    });
-	addOption(new IgnoreOption
+	addOption(new Option
 		  ("-breakiterator", "", 1, 
 		   "Compute 1st sentence with BreakIterator") {
+		void process(RunData rd, List<String> args) { /* nop */ }
 	    });
 	addOption(new IgnoreOption
 		  ("-bootclasspath", "<pathlist>", 2, 

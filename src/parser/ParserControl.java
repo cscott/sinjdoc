@@ -36,6 +36,8 @@ public class ParserControl {
     List<File> sourceFiles = Arrays.asList(new File[0]);
     /** Packages to document. */
     List<String> packages = Arrays.asList(new String[0]);
+    /** Overview file. */
+    File overview=null;
 
     public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
@@ -51,6 +53,8 @@ public class ParserControl {
 	this.sourceVersion=v;
     }
     public int getSourceVersion() { return this.sourceVersion; }
+
+    public void setOverviewFile(File f) { this.overview=f; }
 
     public void setSourceFiles(List<File> sp) {
 	// eliminate duplicates.
