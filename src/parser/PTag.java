@@ -83,8 +83,8 @@ abstract class PTag
     static Tag newTag(String tagname, List<Tag> contents,
 		      SourcePosition pos, TypeContext tagContext) {
 	tagname=tagname.intern();
-	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="param") return new PParamTag(pos, tagname, contents);
+	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
 	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
 	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents);
