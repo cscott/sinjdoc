@@ -2,7 +2,7 @@ package net.cscott.gjdoc.lexer;
 
 import java_cup.runtime.Symbol;
 
-public class Identifier extends Token {
+class Identifier extends Token {
   String identifier;
   public Identifier(String identifier) { this.identifier=identifier; }
 
