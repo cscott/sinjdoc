@@ -5,6 +5,7 @@ TEMPLATE_ROOT=$(JAVAROOT)/net/cscott/gjdoc/html/templates
 
 TEMPLATE_FILES = \
 package-frame.html \
+package-summary.html \
 allclasses-frame.html \
 overview-frame.html \
 overview-summary.html \

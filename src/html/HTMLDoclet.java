@@ -164,7 +164,15 @@ public class HTMLDoclet extends Doclet {
 	TemplateContext context = new TemplateContext
 	    (root,options, new URLContext(hu.toURL(pd,"package-summary.html")),
 	     pd);
-	// xxx do me.
+	TemplateWriter tw = new TemplateWriter
+	    ("package-summary.html"/*resource*/, hu, context);
+	tw.copyToSplit(root);
+	// first split is first sentence of package tags.
+	tw.print(transTags(pd.firstSentenceTags()));
+	tw.copyToSplit(root);
+	// second split is full contents of package tags.
+	tw.print(transTags(pd.tags()));
+	tw.copyRemainder(root); // done!
     }
     void makePackageTree(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
