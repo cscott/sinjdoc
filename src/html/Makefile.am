@@ -13,6 +13,7 @@ HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \
 SimpleCharSequence.java \
+TemplateWriter.java \
 URLContext.java \
 Version.java
 
