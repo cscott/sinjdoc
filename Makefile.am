@@ -33,9 +33,9 @@ doc:
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
 	   -overview src/overview.html \
-	   -windowtitle "GJDoc $(VERSION) documentation" \
-	   -doctitle "GJDoc $(VERSION) documentation" \
-	   -header "GJDoc $(VERSION)" \
+	   -windowtitle "@PACKAGE_STRING@ documentation" \
+	   -doctitle "@PACKAGE_STRING@ documentation" \
+	   -header "@PACKAGE_STRING@" \
 	   -bottom "Copyright &copy; 2003 C. Scott Ananian" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
@@ -64,7 +64,7 @@ upload: dist doc ChangeLog @PACKAGE_TARNAME@.jar
 	$(RM) -rf $(PACKAGE)-$(VERSION)
 	mkdir $(PACKAGE)-$(VERSION)
 	tar -c doc | tar -C $(PACKAGE)-$(VERSION) -x
-	(date ; echo "Released version $(VERSION)" ; echo " " ; cat ChangeLog)\
+	(date ; echo "Released @PACKAGE_STRING@" ; echo " " ; cat ChangeLog)\
 		> $(PACKAGE)-$(VERSION)/ChangeLog.txt
 	cp $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)/
 	cd $(PACKAGE)-$(VERSION) && \
