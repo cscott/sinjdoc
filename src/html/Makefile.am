@@ -14,6 +14,7 @@ HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \
 Pair.java \
+ReplayReader.java \
 SimpleCharSequence.java \
 TemplateContext.java \
 TemplateWriter.java \
