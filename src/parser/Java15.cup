@@ -5,6 +5,7 @@ import java_cup.runtime.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.List;
 
 /* Java 1.5 parser for CUP.
@@ -271,6 +272,7 @@ start with goal;
 
 // 19.2) The Syntactic Grammar
 goal ::=	compilation_unit
+	{: RESULT=Arrays.asList(new PClassDoc[0]); :}
 	;
 
 // 19.3) Lexical Structure.

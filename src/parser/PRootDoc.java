@@ -83,6 +83,7 @@ public class PRootDoc extends PDoc
 	    assert f.exists() && f.isFile();
 	    List<PClassDoc> pcds = Arrays.asList(new PClassDoc[0]);
 	    try {
+		printNotice("Parsing "+f);
 		pcds = (List/*<PClassDoc>*/)
 		    new Java15(this, f).parse().value;
 	    } catch (java.io.FileNotFoundException e) {
