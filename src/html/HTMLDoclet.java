@@ -122,7 +122,30 @@ public class HTMLDoclet extends Doclet {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext(hu.toURL(pd, "package-frame.html")),
 	     pd, null);
-	// xxx do me.
+	TemplateWriter tw = new TemplateWriter
+	    ("package-frame.html"/*resource*/, hu, context);
+	tw.copyToSplit(root);
+	// dump interfaces
+	for (Iterator<ClassDoc> it=pd.includedInterfaces().iterator();
+	     it.hasNext(); )
+	    tw.println(hu.toLink(context.curURL, it.next(), true));
+	tw.copyToSplit(root);
+	// dump ordinary classes
+	for (Iterator<ClassDoc> it=pd.includedOrdinaryClasses().iterator();
+	     it.hasNext(); )
+	    tw.println(hu.toLink(context.curURL, it.next(), true));
+	tw.copyToSplit(root);
+	// dump exceptions
+	for (Iterator<ClassDoc> it=pd.includedErrors().iterator();
+	     it.hasNext(); )
+	    tw.println(hu.toLink(context.curURL, it.next(), true));
+	tw.copyToSplit(root);
+	// dump errors
+	for (Iterator<ClassDoc> it=pd.includedExceptions().iterator();
+	     it.hasNext(); )
+	    tw.println(hu.toLink(context.curURL, it.next(), true));
+	// done!
+	tw.copyRemainder(root);
     }
     void makePackageSummary(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
