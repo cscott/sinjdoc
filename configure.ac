@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(GJDoc, 0.2, cscott@cscott.net)
+AC_INIT(GJDoc, 0.3, cscott@cscott.net)
 AC_COPYRIGHT(Copyright (c) 2003 C. Scott Ananian)
 AC_REVISION($Revision$)
 AC_CONFIG_SRCDIR(configure.ac) # double check --srcdir validity.
