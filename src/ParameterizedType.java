@@ -1,5 +1,5 @@
 // ParameterizedType.java, created Wed Mar 19 15:06:55 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * type such as <code>Collection&lt;Integer&gt;</code> or
  * <code>HashMap&lt;String,Double&gt;</code>.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see java.lang.reflect.ParameterizedType
  */

@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.io.LineNumberReader;
 
 /* Java lexer.
- * Copyright (C) 2002 C. Scott Ananian <cananian@alumni.princeton.edu>
+ * Copyright (C) 2002 C. Scott Ananian (cscott@cscott.net)
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */

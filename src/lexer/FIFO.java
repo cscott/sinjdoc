@@ -1,7 +1,7 @@
 package net.cscott.gjdoc.lexer;
 
 /** FIFO class.  This helps implement the lookahead we need for JSR-14.
- * Copyright (C) 2002 C. Scott Ananian <cananian@alumni.princeton.edu>
+ * Copyright (C) 2002 C. Scott Ananian (cscott@cscott.net)
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */

@@ -1,5 +1,5 @@
 // PackageDoc.java, created Wed Mar 19 12:23:13 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * comment and tags, and the classes in the package.  It does *not*
  * necessarily represent a package included in the current GJDoc run.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.PackageDoc
  */

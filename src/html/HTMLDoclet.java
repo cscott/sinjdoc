@@ -1,5 +1,5 @@
 // HTMLDoclet.java, created Tue Mar 18 14:31:10 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * <code>HTMLDoclet</code>
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 public class HTMLDoclet extends Doclet {

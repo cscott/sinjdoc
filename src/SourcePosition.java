@@ -1,5 +1,5 @@
 // SourcePosition.java, created Tue Mar 18 18:31:42 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -9,7 +9,7 @@ import java.io.File;
  * The <code>SourcePosition</code> interface describes a source position:
  * filename, line number, and column number.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.SourcePosition
  */

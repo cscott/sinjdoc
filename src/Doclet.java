@@ -1,5 +1,5 @@
 // Doclet.java, created Tue Mar 18 14:59:20 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * The <code>Doclet</code> class provides the entry-point methods for
  * a documentation generator.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.Doclet
  */

@@ -1,5 +1,5 @@
 // ThrowsTag.java, created Wed Mar 19 13:03:46 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * The <code>PThrowsTag</code> class represents a @throws or @exception
  * documentation tag.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 abstract class PThrowsTag extends PTag.Trailing

@@ -1,5 +1,5 @@
 // MemberDoc.java, created Wed Mar 19 12:18:43 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
@@ -10,7 +10,7 @@ package net.cscott.gjdoc.parser;
  * members of a class (inner classes) are represented instead by
  * <code>PClassDoc</code>.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 abstract class PMemberDoc extends PProgramElementDoc

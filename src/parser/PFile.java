@@ -8,7 +8,7 @@ import java.io.File;
  * and a lazily-created table which allows translation of raw character
  * indices to line numbers.
  *
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 public class PFile {

@@ -3,7 +3,7 @@ package net.cscott.gjdoc.parser;
 /**
  * Simple strongly-typed pair class.
  *
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 

@@ -1,5 +1,5 @@
 // ClassDoc.java, created Wed Mar 19 11:39:43 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * using <code>Type</code> (components of which can be converted to
  * <code>ClassDoc</code>, if possible).
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.ClassDoc
  */
@@ -112,7 +112,7 @@ public interface ClassDoc extends ProgramElementDoc, Type {
     public List<MethodDoc> serializationMethods();
     /**
      * Test whether this class is a subclass of the specified class.
-     * @parameter cd the candidate superclass.
+     * @param cd the candidate superclass.
      * @return true if cd is a superclass of this class.
      */
     public boolean subclassOf(ClassDoc cd);

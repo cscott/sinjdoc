@@ -1,5 +1,5 @@
 // Doc.java, created Wed Mar 19 12:04:15 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * <code>Doc</code> items are <code>ReferenceUnique</code>, that is, they
  * are == comparable.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.Doc
  */

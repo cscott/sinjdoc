@@ -1,5 +1,5 @@
 // RootDoc.java, created Wed Mar 19 12:56:45 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * GJDoc; in particular the packages, classes, and options specified by
  * the user.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  * @see com.sun.javadoc.RootDoc
  */

@@ -1,5 +1,5 @@
 // SerialFieldTag.java, created Wed Mar 19 13:01:22 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * The <code>PSerialFieldTag</code> class documents a Serializable field
  * defined by an ObjectStreamField.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 abstract class PSerialFieldTag extends PTag.Trailing

@@ -1,5 +1,5 @@
 // SeeTag.java, created Wed Mar 19 12:59:15 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * tag.  The @see tag can be plain text, or reference a class or
  * member.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 // XXX shares implementation with the inline reference tag

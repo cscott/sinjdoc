@@ -1,5 +1,5 @@
 // SourcePosition.java, created Tue Mar 18 18:31:42 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
@@ -11,7 +11,7 @@ import java.io.File;
  * the position as a zero-based character index which it lazily converts
  * to line and column number when needed.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 class PSourcePosition

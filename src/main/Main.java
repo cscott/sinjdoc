@@ -1,5 +1,5 @@
 // Main.java, created Sat Mar 15 19:14:23 2003 by cananian
-// Copyright (C) 2003 C. Scott Ananian <cananian@alumni.princeton.edu>
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
@@ -19,36 +19,36 @@ import java.util.regex.Pattern;
  * deliberately very similar to that of Sun's javadoc, although
  * slightly different option sets may be supported.
  * 
- * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
+ * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
 public class Main {
     /** Command-line interface.  Exits using <code>System.exit()</code>.
      *  Doesn't return an exit code.
-     * @parameter args The command line parameters.
+     * @param args The command line parameters.
      */
     public static void main(String[] args) {
 	System.exit(execute(args));
     }
     /** Programmatic interface.
-     * @parameter args The command line parameters.
+     * @param args The command line parameters.
      * @return the exit code.
      */
     public static int execute(String[] args) {
 	return execute("GJDoc", args);
     }
     /** Programmatic interface.
-     * @parameter programName Name of the program, for error messages.
-     * @parameter arg The command line parameters.
+     * @param programName Name of the program, for error messages.
+     * @param arg The command line parameters.
      * @return the exit code.
      */
     public static int execute(String programName, String[] args) {
 	return execute(programName, HTMLDoclet.class.getName(), args);
     }
     /** Programmatic interface.
-     * @parameter programName Name of the program, for error messages.
-     * @parameter defaultDocletClassName ignored.
-     * @parameter arg The command line parameters.
+     * @param programName Name of the program, for error messages.
+     * @param defaultDocletClassName ignored.
+     * @param arg The command line parameters.
      * @return the exit code.
      */
     public static int execute(String programName,
@@ -59,12 +59,12 @@ public class Main {
 		       defaultDocletClassName, args);
     }
     /** Programmatic interface.
-     * @parameter programName Name of the program, for error messages.
-     * @parameter errWriter PrintWriter to receive error messages.
-     * @parameter warnWriter PrintWriter to receive warning messages.
-     * @parameter noticeWriter PrintWriter to receive notice messages.
-     * @parameter defaultDocletClassName ignored.
-     * @parameter arg The command line parameters.
+     * @param programName Name of the program, for error messages.
+     * @param errWriter PrintWriter to receive error messages.
+     * @param warnWriter PrintWriter to receive warning messages.
+     * @param noticeWriter PrintWriter to receive notice messages.
+     * @param defaultDocletClassName ignored.
+     * @param arg The command line parameters.
      * @return the exit code.
      */
     public static int execute(String programName,

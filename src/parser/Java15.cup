@@ -5,7 +5,7 @@ import java_cup.runtime.*;
 /* Java 1.5 parser for CUP.
  * (actually "Java 1.4 with JSR-14" parser,
  *  since Java 1.5 has not yet been finalized)
- * Copyright (C) 2002 C. Scott Ananian <cananian@alumni.princeton.edu>
+ * Copyright (C) 2002 C. Scott Ananian (cscott@cscott.net)
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */
