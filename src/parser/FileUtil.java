@@ -197,8 +197,10 @@ public class FileUtil {
 	return new Pair<String,PSourcePosition>
 	    (sb.toString(), new PSourcePosition(f, encoding, reporter));
     }
-    static Reader fileReader(File f, String encoding,
-			     DocErrorReporter reporter)
+    /** Return a <code>Reader</code> for the given file using the given
+     *  encoding.  Reports any encoding errors using the given reporter. */
+    public static Reader fileReader(File f, String encoding,
+				    DocErrorReporter reporter)
 	throws java.io.FileNotFoundException {
 	if (encoding!=null) try {
 	    return new InputStreamReader(new FileInputStream(f), encoding);
