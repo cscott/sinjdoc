@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
@@ -319,6 +320,21 @@ class TemplateWriter extends PrintWriter  {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.bottom==null) return;
 		    tw.write(context.options.bottom);
+		}
+	    });
+	register("CLASSPARAMS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    List<ClassTypeVariable> ctvs =
+			context.curClass.typeParameters();
+		    if (ctvs.size()==0) return;
+		    tw.write("&lt;");
+		    for(Iterator<ClassTypeVariable> it=ctvs.iterator();
+			it.hasNext(); ) {
+			tw.write(it.next().getName());
+			if (it.hasNext()) tw.write(",");
+		    }
+		    tw.write("&gt;");
 		}
 	    });
 	register("CLASSSHORTNAME", new TemplateAction() {

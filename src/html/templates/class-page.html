@@ -6,7 +6,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>@CLASSSHORTNAME@@TITLESUFFIX@</title>
+    <title>@CLASSSHORTNAME@@CLASSPARAMS@@TITLESUFFIX@</title>
     <meta name="keywords" content="@CLASSNAME@,@CLASSSHORTNAME@ @CLASSTYPE@" />
     <link href="@ROOT@stylesheet.css" rel="stylesheet" type="text/css" />
   </head>
@@ -52,7 +52,7 @@
     <p class="clear"><!--empty--></p>
    </div>
    <p class="packageName">@PKGNAME@</p>
-   <h1>@IF_INTERFACE@ Interface @END@ @IFNOT_INTERFACE@ Class @END@ @CLASSSHORTNAME@</h1>
+   <h1>@IF_INTERFACE@ Interface @END@ @IFNOT_INTERFACE@ Class @END@ @CLASSSHORTNAME@@CLASSPARAMS@</h1>
    <p class="implementingClasses">
    All known implementing classes:
      <a href="CharBuffer.html">CharBuffer</a>
@@ -69,7 +69,7 @@
    </p>
 
    <p class="declaration">public interface <span
-class="className">@CLASSSHORTNAME@</span> <span class="extends">extends <a
+class="className">@CLASSSHORTNAME@@CLASSPARAMS@</span> <span class="extends">extends <a
 href="AbstractCollection.html">AbstractCollection</a></span> <span
 class="implements">implements <a href="List.html">List</a></span></p>
 
