@@ -3,8 +3,7 @@ MAINTAINERCLEANFILES = Makefile.in configure aclocal.m4 \
 		       scripts/config.guess scripts/config.sub \
 		       scripts/install-sh scripts/ltmain.sh \
 		       scripts/missing scripts/mkinstalldirs
-EXTRA_DIST = autogen.sh $(wildcard lib/*.jar) lib/README classes/README \
-	overview.html
+EXTRA_DIST = autogen.sh $(wildcard lib/*.jar) lib/README classes/README
 
 SUBDIRS = src
 
@@ -29,7 +28,7 @@ doc:
 	cd doc-link/net/cscott/ ; ln -s ../../../src gjdoc
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
-	   -overview overview.html \
+	   -overview src/overview.html \
 	   -doctitle "GJDoc documentation" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
