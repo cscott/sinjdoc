@@ -257,13 +257,14 @@ class HTMLUtil {
 	    if (doBounds) {
 		List<Type> bounds = tv.getBounds();
 		if (bounds.size() > 1 ||
-		    !bounds.get(0).signature().equals("java.lang.Object")) {
+		    !(bounds.get(0) instanceof ClassType &&
+		      bounds.get(0).signature().equals("java.lang.Object"))) {
 		    // "interesting" bounds.  bounds are always linked.
-		    sb.append(" extends ");
+		    sb.append("&nbsp;extends&nbsp;");
 		    for (Iterator<Type> it2=bounds.iterator(); it2.hasNext();){
 			sb.append(HTMLUtil.toLink(context, it2.next()));
 			if (it2.hasNext())
-			    sb.append(" &amp; ");
+			    sb.append("&amp;");
 		    }
 		}
 	    }
