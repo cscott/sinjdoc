@@ -297,7 +297,7 @@ class HTMLOptions {
 		if (cs.canEncode()) return true;
 		reporter.printError("Can't encode with charset "+cs);
 	    } catch (IllegalArgumentException e) {
-		reporter.printError(e.toString());
+		reporter.printError("Invalid charset: "+optionWithArgs.get(1));
 	    }
 	    return false;
 	}
