@@ -19,4 +19,10 @@ public abstract class Version {
     /** The address to which bug reports should be sent.
      *  @return "@PACKAGE_BUGREPORT@" */
     public static final String PACKAGE_BUGREPORT = "@PACKAGE_BUGREPORT@";
+
+    /** Prints the package version if invoked. */
+    public static void main(String[] args) {
+	System.out.println(PACKAGE_STRING);
+	System.out.println("Bug reports to "+PACKAGE_BUGREPORT);
+    }
 }
