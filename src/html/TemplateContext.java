@@ -55,4 +55,16 @@ class TemplateContext {
 	this.curURL = curURL;
 	assert root!=null && options!=null && curURL!=null;
     }
+
+    // for debugging.
+    public String toString() {
+	StringBuffer sb = new StringBuffer("TC[");
+	sb.append(curURL); sb.append(",");
+	if (curMember!=null) sb.append(curMember.toString());
+	else if (curClass!=null) sb.append(curClass.toString());
+	else if (curPackage!=null) sb.append(curPackage.toString());
+	else sb.append("ROOT");
+	sb.append("]");
+	return sb.toString();
+    }
 }
