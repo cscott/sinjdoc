@@ -18,6 +18,13 @@ public interface ParameterizedType extends Type {
      *  of this parameterized type; that is, the type without parameters. */
     public ClassType getBaseType();
     /** Return the type arguments that this parameterized type has been
-     *  instantiated with. */
+     *  instantiated with.  Note that for nested parameterized types,
+     *  the size of the returned list may well be larger than the size
+     *  of <code>getBaseType().typeParameters()</code>.  The returned
+     *  actual types are ordered from outermost class to innermost
+     *  class.  For the type <code>A<Integer>.B<String>.C</code>,
+     *  this method will return the list <code>[ Integer, String ]</code>
+     *  even those <code>getBaseType().typeParameters().size()</code> will
+     *  be zero. */
     public List<Type> getActualTypeArguments();
 }
