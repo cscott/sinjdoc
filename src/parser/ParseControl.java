@@ -96,7 +96,7 @@ public class ParseControl {
 		File f = it2.next();
 		// note that 'package' is non-null here because package is
 		// always included.
-		List<PClassDoc> pcds = prd.findOrCreateClasses(f, ppd);
+		List<PClassDoc> pcds = prd.findOrCreateClasses(f, ppd).classes;
 		allClasses.addAll(pcds);
 		// these classes should already have been added to the package
 		if (DEBUG) assert ppd.includedClasses().containsAll(pcds);
@@ -108,7 +108,7 @@ public class ParseControl {
 	    File f = it.next();
 	    // note that 'package' is null here because package may not be
 	    // included.
-	    List<PClassDoc> pcds = prd.findOrCreateClasses(f, null);
+	    List<PClassDoc> pcds = prd.findOrCreateClasses(f, null).classes;
 	    // add these classes to 'all classes' and 'specified classes'
 	    allClasses.addAll(pcds);
 	    specifiedClasses.addAll(pcds);
