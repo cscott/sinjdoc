@@ -33,6 +33,7 @@ abstract class PMemberDoc extends PProgramElementDoc
 	this.commentText = commentText;
 	this.commentPosition = commentPosition;
 	this.commentContext = commentContext;
+	assert name!=null;
     }
     public boolean isSynthetic() { return isSynthetic; }
     // methods abstract in PDoc
