@@ -42,7 +42,8 @@ abstract class PTypeVariable
 	    Type t = it.next();
 	    assert !(t instanceof ArrayType);
 	    if (!(t instanceof TypeVariable || TypeUtil.isInterface(t))) {
-		assert !seenClass : "at most one bound can be non-interface";
+		// XXX this test is not valid because isInterface is not exact
+		//assert !seenClass : "at most one bound can be non-interface";
 		seenClass=true;
 	    }
 	}
