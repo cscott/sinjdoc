@@ -93,6 +93,7 @@ action code {:
   }
 
   PClassType lookup(String name) {
+      // XXX do something about type variables.
       return new PLazyClassType(parser.typeContexts.peek(), name);
   }
   static class TypeList extends ArrayList<Type> {

@@ -46,6 +46,12 @@ class TypeContext {
     }
 
     // type resolution methods.
+
+    // hack, until we split this properly.
+    ClassType lookupClassTypeName(String typeName) {
+	return (ClassType) lookupTypeName(typeName); // XXX HACK
+    }
+
     /** Look up the given type name in this type context. The result can
      *  be a type variable in the methodScope or classScope. */
     Type lookupTypeName(String typeName) {
@@ -137,9 +143,7 @@ class TypeContext {
 		if (id.equals(t.typeName())) return t;
 	    }
 	//   2) try class named Q.
-	Type t = lookupTypeName(Q);
-	ClassDoc cls = (t instanceof ClassType) ?
-	    ((ClassType)t).asClassDoc() : null;
+	ClassDoc cls = lookupClassTypeName(Q).asClassDoc();
 	if (cls!=null)
 	    for (Iterator<ClassDoc> it=cls.innerClasses().iterator();
 		 it.hasNext(); ) {

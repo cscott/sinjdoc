@@ -15,7 +15,9 @@ import java.util.List;
  * The <code>PLazyClassType</code> class represents an unresolved class
  * type.  Resolution of the exact type specified is deferred until
  * its methods are invoked, at which time the given <code>TypeContext</code>
- * is used to resolve the name.
+ * is used to resolve the name.  NOTE THAT this will NOT work for
+ * type variable names! (They should be instances of PTypeVariable, not
+ * PClassType.)
  *
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
@@ -45,8 +47,7 @@ class PLazyClassType extends PClassType {
     }
     private void lookup() {
 	assert cache==null && isValid();
-	cache = (ClassType) // XXX what if this is a type variable???
-	    typeContext.lookupTypeName(typeName);
+	cache = typeContext.lookupClassTypeName(typeName);
 	typeContext=null;
 	typeName=null;
 	assert cache!=null && isValid();

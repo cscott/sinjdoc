@@ -84,14 +84,13 @@ class PClassDoc extends PProgramElementDoc
 	return Collections.unmodifiableList(fields);
     }
     public final ClassDoc findClass(String className) {
-	return ((ClassType) typeContext.lookupTypeName(className))//xxx
-	    .asClassDoc();
+	return typeContext.lookupClassTypeName(className).asClassDoc();
     }
     public final List<ClassType> importedClasses() {
 	ArrayList<ClassType> result = new ArrayList<ClassType>();
 	for (Iterator<String> it=typeContext.compilationUnit.singleTypeImport
 		 .iterator(); it.hasNext(); )
-	    result.add((ClassType)typeContext.lookupTypeName(it.next()));//xxx
+	    result.add(typeContext.lookupClassTypeName(it.next()));
 	result.trimToSize();
 	return Collections.unmodifiableList(result);
     }

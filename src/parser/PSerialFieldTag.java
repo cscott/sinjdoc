@@ -58,6 +58,8 @@ class PSerialFieldTag extends PTag.Trailing
     public ClassDoc fieldTypeDoc() {
 	if (fieldType instanceof ClassType)
 	    return ((ClassType)fieldType).asClassDoc();
+	// XXX also link in the base type's doc for array and parameterized
+	//     types?
 	return null;
     }
 }
