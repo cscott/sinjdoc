@@ -93,6 +93,8 @@ public class FileUtil {
 		}
 	    }));
     }
+    /** Expand the given subpackage and exclude strings to yield a full list
+     *  of specified packages. */
     public List<String> expandPackages(List<String> subpackages,
 				       List<String> exclude) {
 	List<String> result = new ArrayList<String>();
@@ -129,6 +131,8 @@ public class FileUtil {
 	    _expandOnePackage_(result, newPkg, exclude);
 	}
     }
+    /** Returns a list of all the source files found in the source path
+     *  corresponding to the given package name. */
     public List<File> sourceFilesInPackage(String packageName) {
 	File pkgDir = findPackage(packageName);
 	if (pkgDir==null) return Arrays.asList(new File[0]);
