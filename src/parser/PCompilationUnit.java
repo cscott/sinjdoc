@@ -18,14 +18,18 @@ import java.util.List;
 class PCompilationUnit {
     final File file;
     final List<String> singleTypeImport = new ArrayList<String>();
+    final List<String> staticSingleTypeImport = new ArrayList<String>();
     final List<PPackageDoc> onDemandImport = new ArrayList<PPackageDoc>();
+    final List<String> staticOnDemandImport = new ArrayList<String>();
     final List<PClassDoc> classes = new ArrayList<PClassDoc>();
 
     PCompilationUnit(File file) { this.file = file; }
     public String toString() {
 	return file+"["+
 	    "singleTypeImport="+singleTypeImport+", "+
+	    "staticSingleTypeImport="+staticSingleTypeImport+", "+
 	    "onDemandImport="+onDemandImport+", "+
+	    "staticOnDemandImport="+staticOnDemandImport+", "+
 	    "classes="+classes+"]";
     }
 }// PCompilationUnit

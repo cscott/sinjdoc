@@ -9,6 +9,7 @@ import net.cscott.sinjdoc.ClassType;
 import net.cscott.sinjdoc.ClassTypeVariable;
 import net.cscott.sinjdoc.ParameterizedType;
 import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeArgument;
 import net.cscott.sinjdoc.TypeVisitor;
 import net.cscott.sinjdoc.TypeVariable;
 
@@ -190,6 +191,12 @@ abstract class TypeUtil {
 				    List<Type> typeList) {
 	return subst(makeSubstMap(substitutions), typeList);
     }
+    /** Make the substitutions of types for type variables specified by the
+     *  given parameterized type in the specified list of type arguments. */
+    private static List<TypeArgument> substA(ParameterizedType substitutions,
+					     List<TypeArgument> argsList) {
+	return substA(makeSubstMap(substitutions), argsList);
+    }
     /** Helper function: make a mapping from <code>TypeVariable</code>s to
      *  <code>Type</code>s based on the given <code>ParameterizedType</code>.
      */
@@ -200,9 +207,16 @@ abstract class TypeUtil {
 	    ClassDoc cd = ptt.getBaseType().asClassDoc();
 	    if (cd!=null) {
 		Iterator<ClassTypeVariable> it1=cd.typeParameters().iterator();
-		Iterator<Type> it2 = ptt.getActualTypeArguments().iterator();
-		while (it1.hasNext() && it2.hasNext())
-		    substMap.put(it1.next(), it2.next());
+		Iterator<TypeArgument> it2 =
+		    ptt.getActualTypeArguments().iterator();
+		while (it1.hasNext() && it2.hasNext()) {
+		    ClassTypeVariable ctv = it1.next();
+		    TypeArgument arg = it2.next();
+		    // wildcard type arguments aren't allowed in substitutions
+		    assert !arg.isCovariant();
+		    assert !arg.isContravariant();
+		    substMap.put(ctv, arg.getType());
+		}
 		// lists should be the same size:
 		assert !it1.hasNext();
 		assert !it2.hasNext();
@@ -219,6 +233,18 @@ abstract class TypeUtil {
 	List<Type> result = new ArrayList<Type>(typeList.size());
 	for (Iterator<Type> it=typeList.iterator(); it.hasNext(); )
 	    result.add(subst(substMap, it.next()));
+	return result;
+    }
+    /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
+     *  the <code>argsList</code> according to the given <code>Map</code>. */
+    private static List<TypeArgument> substA
+	(final Map<TypeVariable,Type> substMap, List<TypeArgument> argsList) {
+	List<TypeArgument> result=new ArrayList<TypeArgument>(argsList.size());
+	for (Iterator<TypeArgument> it=argsList.iterator(); it.hasNext(); ) {
+	    TypeArgument a = it.next();
+	    result.add(new PTypeArgument(subst(substMap, a.getType()),
+					 a.isCovariant(),a.isContravariant()));
+	}
 	return result;
     }
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
@@ -239,7 +265,7 @@ abstract class TypeUtil {
 		    (t.getBaseType(),
 		     t.getDeclaringType()==null ? null :
 		     subst(substMap, t.getDeclaringType()),
-		     subst(substMap, t.getActualTypeArguments()));
+		     substA(substMap, t.getActualTypeArguments()));
 	    }
 	    public Type visit(TypeVariable t) {
 		if (substMap.containsKey(t)) return substMap.get(t);

@@ -5,6 +5,7 @@ package net.cscott.sinjdoc.parser;
 
 import net.cscott.sinjdoc.ClassType;
 import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeArgument;
 import net.cscott.sinjdoc.TypeVisitor;
 
 import java.util.Collections;
@@ -22,10 +23,10 @@ class PParameterizedType
     implements net.cscott.sinjdoc.ParameterizedType {
     final ClassType baseType;
     final Type declaringType;
-    final List<Type> actualTypeArguments;
+    final List<TypeArgument> actualTypeArguments;
     /** Create a new parameterized class type. */
     PParameterizedType(ClassType baseType, Type declaringType,
-		       List<Type> actualTypeArguments) {
+		       List<TypeArgument> actualTypeArguments) {
 	this.baseType = baseType;
 	this.declaringType = declaringType;
 	this.actualTypeArguments = actualTypeArguments;
@@ -33,7 +34,7 @@ class PParameterizedType
     }
     public ClassType getBaseType() { return baseType; }
     public Type getDeclaringType() { return declaringType; }
-    public List<Type> getActualTypeArguments() {
+    public List<TypeArgument> getActualTypeArguments() {
 	return Collections.unmodifiableList(actualTypeArguments);
     }
     public String signature() {
@@ -42,7 +43,7 @@ class PParameterizedType
     public String toString() {
 	StringBuffer sb = new StringBuffer(getBaseType().toString());
 	sb.append('<');
-	for (Iterator<Type> it=getActualTypeArguments().iterator();
+	for (Iterator<TypeArgument> it=getActualTypeArguments().iterator();
 	     it.hasNext(); ) {
 	    sb.append(it.next().toString());
 	    if (it.hasNext()) sb.append(',');

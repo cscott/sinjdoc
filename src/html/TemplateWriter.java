@@ -502,7 +502,9 @@ class TemplateWriter extends PrintWriter  {
 			    ((ExecutableMemberDoc)context.curMember)
 			    .parameters().iterator(); it.hasNext(); ) {
 			Parameter p = it.next();
-			tw.write(HTMLUtil.toLink(context.curURL, p.type()));
+			tw.write(HTMLUtil.toLink(context.curURL,
+						 p.printableType()));
+			if (p.isVarArgs()) tw.write("...");
 			tw.write(" ");
 			tw.write(p.name());
 			if (it.hasNext()) tw.write(", ");

@@ -9,6 +9,7 @@ import net.cscott.sinjdoc.SourcePosition;
 import net.cscott.sinjdoc.Tag;
 import net.cscott.sinjdoc.TagVisitor;
 import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeArgument;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,35 +53,39 @@ abstract class PTag
 
     // utility functions.
     // XXX make handle nested parameterized types
+    // XXX make handle wildcards
     static Type parseParameterizedType(TypeContext tagContext, String typeName,
 				       PSourcePosition pos)
 	throws TagParseException {
-	Stack<List<Type>> typeStack = new Stack<List<Type>>();
-	typeStack.push(new ArrayList<Type>(2));
+	Stack<List<TypeArgument>> typeStack = new Stack<List<TypeArgument>>();
+	typeStack.push(new ArrayList<TypeArgument>(2));
 	Matcher matcher = PIECE.matcher(typeName);
 	int lastMatch = 0;
 	while (matcher.find()) {
 	    lastMatch=matcher.end();
-	    typeStack.peek().add(tagContext.lookupTypeName(matcher.group(1),
-							   true/*lazy*/));
+	    typeStack.peek().add(new PTypeArgument
+				 (tagContext.lookupTypeName(matcher.group(1),
+							    true/*lazy*/),
+				  false, false));
 	    if ("<".equals(matcher.group(2))) { // start new parameterized type
-		if (!(typeStack.peek().get(typeStack.peek().size()-1)
+		if (!(typeStack.peek().get(typeStack.peek().size()-1).getType()
 		      instanceof ClassType))
 		    throw new TagParseException
 			(pos.add(matcher.start(1)),
 			 "can't parameterize a type variable");
-		typeStack.push(new ArrayList<Type>(2));
+		typeStack.push(new ArrayList<TypeArgument>(2));
 	    } else if (">".equals(matcher.group(2))) {// end parameterized type
 		if (typeStack.size()==1)
 		    throw new TagParseException
 			(pos.add(matcher.start(2)), "unmatched > in type");
-		List<Type> typeArgs = typeStack.pop();
+		List<TypeArgument> typeArgs = typeStack.pop();
 		int last = typeStack.peek().size()-1;
 		assert last>=0; // regexp doesn't match otherwise
-		ClassType base = (ClassType) typeStack.peek().get(last);
+		ClassType base=(ClassType)typeStack.peek().get(last).getType();
 		// XXX doesn't handle parameterized inner classes.
 		Type pt = new PParameterizedType(base,null,typeArgs);
-		typeStack.peek().set(last, pt);
+		typeStack.peek().set(last,
+				     new PTypeArgument(pt, false, false));
 	    }
 	}
 	if (lastMatch!=typeName.length())
@@ -93,7 +98,7 @@ abstract class PTag
 	    throw new TagParseException(pos, "no type found");
 	if (typeStack.peek().size()>1)
 	    throw new TagParseException(pos, "too many types found");
-	return typeStack.peek().get(0);
+	return typeStack.peek().get(0).getType();
     }
     private static final Pattern PIECE=Pattern.compile
 	("\\G\\s*([^<>,]+)\\s*(\\z|[<>,])");

@@ -43,6 +43,7 @@ PSerialFieldTag.java \
 PSourcePosition.java \
 PTag.java \
 PThrowsTag.java \
+PTypeArgument.java \
 PTypeVariable.java
 
 # CUP

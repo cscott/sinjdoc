@@ -17,6 +17,7 @@ import net.cscott.sinjdoc.PackageDoc;
 import net.cscott.sinjdoc.ParameterizedType;
 import net.cscott.sinjdoc.RootDoc;
 import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeArgument;
 import net.cscott.sinjdoc.TypeVariable;
 import net.cscott.sinjdoc.TypeVisitor;
 
@@ -217,13 +218,22 @@ class HTMLUtil {
 		    cd.typeParameters().size() ==
 		    t.getActualTypeArguments().size();
 		// and our parameters.
-		Iterator<Type> it = t.getActualTypeArguments().iterator();
+		Iterator<TypeArgument> it =
+		    t.getActualTypeArguments().iterator();
 		if (it.hasNext()) {
 		    sb.append("&lt;");
 		    while (it.hasNext()) {
-			sb.append(it.next().accept(this));
+			TypeArgument a = it.next();
+			if (a.isCovariant() || a.isContravariant())
+			    sb.append('?');
+			if (a.isCovariant())
+			    sb.append(" extends ");
+			if (a.isContravariant())
+			    sb.append(" super ");
+			if (!(a.isCovariant() && a.isContravariant()))
+			    sb.append(a.getType().accept(this));
 			if (it.hasNext())
-			    sb.append(",");
+			    sb.append(',');
 		    }
 		    sb.append("&gt;");
 		}

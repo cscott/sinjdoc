@@ -36,5 +36,5 @@ public interface ParameterizedType extends Type {
      *  will return the <code>ParameterizedType</code> for
      *  <code>A&lt;Integer&gt;.B&lt;String&gt;</code>.
      */
-    public List<Type> getActualTypeArguments();
+    public List<TypeArgument> getActualTypeArguments();
 }

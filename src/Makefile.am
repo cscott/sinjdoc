@@ -36,6 +36,7 @@ Tag.java \
 TagVisitor.java \
 ThrowsTag.java \
 Type.java \
+TypeArgument.java \
 TypeVariable.java \
 TypeVisitor.java
 

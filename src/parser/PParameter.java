@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.sinjdoc.parser;
 
+import net.cscott.sinjdoc.ArrayType;
 import net.cscott.sinjdoc.Type;
 
 /**
@@ -15,13 +16,27 @@ import net.cscott.sinjdoc.Type;
 class PParameter implements net.cscott.sinjdoc.Parameter {
     final Type type;
     final String name;
-    PParameter(Type type, String name) {
-	this.type = type; this.name = name;
+    final boolean isVarArgs;
+    PParameter(Type type, String name, boolean isVarArgs) {
+	this.type = type; this.name = name; this.isVarArgs = isVarArgs;
+	assert isVarArgs ? (type instanceof ArrayType) : true;
     }
     public Type type() { return type; }
     public String name() { return name; }
+    public boolean isVarArgs() { return isVarArgs; }
+
+    public Type printableType() {
+	Type ty = type();
+	if (isVarArgs) {
+	    ArrayType at = (ArrayType) ty;
+	    ty = (at.dimension() > 1) ?
+		new PArrayType(at.baseType(), at.dimension()-1) :
+		at.baseType();
+	}
+	return ty;
+    }
 
     public final String toString() {
-	return type().toString()+" "+name();
+	return printableType().toString()+(isVarArgs?"... ":" ")+name();
     }
 }

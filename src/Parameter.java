@@ -19,6 +19,13 @@ public interface Parameter {
      *  parameter is <code>short index</code>, then
      *  <code>type().typeName()</code> would be the string "short". */
     public abstract Type type();
+    /** Returns <code>true</code> if this is a "varargs" parameter. */
+    public abstract boolean isVarArgs();
+    /** Return the "printable type" -- this is the component type
+     *  of the type of a varargs parameter, otherwise it is the
+     *  type of the parameter.
+     */
+    public abstract Type printableType();
     /** Return a human-readable string representing this parameter.
      *  For example, if this parameter is <code>short index</code>,
      *  returns "short index". */
