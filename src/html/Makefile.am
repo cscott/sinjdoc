@@ -9,6 +9,7 @@ CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
 HTMLDoclet.java \
+HTMLOptions.java \
 URLContext.java \
 Version.java
 
