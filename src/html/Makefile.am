@@ -13,6 +13,7 @@ DocComparator.java \
 HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \
+Pair.java \
 SimpleCharSequence.java \
 TemplateContext.java \
 TemplateWriter.java \
