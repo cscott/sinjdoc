@@ -12,19 +12,29 @@ import java.io.File;
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
-abstract class PSourcePosition
+class PSourcePosition
     implements net.cscott.gjdoc.SourcePosition {
+    final File file; final int line; final int column;
+    PSourcePosition(File file, int line, int column) {
+	this.file = file; this.line = line; this.column = column;
+    }
     /** The source file.  Returns null if no file information is available. */
-    public abstract File file();
+    public File file() { return file; }
     /** The line in the source file.  The first line is numbered 1; 0 means
      *  no line number information is available. */
-    public abstract int line();
+    public int line() { return line; }
     /** The column in the source file.  The first column is numbered 1; 0 means
      *  no column information is available.  Columns count characters in the
      *  input stream; a tab advances the column number to the next 8-column
      *  tab stop. */
-    public abstract int column();
+    public int column() { return column; }
     /** Convert the source position to the form "Filename:line".
      */
-    public abstract String toString();
+    public final String toString() {
+	String filename = file()!=null?file().getPath():"<unknown>";
+	return filename+":"+line();
+    }
+
+    public static final net.cscott.gjdoc.SourcePosition NO_INFO =
+	new PSourcePosition(null, 0, 0);
 }
