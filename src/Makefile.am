@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = . parser lexer html main
+SUBDIRS = . lexer parser html main
 EXTRA_DIST := package.html overview.html
 
 AM_JAVACFLAGS = -g -warnunchecked

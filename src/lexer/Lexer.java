@@ -1,6 +1,5 @@
 package net.cscott.gjdoc.lexer;
 
-import net.cscott.gjdoc.parser.Sym;
 import java.io.Reader;
 import java.io.LineNumberReader;
 
@@ -10,7 +9,7 @@ import java.io.LineNumberReader;
  * COPYING for more details.  There is NO WARRANTY on this code.
  */
 
-public class Lexer implements net.cscott.gjdoc.parser.Lexer {
+public class Lexer {
   LineNumberReader reader;
   boolean isJava12;
   boolean isJava14;
@@ -75,7 +74,7 @@ public class Lexer implements net.cscott.gjdoc.parser.Lexer {
   }
   private java_cup.runtime.Symbol last = null;
   private FIFO lookahead = null;
-  public java_cup.runtime.Symbol _nextToken() throws java.io.IOException {
+  java_cup.runtime.Symbol _nextToken() throws java.io.IOException {
     /* tokens are:
      *  Identifiers/Keywords/true/false/null (start with java letter)
      *  numeric literal (start with number)

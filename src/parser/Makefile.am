@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES = Makefile.in Java15.java Sym.java
 AM_JAVACFLAGS = -g -warnunchecked
 EXTRA_DIST := package.html Java15.cup
 
@@ -11,7 +11,6 @@ noinst_JAVA = \
 Pair.java \
 Java15.java \
 Sym.java \
-Lexer.java \
 FileUtil.java \
 ParseControl.java \
 PClassDoc.java \

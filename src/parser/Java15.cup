@@ -1,5 +1,6 @@
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.lexer.Lexer;
 import java_cup.runtime.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,8 +27,7 @@ parser code  {:
   public Java15(PRootDoc rootDoc, File f) throws java.io.FileNotFoundException{
       this();
       this.rootDoc = rootDoc;
-      // XXX CIRCULAR DEPENDENCY.
-      this.lexer = new net.cscott.gjdoc.lexer.Lexer
+      this.lexer = new Lexer
 	  (new BufferedReader(new FileReader(f)), rootDoc.pc.sourceVersion);
   }
 

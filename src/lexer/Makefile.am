@@ -2,10 +2,18 @@
 MAINTAINERCLEANFILES = Makefile.in
 AM_JAVACFLAGS = -g -warnunchecked
 EXTRA_DIST := package.html
+CLEANFILES = Sym.java
 
 JAVAROOT=$(top_builddir)/classes
 
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/cup.jar:$$CLASSPATH
+
+# hack, but a small one.  This prevents a circular dependency between the
+# parser package and the lexer package.
+Sym.java: $(top_srcdir)/src/parser/Sym.java
+	sed -e 's/^package.*$$/package net.cscott.gjdoc.lexer;/' < $< > $@
+$(top_srcdir)/src/parser/Sym.java: $(top_srcdir)/src/parser/Java15.cup
+	$(MAKE) -C $(top_srcdir)/src/parser Sym.java
 
 noinst_JAVA = \
 BooleanLiteral.java \
@@ -30,6 +38,7 @@ NumericLiteral.java \
 Operator.java \
 Separator.java \
 StringLiteral.java \
+Sym.java \
 Token.java \
 TraditionalComment.java \
 WhiteSpace.java
