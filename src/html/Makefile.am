@@ -4,6 +4,8 @@ AM_JAVACFLAGS = -g -warnunchecked
 
 JAVAROOT=$(top_builddir)/classes
 
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
+
 noinst_JAVA = \
 HTMLDoclet.java \
 Version.java

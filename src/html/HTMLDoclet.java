@@ -18,6 +18,13 @@ public class HTMLDoclet extends Doclet {
     public String getName() { return "Standard"; }
 
     public boolean start(RootDoc root) {
+	// look at overview document.
+	System.out.println("RAW COMMENT TEXT: "+root.getRawCommentText());
+	System.out.println("COMMENT TEXT: "+root.commentText());
+	System.out.println("TAGS: "+root.tags());
+	System.out.println("INLINE TAGS: "+root.inlineTags());
+	System.out.println("FIRST SENTENCE TAGS: "+root.firstSentenceTags());
+
 	// create main index page
 	// for each package listed...
 	//   create package page.
