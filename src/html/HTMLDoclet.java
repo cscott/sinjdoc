@@ -50,20 +50,22 @@ public class HTMLDoclet extends Doclet {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("index.html"), null, null);
 	int numPackages = root.specifiedPackages().size();
-	TemplateWriter indexWriter = new TemplateWriter
-	    (numPackages<2 ? "index-nopackages.html" : "index-packages.html",
-	     hu, context);
-	String mainURL=null;
-	if (numPackages==0) {
-	    mainURL=toURL((ClassDoc)Collections.min((List)root.specifiedClasses()));
-	} else if (numPackages==1) {
-	    if (root.specifiedClasses().size()>0)
-		mainURL="overview-summary.html";
-	    else
-		mainURL=toURL(root.specifiedPackages().get(0));
-	}
-	if (numPackages<2) {
+	TemplateWriter indexWriter;
+	String mainURL;
+
+	if (numPackages==0)
+	    mainURL=toURL((ClassDoc)Collections.min
+			  ((List)root.specifiedClasses()));
+	else if (numPackages==1 && root.specifiedClasses().size()==0)
+	    mainURL=toURL(root.specifiedPackages().get(0));
+	else
+	    mainURL=null;
+
+	if (mainURL==null) {
+	    indexWriter=new TemplateWriter("index-packages.html",hu,context);
+	} else {
 	    mainURL = context.curURL.makeRelative(mainURL);
+	    indexWriter=new TemplateWriter("index-nopackages.html",hu,context);
 	    indexWriter.copyToSplit(root);
 	    indexWriter.print(mainURL);
 	    indexWriter.copyToSplit(root);
