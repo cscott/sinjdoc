@@ -34,7 +34,7 @@ doc:
 	   -overview src/overview.html \
 	   -windowtitle "GJDoc documentation" \
 	   -doctitle "GJDoc documentation" \
-	   -header "GJDoc" -bottom "&copy; 2003 C. Scott Ananian" \
+	   -header "GJDoc" -bottom "Copyright &copy; 2003 C. Scott Ananian" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
 	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
