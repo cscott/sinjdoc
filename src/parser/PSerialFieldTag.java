@@ -34,7 +34,8 @@ class PSerialFieldTag extends PTag.Trailing
 	assert name()=="serialField";
 	//  parse the tag.
 	Pair<Matcher,List<Tag>> pair =
-	    extractRegexp(contents, NAME_AND_TYPE, "field name and type");
+	    extractRegexpFromHead(contents, NAME_AND_TYPE,
+				  "field name and type");
 	// okay, assign to the fields of the object.
 	this.fieldName = pair.left.group(1);
 	this.fieldTypeString = pair.left.group(2);

@@ -31,7 +31,7 @@ class PThrowsTag extends PTag.Trailing
 	assert name()=="throws" || name()=="exception";
 	// parse the tag
 	Pair<Matcher,List<Tag>> pair =
-	    extractRegexp(contents, NAME, "exception name");
+	    extractRegexpFromHead(contents, NAME, "exception name");
 	// okay, assign to the fields of the object.
 	this.exceptionName = pair.left.group();
 	// XXX what if exception type is parameterized?

@@ -26,7 +26,7 @@ class PParamTag extends PTag.Trailing
 	assert name()=="param";
 	// parse the tag.
 	Pair<Matcher,List<Tag>> pair =
-	    extractRegexp(contents, NAME, "parameter name");
+	    extractRegexpFromHead(contents, NAME, "parameter name");
 	// assign to fields.
 	this.parameterName = pair.left.group();
 	this.parameterComment = pair.right;

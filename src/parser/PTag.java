@@ -65,29 +65,48 @@ abstract class PTag
 	    this.contents = contents;
 	}
 	// a generic parsing function using a regexp.
-	protected Pair<Matcher,List<Tag>> extractRegexp
-	    (List<Tag> contents, Pattern pat, String patternDescription) 
+	protected Pair<Matcher,List<Tag>> extractRegexpFromHead
+	    (List<Tag> contents, Pattern pat, String patternDescription)
 	    throws TagParseException {
+	    return extractRegexp(contents, pat, patternDescription, true);
+	}
+	protected Pair<Matcher,List<Tag>> extractRegexpFromTail
+	    (List<Tag> contents, Pattern pat, String patternDescription)
+	    throws TagParseException {
+	    return extractRegexp(contents, pat, patternDescription, false);
+	}
+	private Pair<Matcher,List<Tag>> extractRegexp
+	    (List<Tag> contents, Pattern pat, String patternDescription,
+	     boolean fromHead) throws TagParseException {
 	    if (contents.size()==0)
 		throw new TagParseException
 		    (position(), "Empty @"+name()+" tag");
-	    Tag first = contents.get(0);
-	    if (!first.isText())
+	    Tag tag = contents.get(fromHead?0:(contents.size()-1));
+	    if (!tag.isText())
 		throw new TagParseException
-		    (first.position(), "Illegal inline tag in @"+name());
+		    (tag.position(), "Illegal inline tag in @"+name());
 
-	    Matcher matcher = pat.matcher(first.text());
+	    Matcher matcher = pat.matcher(tag.text());
 	    if (!matcher.find())
 		throw new TagParseException
-		    (first.position(), "Invalid or missing "+patternDescription+" in "+
+		    (tag.position(), "Invalid or missing "+patternDescription+" in "+
 		     "@"+name()+" tag");
 	    ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
-	    if (matcher.end()!=first.text().length())
-		nContents.add
-		    (PTag.newTextTag
-		     (first.text().substring(matcher.end()),
-		      ((PSourcePosition)first.position()).add(matcher.end())));
-	    nContents.addAll(contents.subList(1, contents.size()));
+	    if (fromHead) { // trim first element
+		if (matcher.end()!=tag.text().length())
+		    nContents.add
+			(PTag.newTextTag
+			 (tag.text().substring(matcher.end()),
+			  ((PSourcePosition)tag.position()).add(matcher.end())));
+		nContents.addAll(contents.subList(1, contents.size()));
+	    } else { // trim last element
+		nContents.addAll(contents.subList(0, contents.size()-1));
+		if (matcher.start()>0)
+		    nContents.add
+			(PTag.newTextTag
+			 (tag.text().substring(0, matcher.start()),
+			  tag.position()));
+	    }
 	    nContents.trimToSize();
 	    // okay!
 	    return new Pair<Matcher,List<Tag>>

@@ -19,8 +19,6 @@ import java.util.regex.Pattern;
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
- * @see java.lang.Object#hash(int,float) a great looking class
- *     {@underline foo} yo {@link java.lang} blah {@link #hashCode()} foo
  */
 class PSeeTag extends PTag.NonText
     implements net.cscott.gjdoc.SeeTag {
@@ -32,21 +30,29 @@ class PSeeTag extends PTag.NonText
 	    TypeContext tagContext) throws TagParseException {
 	super(sp, name, contents);
 	assert name()=="see" || name()=="link" || name()=="linkplain";
-	char firstChar = extractRegexp
+	Pair<Matcher,List<Tag>> pair;
+	char firstChar = extractRegexpFromHead
 	    (contents, FIRSTCHAR, "non-space character")
 	    .left.group().charAt(0);
 	if (firstChar=='\"') { // string.
-	    // xxx should strip the " characters from the start and end of
-	    // the tags list.
-	    throw new RuntimeException("unimplemented");
+	    // strip the " characters from the start and end of tags
+	    pair = extractRegexpFromHead(contents, STRING_START,
+					 "start of string");
+	    pair = extractRegexpFromTail(pair.right, STRING_END,
+					 "end of string");
+	    this.label = pair.right;
+	    this.classPart = this.memberNamePart = this.memberArgsPart = null;
 	} else if (firstChar=='<') { // href
-	    // xxx should strip the <a href="..."> and </a> from start and
-	    // end of tags list.
-	    throw new RuntimeException("unimplemented");
+	    // strip the <a href="..."> and </a> from start and end of tags
+	    pair = extractRegexpFromHead(contents, HREF_START,
+					 "html start tag");
+	    pair = extractRegexpFromTail(pair.right, HREF_END,
+					 "html end tag");
+	    this.label = pair.right;
+	    this.classPart = this.memberNamePart = this.memberArgsPart = null;
 	} else { // java member reference.
-	    Pair<Matcher,List<Tag>> pair =
-		extractRegexp(contents, JREF,
-			      "java package, class, or member reference");
+	    pair = extractRegexpFromHead
+		(contents, JREF, "java package, class, or member reference");
 	    this.label = pair.right;
 	    this.classPart = pair.left.group(1);
 	    this.memberNamePart = pair.left.group(2);
@@ -54,8 +60,13 @@ class PSeeTag extends PTag.NonText
 	}
     }
     private static final Pattern FIRSTCHAR = Pattern.compile("^\\s*(\\S)");
-    private static final Pattern STRING = Pattern.compile("\"([^\"]*)\"");
-    private static final Pattern HREF = Pattern.compile("<[^>]*>([^<]*)<");
+
+    private static final Pattern STRING_START = Pattern.compile("^\\s*\"");
+    private static final Pattern STRING_END = Pattern.compile("\"\\s*$");
+
+    private static final Pattern HREF_START = Pattern.compile("^\\s*<[^<>]*>");
+    private static final Pattern HREF_END = Pattern.compile("<[^<>]*>\\s*$");
+
     // insanely complicated regex.  We anchor at the start and allow leading
     // spaces, to keep the regex from skipping malformed bits at the beginning.
     // Then we say there is *either* a class/pattern specifier *or* the
