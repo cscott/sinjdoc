@@ -4,11 +4,15 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.SerialFieldTag;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.Type;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The <code>PSerialFieldTag</code> class documents a Serializable field
@@ -17,15 +21,42 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PSerialFieldTag extends PTag.Trailing
+class PSerialFieldTag extends PTag.Trailing
     implements net.cscott.gjdoc.SerialFieldTag {
-    PSerialFieldTag(SourcePosition sp, String name, List<Tag> contents) {
+    final String fieldName;
+    final Type   fieldType;
+    final String fieldTypeString;
+    final List<Tag> fieldDescription;
+    PSerialFieldTag(SourcePosition sp, String name, List<Tag> contents,
+		    TypeContext tagContext)
+	throws TagParseException {
 	super(sp, name, contents);
 	assert name()=="serialField";
+	//  parse the tag.
+	Pair<Matcher,List<Tag>> pair =
+	    extractRegexp(contents, NAME_AND_TYPE, "field name and type");
+	// okay, assign to the fields of the object.
+	this.fieldName = pair.left.group(1);
+	this.fieldTypeString = pair.left.group(2);
+	// XXX what if field type is parameterized?
+	this.fieldType = tagContext.lookupTypeName(fieldTypeString);
+	this.fieldDescription = pair.right;
     }
-    public abstract int compareTo(SerialFieldTag tag);
-    public abstract List<Tag> description();
-    public abstract String fieldName();
-    public abstract String fieldType();
-    public abstract ClassDoc fieldTypeDoc();
+    private static final Pattern NAME_AND_TYPE = Pattern.compile
+	("(\\S+)\\s+(\\S+)");
+
+    /** Compare based on source position. */
+    public int compareTo(SerialFieldTag tag) {
+	if (position().line() != tag.position().line())
+	    return position().line() - tag.position().line();
+	return position().column() - tag.position().column();
+    }
+    public List<Tag> description() { return fieldDescription; }
+    public String fieldName() { return fieldName; }
+    public String fieldType() { return fieldTypeString; }
+    public ClassDoc fieldTypeDoc() {
+	if (fieldType instanceof ClassType)
+	    return ((ClassType)fieldType).asClassDoc();
+	return null;
+    }
 }

@@ -29,32 +29,14 @@ class PThrowsTag extends PTag.Trailing
 	       TypeContext tagContext) throws TagParseException {
 	super(sp, name, contents);
 	assert name()=="throws" || name()=="exception";
-	//  now parse the tag.
-	// exception name should be first word in tag.
-	if (contents.size()==0)
-	    throw new TagParseException(position(), "Empty @"+name()+" tag");
-	Tag first = contents.get(0);
-	if (!first.isText())
-	    throw new TagParseException(first.position(),
-					"Exception name must not be a tag");
-	Matcher matcher = NAME.matcher(first.text());
-	if (!matcher.find())
-	    throw new TagParseException(first.position(),
-					"Can't find exception name for "+
-					"@"+name()+" tag");
-	String exName = matcher.group();
-	ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
-	if (matcher.end()!=first.text().length())
-	    nContents.add
-		(PTag.newTextTag
-		 (first.text().substring(matcher.end()),
-		  ((PSourcePosition)first.position()).add(matcher.end())));
-	nContents.addAll(contents.subList(1, contents.size()));
-	nContents.trimToSize();
+	// parse the tag
+	Pair<Matcher,List<Tag>> pair =
+	    extractRegexp(contents, NAME, "exception name");
 	// okay, assign to the fields of the object.
-	this.exceptionType = tagContext.lookupTypeName(exName);
-	this.exceptionName = exName;
-	this.exceptionComment = Collections.unmodifiableList(nContents);
+	this.exceptionName = pair.left.group();
+	// XXX what if exception type is parameterized?
+	this.exceptionType = tagContext.lookupTypeName(exceptionName);
+	this.exceptionComment = pair.right;
     }
     private static final Pattern NAME = Pattern.compile("\\S+");
 

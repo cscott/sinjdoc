@@ -18,21 +18,15 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-// XXX shares implementation with the inline reference tag
-abstract class PSeeTag extends PTag
+abstract class PSeeTag extends PTag.NonText
     implements net.cscott.gjdoc.SeeTag {
-    final String name; final List<Tag> contents;
     PSeeTag(SourcePosition sp, String name, List<Tag> contents,
 	    TypeContext tagContext) {
-	super(sp);
-	this.name = name.intern();
-	this.contents = contents;
+	super(sp, name, contents);
 	assert name()=="see" || name()=="link" || name()=="linkplain";
     }
     public boolean isTrailing() { return name=="see"; }
     public boolean isInline() { return name=="link" || name=="linkplain"; }
-    public String name() { return name; }
-    public List<Tag> contents() { return contents; }
     // parse!
     public abstract String label();
     public abstract ClassDoc referencedClass();

@@ -7,8 +7,6 @@ import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,31 +24,12 @@ class PParamTag extends PTag.Trailing
 	throws TagParseException {
 	super(sp, name, contents);
 	assert name()=="param";
-	// now parse the tag.
-	// parameter name should be first word in tag.
-	if (contents.size()==0)
-	    throw new TagParseException(position(), "Empty @param tag");
-	Tag first = contents.get(0);
-	if (!first.isText())
-	    throw new TagParseException(first.position(),
-					"Parameter name must not be a tag");
-	Matcher matcher = NAME.matcher(first.text());
-	if (!matcher.find())
-	    throw new TagParseException(first.position(),
-					"Can't find parameter name for "+
-					"@param tag");
-	String paramName = matcher.group();
-	ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
-	if (matcher.end()!=first.text().length())
-	    nContents.add
-		(PTag.newTextTag
-		 (first.text().substring(matcher.end()),
-		  ((PSourcePosition)first.position()).add(matcher.end())));
-	nContents.addAll(contents.subList(1, contents.size()));
-	nContents.trimToSize();
-	// okay, assign to the fields of the object.
-	this.parameterName = paramName;
-	this.parameterComment = Collections.unmodifiableList(nContents);
+	// parse the tag.
+	Pair<Matcher,List<Tag>> pair =
+	    extractRegexp(contents, NAME, "parameter name");
+	// assign to fields.
+	this.parameterName = pair.left.group();
+	this.parameterComment = pair.right;
     }
     private static final Pattern NAME = Pattern.compile("\\S+");
 

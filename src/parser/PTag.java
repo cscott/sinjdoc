@@ -7,9 +7,12 @@ import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 /**
  * The <code>PTag</code> class represents a documentation tag.  The
  * tag name and tag text are available for queries; tags with structure
@@ -51,7 +54,7 @@ abstract class PTag
 	    this.text = text;
 	}
     }
-    private static abstract class NonText extends PTag {
+    static abstract class NonText extends PTag {
 	final String name;
 	final List<Tag> contents;
 	public final String name() { return name; }
@@ -61,7 +64,35 @@ abstract class PTag
 	    this.name = name.intern();
 	    this.contents = contents;
 	}
-	// some generic parsing functions here?
+	// a generic parsing function using a regexp.
+	protected Pair<Matcher,List<Tag>> extractRegexp
+	    (List<Tag> contents, Pattern pat, String patternDescription) 
+	    throws TagParseException {
+	    if (contents.size()==0)
+		throw new TagParseException
+		    (position(), "Empty @"+name()+" tag");
+	    Tag first = contents.get(0);
+	    if (!first.isText())
+		throw new TagParseException
+		    (first.position(), "Illegal inline tag in @"+name());
+
+	    Matcher matcher = pat.matcher(first.text());
+	    if (!matcher.find())
+		throw new TagParseException
+		    (first.position(), "Can't find "+patternDescription+" in "+
+		     "@"+name()+" tag");
+	    ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
+	    if (matcher.end()!=first.text().length())
+		nContents.add
+		    (PTag.newTextTag
+		     (first.text().substring(matcher.end()),
+		      ((PSourcePosition)first.position()).add(matcher.end())));
+	    nContents.addAll(contents.subList(1, contents.size()));
+	    nContents.trimToSize();
+	    // okay!
+	    return new Pair<Matcher,List<Tag>>
+		(matcher, Collections.unmodifiableList(nContents));
+	}
     }
     static class Trailing extends NonText {
 	public boolean isTrailing() { return true; }
@@ -89,8 +120,9 @@ abstract class PTag
 		return new PParamTag(pos, tagname, contents);
 	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
-	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
 	*/
+	    if (tagname=="serialField")
+		return new PSerialFieldTag(pos, tagname, contents, tagContext);
 	    if (tagname=="throws" || tagname=="exception")
 		return new PThrowsTag(pos, tagname, contents, tagContext);
 	} catch (TagParseException tpe) {
