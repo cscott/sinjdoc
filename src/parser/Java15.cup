@@ -151,7 +151,7 @@ action code {:
   }
   // before type parameters and superclass/interfaces declarations
   private void startTypeDeclaration(int modifiers, String name,
-				    boolean isInterface, int pos) {
+				    int class_type, int pos) {
       // Create classDoc object.
       PClassDoc outer = parser.outerClasses.empty() ?
 	  null : parser.outerClasses.peek();
@@ -160,9 +160,11 @@ action code {:
       if (outer!=null && outer.isInterface())
 	  modifiers |= Modifier.PUBLIC | Modifier.STATIC;
       
+      // note that enum classes are 'ordinary classes' (as opposed to
+      // interfaces) -- we don't invent a new 'enum class' type.
       PClassDoc cd = new PClassDoc(parser.rootDoc.pc, parser.expectedPackage,
 				   parser.compilationUnit, outer, modifiers,
-				   name, sp(pos), isInterface,
+				   name, sp(pos), class_type==Sym.INTERFACE,
 				   parser.lexer.lastComment(),
 				   sp(parser.lexer.lastCommentPos()));
       parser.lexer.clearComment();
@@ -177,6 +179,8 @@ action code {:
       // new environment scope for type variables.
       assert parser.additionalTypeVariables.isEmpty();
       parser.isClassTypeVariable=true; // type vars go in this class!
+      // add implicit members and proper superclass to enum classes
+      if (class_type==Sym.ENUM) fixupEnum(pos);
   }
   // just before class body
   private void midTypeDeclaration() {
@@ -189,6 +193,63 @@ action code {:
       parser.typeContexts.pop();
       parser.outerClasses.pop();
   }
+  private void fixupEnum(int pos) {
+      // set the correct superclass.
+      PClassDoc pcd = parser.outerClasses.peek();
+      Type thisType = pcd.type();
+      ClassType enumType = new PEagerClassType
+	  (parser.rootDoc.pc, "java.lang", "Enum");
+      pcd.superclass = new PParameterizedType
+	  (enumType, null, new TypeArgumentList(new PTypeArgument
+						(thisType, false, false)));
+      // add the implicit members of the class.
+      int m = Modifier.PUBLIC | Modifier.FINAL;
+      Type listType = new PParameterizedType
+	  (new PEagerClassType(parser.rootDoc.pc, "java.util", "List"), null,
+	   new TypeArgumentList(new PTypeArgument(thisType, false, false)));
+      ClassType stringType = new PEagerClassType
+	  (parser.rootDoc.pc, "java.lang", "String");
+      //    public static List<this enum class> VALUES;
+      commentOverride="An immutable list containing the values comprising "+
+	  "this enum class in the order they're declared.  This field may "+
+	  "be used to iterate over the constants as follows: <pre>"+
+	  "for("+pcd.name()+" c : "+pcd.name()+".VALUES)\n"+
+	  "    System.out.println(c);</pre>";
+      doFieldDeclaration(m | Modifier.STATIC, listType,
+			 new VariableDeclaratorList
+			 (new VariableDeclarator("VALUES", pos)));
+      //    public final List<this enum class> family();
+      commentOverride="Returns an immutable list containing the values "+
+	  "comprising this enum class in the order they're declared.  This "+
+	  "instance method simply returns <code>VALUES</code>.  Few "+
+	  "programmers should have any need to use this method.  It is "+
+	  "provided for use by sophisticated enum-based data structures to "+
+	  "prevent the need for reflective access to <code>VALUES</code>.\n"+
+	  "@return an immutable list containing the values comprising this "+
+	  "enum class, in the order they're declared.";
+      doMethodDeclaration(m, listType, new MethodDeclarator
+			  ("family", pos, new PParameterList()),
+			  new TypeList());
+      //    public static <this enum class> valueOf(String name);
+      commentOverride="Static factory to return the enum constant pertaining "+
+	  "to the given string name.  The string must match exactly an "+
+	  "identifier used to declare an enum constant in this type.\n"+
+	  "@throws IllegalArgumentException if this enum class has no "+
+	  "constant with the specified name.";
+      doMethodDeclaration(m | Modifier.STATIC, thisType, new MethodDeclarator
+			  ("valueOf", pos, new PParameterList
+			   (new PParameter(stringType, "name", false))),
+			  new TypeList());
+  }
+  // enum constant declaration
+  private void doEnumConstantDeclaration(String name, int pos) {
+      int m = Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL;
+      Type ty = parser.outerClasses.peek().type();
+      List<VariableDeclarator> vdl = new VariableDeclaratorList
+	  (new VariableDeclarator(name, pos));
+      doFieldDeclaration(m, ty, vdl);
+  }
+  private String commentOverride=null;
   // field declaration
   private void doFieldDeclaration(int modifiers, Type ty,
 				  List<VariableDeclarator> variables) {
@@ -196,6 +257,9 @@ action code {:
       String commentText = parser.lexer.lastComment();
       PSourcePosition commentPos = sp(parser.lexer.lastCommentPos());
       parser.lexer.clearComment();
+      if (commentOverride!=null) { // allow "synthetic" comments
+	  commentText=commentOverride; commentOverride=null;
+      }
       // this is the class to which this field belongs.
       PClassDoc parent = parser.outerClasses.peek();
       // fields in interfaces are implicitly public. (JLS 6.6.1)
@@ -217,6 +281,9 @@ action code {:
       String commentText = parser.lexer.lastComment();
       PSourcePosition commentPos = sp(parser.lexer.lastCommentPos());
       parser.lexer.clearComment();
+      if (commentOverride!=null) { // allow "synthetic" comments
+	  commentText=commentOverride; commentOverride=null;
+      }
       // this is the class to which this method belongs.
       PClassDoc parent = parser.outerClasses.peek();
       // methods in interfaces are implicitly public. (JLS 6.6.1)
@@ -918,7 +985,7 @@ modifier ::=	PUBLIC
 // 19.8.1) Class Declaration:
 class_declaration ::= 
 	modifiers_opt:m CLASS IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
+		{: startTypeDeclaration(m.intValue(), id, Sym.CLASS, idleft);:}
           type_parameters_opt super_opt interfaces_opt
 		{: midTypeDeclaration(); :}
 	  class_body
@@ -964,7 +1031,7 @@ class_member_declaration ::=
 	|	method_declaration
 	/* repeat the prod for 'class_declaration' here: */
 	|	modifiers_opt:m CLASS IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
+		{: startTypeDeclaration(m.intValue(), id, Sym.CLASS, idleft);:}
 		 type_parameters_opt super_opt interfaces_opt
 		{: midTypeDeclaration(); :}
 		 class_body
@@ -975,9 +1042,13 @@ class_member_declaration ::=
 	;
 
 // JSR-201) Enum Declaration
-// XXXXXXXX implement this.
 enum_declaration ::=
-		modifiers_opt ENUM IDENTIFIER interfaces_opt enum_body
+		modifiers_opt:m ENUM IDENTIFIER:id
+		{: startTypeDeclaration(m.intValue(), id, Sym.ENUM, idleft); :}
+			interfaces_opt
+		{: midTypeDeclaration(); :}
+			enum_body
+		{: endTypeDeclaration(); :}
 	;
 enum_body ::=
 		LBRACE enum_constants_opt enum_body_declarations_opt RBRACE
@@ -990,8 +1061,10 @@ enum_constants ::=
 	|	enum_constants COMMA enum_constant
 	;
 enum_constant ::=
-		IDENTIFIER enum_arguments_opt
-	|	IDENTIFIER enum_arguments_opt class_body
+		IDENTIFIER:id enum_arguments_opt
+		{: doEnumConstantDeclaration(id, idleft); :}
+	|	IDENTIFIER:id enum_arguments_opt class_body
+		{: doEnumConstantDeclaration(id, idleft); :}
 	;
 enum_arguments_opt ::=
 	|	LPAREN argument_list_opt RPAREN
@@ -1141,7 +1214,7 @@ explicit_constructor_invocation ::=
 // 19.9.1) Interface Declarations
 interface_declaration ::=
 		modifiers_opt:m INTERFACE IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, true, idleft); :}
+		{: startTypeDeclaration(m.intValue(), id, Sym.INTERFACE, idleft); :}
 		 type_parameters_opt extends_interfaces_opt
 		{: midTypeDeclaration(); :}
 		 interface_body
@@ -1435,14 +1508,14 @@ class_instance_creation_expression ::=
 		NEW class_or_interface_type LPAREN argument_list_opt RPAREN
 	|	NEW class_or_interface_type:ty LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
-		   startTypeDeclaration(0, newAnonClassName(), false, tyleft);
+		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, tyleft);
 		   midTypeDeclaration(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
 	|	NEW type_arguments class_or_interface_type LPAREN argument_list_opt RPAREN
 	|	NEW type_arguments class_or_interface_type:ty LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
-		   startTypeDeclaration(0, newAnonClassName(), false, tyleft);
+		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, tyleft);
 		   midTypeDeclaration(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
@@ -1451,7 +1524,7 @@ class_instance_creation_expression ::=
 	|	primary DOT NEW type_arguments_opt IDENTIFIER:id type_arguments_opt
 			LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
-		   startTypeDeclaration(0, newAnonClassName(), false, idleft);
+		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, idleft);
 		   midTypeDeclaration(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
@@ -1460,7 +1533,7 @@ class_instance_creation_expression ::=
 	|	name DOT NEW type_arguments_opt IDENTIFIER:id type_arguments_opt
 			LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
-		   startTypeDeclaration(0, newAnonClassName(), false, idleft);
+		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, idleft);
 		   midTypeDeclaration(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
