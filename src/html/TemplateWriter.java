@@ -8,11 +8,14 @@ import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.ConstructorDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.ExecutableMemberDoc;
 import net.cscott.gjdoc.FieldDoc;
 import net.cscott.gjdoc.MemberDoc;
 import net.cscott.gjdoc.MethodDoc;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.Parameter;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.Type;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
 import java.io.*;
@@ -422,6 +425,55 @@ class TemplateWriter extends PrintWriter  {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    TagEmitter.emit(tw, context.specificItem().tags(),
 				    context);
+		}
+	    });
+	register("FIELD_TYPE", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    FieldDoc fd = (FieldDoc) context.curMember;
+		    tw.write(HTMLUtil.toLink(context.curURL, fd.type()));
+		}
+	    });
+	register("METHOD_RETURN_TYPE", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    Type ty = ((MethodDoc)context.curMember).returnType();
+		    if (ty==null) tw.write("void");
+		    else tw.write(HTMLUtil.toLink(context.curURL, ty));
+		}
+	    });
+	register("METHOD_SIGNATURE", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    tw.write(((ExecutableMemberDoc)context.curMember)
+			     .signature());
+		}
+	    });
+	register("METHOD_PARAMS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    for(Iterator<Parameter> it =
+			    ((ExecutableMemberDoc)context.curMember)
+			    .parameters().iterator(); it.hasNext(); ) {
+			Parameter p = it.next();
+			tw.write(HTMLUtil.toLink(context.curURL, p.type()));
+			tw.write(" ");
+			tw.write(p.name());
+			if (it.hasNext()) tw.write(", ");
+		    }
+		}
+	    });
+	register("MEMBER_NAME", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    tw.write(context.curMember.name());
+		}
+	    });
+	register("MEMBER_NAME_LINK", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL,
+					     context.curMember));
 		}
 	    });
 	registerConditional("FIRST", new TemplateConditional() {
