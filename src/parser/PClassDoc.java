@@ -59,9 +59,7 @@ class PClassDoc extends PProgramElementDoc
 	this.typeContext =
 	    new TypeContext(pc, containingPackage, compilationUnit,
 			    this, null);
-	this.tagContext =
-	    new TypeContext(pc, containingPackage, compilationUnit,
-			    containingClass, null);
+	this.tagContext = this.typeContext;
 	this.commentText = commentText;
 	this.commentPosition = commentPosition;
     }

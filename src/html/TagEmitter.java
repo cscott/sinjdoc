@@ -3,7 +3,10 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.sinjdoc.html;
 
+import net.cscott.sinjdoc.ClassDoc;
 import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.MemberDoc;
+import net.cscott.sinjdoc.PackageDoc;
 import net.cscott.sinjdoc.ParamTag;
 import net.cscott.sinjdoc.SeeTag;
 import net.cscott.sinjdoc.SerialFieldTag;
@@ -86,8 +89,12 @@ abstract class TagEmitter {
 			super.emit(pw, kind, tags, context);
 		}
 	    }),
+	new TagInfo("see", SeeTag.class, new SimpleBlockAction("See Also") {
+		void emitInner(PrintWriter pw, Tag t, TemplateContext context){
+		    emitSeeTag(pw, (SeeTag) t, context, true);
+		}
+	    }),
 	new TagInfo(".unknown", null, new SimpleBlockAction("UNKNOWN")),
-	new TagInfo("see", SeeTag.class, new SimpleBlockAction("See Also")),
     };
 
     /** A <code>BlockTagAction</code> allows you to emit a specific type
@@ -218,6 +225,16 @@ abstract class TagEmitter {
 		    pw.print(docRoot);
 		}
 	    });
+	inlineActions.put("link", new InlineTagAction() {
+		void emit(PrintWriter pw, Tag t, TemplateContext context) {
+		    emitSeeTag(pw, (SeeTag) t, context, true);
+		}
+	    });
+	inlineActions.put("linkplain", new InlineTagAction() {
+		void emit(PrintWriter pw, Tag t, TemplateContext context) {
+		    emitSeeTag(pw, (SeeTag) t, context, false);
+		}
+	    });
 	inlineActions.put(".unknown", new InlineTagAction() {
 		void emit(PrintWriter pw, Tag t, TemplateContext context) {
 		    assert t.isInline();
@@ -231,6 +248,55 @@ abstract class TagEmitter {
 		    pw.print("}");
 		}
 	    });
+    }
+    /** Emit a see tag. */
+    static void emitSeeTag(PrintWriter pw, SeeTag t, TemplateContext context,
+			   boolean isCodeFont) {
+	// XXX the no-label output is not exactly according to the javadoc
+	// specs; should be fixed.
+	List<Tag> label = t.label();
+	MemberDoc md = t.referencedMember();
+	ClassDoc cd = t.referencedClass();
+	PackageDoc pd = t.referencedPackage();
+
+	if (isCodeFont && label.size()>0) pw.print("<code>");
+
+	if (md!=null) { // reference to a member
+	    if (label.size()>0) {
+		pw.print("<a href=\"");
+		pw.print(context.curURL.makeRelative(HTMLUtil.toURL(md)));
+		pw.print("\">");
+		emitInline(pw, label, context);
+		pw.print("</a>");
+		if (isCodeFont) pw.print("</code>");
+	    } else
+		pw.print(HTMLUtil.toLink(context.curURL, md));
+	} else if (cd!=null) { // reference to a class
+	    if (label.size()>0) {
+		pw.print("<a href=\"");
+		pw.print(context.curURL.makeRelative(HTMLUtil.toURL(cd)));
+		pw.print("\">");
+		emitInline(pw, label, context);
+		pw.print("</a>");
+		if (isCodeFont) pw.print("</code>");
+	    } else
+		pw.print(HTMLUtil.toLink(context.curURL, cd, cd.name()));
+	} else if (pd!=null) { // reference to a package
+	    String page = "package-summary.html";
+	    if (label.size()>0) {
+		pw.print("<a href=\"");
+		pw.print(context.curURL.makeRelative(HTMLUtil.toURL(pd,page)));
+		pw.print("\">");
+		emitInline(pw, label, context);
+		pw.print("</a>");
+		if (isCodeFont) pw.print("</code>");
+	    } else
+		pw.print(HTMLUtil.toLink(context.curURL, pd, page));
+	} else { // well, just use the raw contents; no linking
+	    emitInline(pw, t.contents(), context);
+	}
+
+	if (isCodeFont && label.size()>0) pw.print("</code>");
     }
     /** Canonicalize the kind of this inline tag. */
     static String inlineTagKind(Tag t) {
