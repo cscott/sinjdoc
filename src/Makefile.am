@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = . parser lexer html
+SUBDIRS = . parser lexer html main
 
 AM_JAVACFLAGS = -g -warnunchecked
 # JAVAROOT directory must exist!
@@ -8,7 +8,6 @@ JAVAROOT=$(top_builddir)/classes
 
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
-# missing Main.java
 noinst_JAVA = \
 ClassDoc.java \
 ClassTypeVariable.java \
@@ -35,13 +34,12 @@ ThrowsTag.java \
 Type.java \
 TypeVariable.java
 
-# make Main.java after everything else, as it uses parser and html packages
-all-am: $(JAVAROOT)/net/cscott/gjdoc/Main.class
-$(JAVAROOT)/net/cscott/gjdoc/Main.class: Main.java
-	$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
-	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?
+# copy Main.java over here so that javadoc can find it.
+# (we can't build it here because of dependency ordering problems)
+all-local: Main.java
+Main.java: main/Main.java
+	cp $< $@
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
 EXTRA_DIST = $(noinst_JAVA)
-EXTRA_DIST+= Main.java
