@@ -95,7 +95,8 @@ public class PRootDoc extends PDoc
 		throw e; // rethrow, for easier debugging.
 	    } catch (Exception e) {
 		// syntax error, etc.
-		printError("Syntax error: "+e); // XXX use source pos
+		//   ignore, because we assume it's already been reported
+		//   by the parser, with better info than we have here.
 	    }
 	    sourceFileMap.put(f, pcu);
 	    for (Iterator<PClassDoc> it=pcu.classes.iterator();
