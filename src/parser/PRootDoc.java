@@ -91,6 +91,8 @@ public class PRootDoc extends PDoc
 	    } catch (java.io.FileNotFoundException e) {
 		assert false : "should never happen.";
 		printError("File not found: "+e);
+	    } catch (RuntimeException e) {
+		throw e; // rethrow, for easier debugging.
 	    } catch (Exception e) {
 		// syntax error, etc.
 		printError("Syntax error: "+e); // XXX use source pos
