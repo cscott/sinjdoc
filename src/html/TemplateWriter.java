@@ -148,6 +148,24 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.curURL.makeRelative(""));
 		}
 	    });
+	register("@HEADER@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.header==null) return;
+		    tw.write(context.options.header);
+		}
+	    });
+	register("@FOOTER@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.footer==null) return;
+		    tw.write(context.options.footer);
+		}
+	    });
+	register("@BOTTOM@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.bottom==null) return;
+		    tw.write(context.options.bottom);
+		}
+	    });
 	register("@PKGNAME@", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
