@@ -6,6 +6,7 @@ package net.cscott.gjdoc.html;
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
 import java.io.*;
@@ -325,6 +326,13 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.curPackage.name());
 		}
 	    });
+	register("PKGFRAMELINK", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curPackage!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL,context.curPackage,
+					     "package-frame.html"));
+		}
+	    });
 	register("PKGSUMMARYLINK", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
@@ -356,6 +364,18 @@ class TemplateWriter extends PrintWriter  {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
 		    return isLast;
+		}
+	    });
+	// iterator over all packages with documented classes
+	register("FORALL_PACKAGES", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<PackageDoc,TemplateContext>
+			(sorted(HTMLUtil.allDocumentedPackages(c.root))) {
+			public TemplateContext filter(PackageDoc pd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, pd);
+			}
+		    };
 		}
 	    });
 	// iterator over included interfaces of the package.

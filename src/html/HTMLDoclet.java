@@ -85,24 +85,15 @@ public class HTMLDoclet extends Doclet {
 	// done!
     }
     void makeOverviewFrame(RootDoc root, HTMLUtil hu) {
-	// sort all referenced packages.
-	List<PackageDoc> pkgList = new ArrayList<PackageDoc>
-	    (allDocumentedPackages(root));
-	Collections.sort(pkgList, new DocComparator<PackageDoc>());
-	// okay, emit the overview-frame header:
+	// make overview-frame.
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("overview-frame.html"));
 	TemplateWriter tw=new TemplateWriter("overview-frame.html",hu,context);
-	tw.copyToSplit(root);
-	// now emit the sorted package list.
-	for (Iterator<PackageDoc> it=pkgList.iterator(); it.hasNext(); )
-	    tw.println(hu.toLink(context.curURL, it.next(),
-				 "package-frame.html"));
-	// emit the footer.
 	tw.copyRemainder(root);
-	// now emit package-frame.html for these packages.
+	// now emit package-frame.html for packages with included classes
 	//  (not referenced except by this file)
-	for (Iterator<PackageDoc> it=pkgList.iterator(); it.hasNext(); )
+	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
+	     it.hasNext(); )
 	    makePackageFrame(root, hu, it.next());
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
@@ -195,17 +186,6 @@ public class HTMLDoclet extends Doclet {
 	// xxx do me.
     }
 
-    private static List<PackageDoc> allDocumentedPackages(RootDoc root) {
-	// first collect all referenced packages.
-	Map<String,PackageDoc> pkgMap = new LinkedHashMap<String,PackageDoc>();
-	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
-	    PackageDoc pd = it.next().containingPackage();
-	    pkgMap.put(pd.name(), pd);
-	}
-	Collection<PackageDoc> c = pkgMap.values();
-	return Arrays.asList(c.toArray(new PackageDoc[c.size()]));
-    }
-
     public boolean start(RootDoc root) {
 	// parse options.
 	options.parseOptions(root.options());
@@ -222,7 +202,7 @@ public class HTMLDoclet extends Doclet {
 	    // XXX create overview-tree.html
 	}
 	// for each package to be documented...
-	for (Iterator<PackageDoc> it=allDocumentedPackages(root).iterator();
+	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
 	     it.hasNext(); ) {
 	    PackageDoc pd = it.next();
 	    // create package pages.

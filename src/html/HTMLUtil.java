@@ -7,6 +7,7 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.RootDoc;
 
 import java.nio.charset.CharsetEncoder;
 import java.io.BufferedWriter;
@@ -21,7 +22,12 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 /**
  * The <code>HTMLUtil</code> class encapsulates several generally-used
@@ -34,6 +40,18 @@ import java.util.regex.Pattern;
 class HTMLUtil {
     DocErrorReporter reporter;
     HTMLUtil(DocErrorReporter reporter) { this.reporter = reporter; }
+
+    /** Collect all documented packages. */
+    public static List<PackageDoc> allDocumentedPackages(RootDoc root) {
+	// first collect all referenced packages.
+	Map<String,PackageDoc> pkgMap = new LinkedHashMap<String,PackageDoc>();
+	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
+	    PackageDoc pd = it.next().containingPackage();
+	    pkgMap.put(pd.name(), pd);
+	}
+	Collection<PackageDoc> c = pkgMap.values();
+	return Arrays.asList(c.toArray(new PackageDoc[c.size()]));
+    }
 
     /** Construct the URL for a page corresponding to the specified class. */
     public static String toURL(ClassDoc c) {
