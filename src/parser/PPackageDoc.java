@@ -35,11 +35,14 @@ class PPackageDoc extends PDoc
 	super(pc);
 	this.name = packageName;
 	this.isIncluded = isIncluded;
-	File packageDir = pc.sourcePath.findPackage(packageName);
-	File packageTextFile = new File(packageDir, "package.html");
+	File packageTextFile = null;
+	if (isIncluded) {
+	    File packageDir = pc.sourcePath.findPackage(packageName);
+	    packageTextFile = new File(packageDir, "package.html");
+	    if (!packageTextFile.exists()) packageTextFile=null;
+	}
 	Pair<String,PSourcePosition> pair =
-	    FileUtil.rawFileText(packageTextFile.exists()?packageTextFile:null,
-				 pc.encoding, pc.reporter);
+	    FileUtil.rawFileText(packageTextFile, pc.encoding, pc.reporter);
 	this.packageText = pair.left;
 	this.packagePosition = pair.right;
 	this.packageContext = new TypeContext(pc, this);
