@@ -104,7 +104,7 @@ class TemplateWriter extends PrintWriter  {
 			write(context.options.docTitle);
 		} else if (tagName.equals("@ROOT@")) {
 		    write(context.curURL.makeRelative(""));
-		} else if (tagName.equals("@SPLIT"))
+		} else if (tagName.equals("@SPLIT@"))
 		    return true; // done.
 		else // invalid tag.
 		    write(tag.toString());
