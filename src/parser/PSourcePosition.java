@@ -25,18 +25,22 @@ class PSourcePosition
     }
     private PSourcePosition(PFile pfile, int charIndex) {
 	this.pfile = pfile; this.charIndex = charIndex;
+	assert pfile!=null;
 	assert charIndex >= 0;
+    }
+    private PSourcePosition() { // for NO_INFO constructor.
+	this.pfile=null; this.charIndex=-1;
     }
     public File file() { return pfile.file; }
     public int line() { return sp().line(); }
     public int column() { return sp().column(); }
     /** mathematical operations. */
     PSourcePosition add(int i) {
+	if (i==0) return this; // short circuit.
+	assert charIndex >= 0 && (charIndex+i) >= 0;
 	return new PSourcePosition(pfile, charIndex+i);
     }
-    PSourcePosition subtract(int i) {
-	return new PSourcePosition(pfile, charIndex-i);
-    }
+    final PSourcePosition subtract(int i) { return add(-i); }
 
     /** Convert the source position to the form "Filename:line".
      */
@@ -51,8 +55,7 @@ class PSourcePosition
 	assert sp!=null;
 	return sp;
     }
-    public static final net.cscott.gjdoc.SourcePosition NO_INFO =
-	new net.cscott.gjdoc.SourcePosition() {
+    public static final PSourcePosition NO_INFO = new PSourcePosition() {
 	    public File file() { return null; }
 	    public int line() { return 0; }
 	    public int column() { return 0; }
