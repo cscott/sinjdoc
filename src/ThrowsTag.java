@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import java.util.List;
 /**
  * The <code>ThrowsTag</code> class represents a @throws or @exception
  * documentation tag.
@@ -16,7 +17,7 @@ public interface ThrowsTag extends Tag {
     public Type exception();
     /** Return the exception comment associated with this
      *  <code>ThrowsTag</code>>. */
-    public String exceptionComment();
+    public List<Tag> exceptionComment();
     /** Return the name of the exception associated with this
      *  <code>ThrowsTag</code>. */
     public String exceptionName();
