@@ -22,7 +22,7 @@ class URLContext {
 
     public String makeRelative(String url) {
 	StringBuffer result = new StringBuffer();
-	assert url.length()>0 && url.charAt(0)!='/';
+	assert url.length()==0 || url.charAt(0)!='/';
 	// strip components off the context URL until it matches the start
 	// of the desired URL.
 	String contextURL = STRIP_FILE.matcher(this.context).replaceFirst("");
