@@ -6,7 +6,8 @@ package net.cscott.sinjdoc.parser;
 import net.cscott.sinjdoc.DocErrorReporter;
 import net.cscott.sinjdoc.RootDoc;
 
-import net.cscott.jutil.UniqueVector;
+// Temporarily removed dependency on jutil.
+//import net.cscott.jutil.UniqueVector;
 
 import java.lang.reflect.Modifier;
 import java.io.File;

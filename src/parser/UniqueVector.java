@@ -1,7 +1,10 @@
 // UniqueVector.java, created Sat Aug  1  1:09:02 1998 by cananian
 // Copyright (C) 1998 C. Scott Ananian <cananian@alumni.princeton.edu>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.jutil;
+// ORIGINALLY FROM JUTIL:
+// package net.cscott.jutil;
+// TEMPORARILY MOVED INTO SINJDOC PARSER
+package net.cscott.sinjdoc.parser;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -36,9 +39,9 @@ public class UniqueVector<E> extends AbstractList<E>
   /** Constructs a vector containing the elements of the specified 
    *  <code>Collection</code>, in the order they are returned by the
    *  collection's iterator.  Duplicate elements are skipped. */
-  public <T extends E> UniqueVector(Collection<T> c) {
+  public UniqueVector(Collection<? extends E> c) {
     this(c.size());
-    for (Iterator<T> it=c.iterator(); it.hasNext(); )
+    for (Iterator<? extends E> it=c.iterator(); it.hasNext(); )
       add(it.next());
   }
 
@@ -133,9 +136,11 @@ public class UniqueVector<E> extends AbstractList<E>
    * Returns an enumeration of the components of this vector.
    * @return an enumeration of the components of this vector.
    */
+    /* REMOVED FROM THE INTERFACE
   public synchronized Enumeration<E> elements() {
     return new IteratorEnumerator<E>(vect.iterator());
   }
+    */
      
   /**
    * Increases the capacity of this vector, if necessary, to ensure that

@@ -44,7 +44,8 @@ PSourcePosition.java \
 PTag.java \
 PThrowsTag.java \
 PTypeArgument.java \
-PTypeVariable.java
+PTypeVariable.java \
+UniqueVector.java
 
 # CUP
 %.java : %.cup

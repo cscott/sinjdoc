@@ -13,7 +13,8 @@ pkgdata_DATA = @PACKAGE_TARNAME@.jar
 @PACKAGE_TARNAME@.jar: $(shell find classes -type f)
 	echo "Manifest-Version: 1.0" > manifest
 	echo "Main-Class: net.cscott.sinjdoc.Main" >> manifest
-	echo "Class-Path: lib/jutil.jar lib/cup.jar" >> manifest
+#	echo "Class-Path: lib/jutil.jar lib/cup.jar" >> manifest
+	echo "Class-Path: lib/cup.jar" >> manifest
 	echo "Implementation-Version: $(VERSION)" >> manifest
 	cd classes && $(JAR) -cfm ../$@ ../manifest net
 	-$(RM) manifest

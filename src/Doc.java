@@ -3,7 +3,8 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.sinjdoc;
 
-import net.cscott.jutil.ReferenceUnique;
+// Temporarily removed dependency on jutil.
+//import net.cscott.jutil.ReferenceUnique;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * @version $Id$
  * @see com.sun.javadoc.Doc
  */
-public interface Doc extends ReferenceUnique, Comparable<Doc> {
+public interface Doc extends /*ReferenceUnique,*/ Comparable<Doc> {
     /** Return the text of the comment for this doc item, with all
      *  tags (including inline tags) removed. */
     public String commentText();
