@@ -36,7 +36,7 @@ parser code  {:
   Stack<TypeContext> typeContexts = new Stack<TypeContext>();
   Map<String,PTypeVariable> additionalTypeVariables =
       new HashMap<String,PTypeVariable>();
-  PMethodDoc currentMethod;
+  PExecutableMemberDoc currentMethod;
   private PSourcePosition startPos;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
@@ -118,10 +118,10 @@ action code {:
 	  bounds = new TypeList(lookupClassType("java.lang.Object"));
       // are we in method or class context?
       if (parser.currentMethod!=null) {  // method context
-	  PMethodDoc parent = parser.currentMethod;
+	  PExecutableMemberDoc parent = parser.currentMethod;
 	  PMethodTypeVariable mtv = new PMethodTypeVariable
 	      (parent, name, bounds);
-	  assert false : "unimplemented"; // XXX add to method doc.
+	  parent.typeParameters.add(mtv);
 	  parser.additionalTypeVariables.put(name, mtv);
       } else { // class context
 	  PClassDoc parent = parser.outerClasses.peek();

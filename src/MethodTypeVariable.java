@@ -13,5 +13,5 @@ package net.cscott.gjdoc;
  */
 public interface MethodTypeVariable extends TypeVariable {
     /** Return the generic method which declares this type variable. */
-    public MethodDoc declaringMethod();
+    public ExecutableMemberDoc declaringMethod();
 }

@@ -3,7 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
-import net.cscott.gjdoc.MethodDoc;
+import net.cscott.gjdoc.ExecutableMemberDoc;
 import net.cscott.gjdoc.Type;
 
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 class PMethodTypeVariable extends PTypeVariable
     implements net.cscott.gjdoc.MethodTypeVariable {
-    final MethodDoc declaringMethod;
-    PMethodTypeVariable(MethodDoc declaringMethod,
+    final ExecutableMemberDoc declaringMethod;
+    PMethodTypeVariable(ExecutableMemberDoc declaringMethod,
 			String name, List<Type> bounds) {
 	super(name, bounds);
 	this.declaringMethod = declaringMethod;
     }
-    public MethodDoc declaringMethod() { return declaringMethod; }
+    public ExecutableMemberDoc declaringMethod() { return declaringMethod; }
 }
