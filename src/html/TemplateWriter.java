@@ -45,15 +45,22 @@ class TemplateWriter extends PrintWriter  {
     TemplateWriter(String resourceName, HTMLUtil hu, TemplateContext context) {
 	this(hu.resourceReader(resourceName), hu, context);
     }
-    private TemplateContext context() {
-	return contextStack.peek().right.get(0);
+    // helper functions.
+    /** Returns the topmost context for this <code>TemplateWriter</code>. */
+    private TemplateContext topContext() {
+	return contextStack.get(0).right.get(0);
+    }
+    /** Returns false if the <code>TemplateWriter</code> is currently
+     *  suppressing output. */
+    private boolean isEcho() {
+	return contextStack.peek().right.size() > 0;
     }
     /** Copy all remaining text from the template and close the files. */
     public void copyRemainder(DocErrorReporter reporter) {
 	try {
 	    copyRemainder();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context().curURL+": "+e);
+	    reporter.printError("Couldn't emit "+topContext().curURL+": "+e);
 	}
     }
     /** Read from the template, performing macro substition, until the
@@ -64,7 +71,7 @@ class TemplateWriter extends PrintWriter  {
 	try {
 	    return copyToSplit();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context().curURL+": "+e);
+	    reporter.printError("Couldn't emit "+topContext().curURL+": "+e);
 	    return false;
 	}
     }
@@ -76,6 +83,7 @@ class TemplateWriter extends PrintWriter  {
 	} finally {
 	    close();
 	    templateReader.close();
+	    assert contextStack.size()==1 : "unmatched blocks.";
 	}
     }
     /** Read from the template, performing macro substition, until the
@@ -100,24 +108,27 @@ class TemplateWriter extends PrintWriter  {
 		// saw closing '@'.  is this a valid tag?
 		String tagName = tag.toString();
 		if (tagName.equals("@SPLIT@")) {
-		    if (context().echo) return true; // done.
+		    if (isEcho()) return true; // done.
 		} else if (tagName.equals("@END@")) {
-		    // pop context. & mark.
+		    // repeat from mark or pop context.
 		    if (contextStack.peek().right.size()>1) {
-			Pair<Mark,List<TemplateContext>> opair =
-			    contextStack.pop(), npair =
-			    new Pair<Mark,List<TemplateContext>>
-			    (opair.left,
-			     opair.right.subList(1,opair.right.size()));
-			contextStack.push(npair);
-			// reset to mark.
-			templateReader.reset(opair.left);
+			// remove first element from context list.
+			Pair<Mark,List<TemplateContext>> pair =
+			    contextStack.pop();
+			contextStack.push(new Pair<Mark,List<TemplateContext>>
+					  (pair.left, pair.right.subList
+					   (1,pair.right.size())));
+			// reset reader to mark.
+			templateReader.reset(pair.left);
 		    } else if (contextStack.size()>1) {
+			// done with this block. pop context.
 			contextStack.pop();
 		    } else assert false : "too many @END@ tags";
 		} else if (macroMap.containsKey(tagName)) {
+		    TemplateContext context = isEcho() ?
+			contextStack.peek().right.get(0) : null;
 		    List<TemplateContext> ltc =
-			macroMap.get(tagName).doMacro(this, context());
+			macroMap.get(tagName).doMacro(this, context);
 		    if (ltc!=null) {
 			// only need to make mark if ltc.size()>1.
 			Mark m = (ltc.size()>1) ? templateReader.getMark()
@@ -126,7 +137,7 @@ class TemplateWriter extends PrintWriter  {
 					  (m, ltc));
 		    }
 		} else // invalid tag.
-		    if (context().echo) write(tag.toString());
+		    if (isEcho()) write(tag.toString());
 		break;
 	    }
 	}
@@ -135,6 +146,17 @@ class TemplateWriter extends PrintWriter  {
 
     /** Encapsulates a macro definition. */
     static abstract class TemplateMacro {
+	/** This is the most general interface to the macro-expansion
+	 *  engine.  The method should write to <code>tw</code> whatever
+	 *  is necessary for the expansion of the macro.  If the
+	 *  return value is non-null, the template text between this
+	 *  macro and a corresponding <code>@END@</code> macro will
+	 *  be repeated once for every element in the
+	 *  <code>TemplateContext</code> list.  Note that returning
+	 *  a list of size 0 is allowed, and suppresses output until the
+	 *  matching <code>@END@</code> macro is found.  The
+	 *  <code>context</code> parameter will be <code>null</code> if
+	 *  output is currently suppressed. */
 	abstract List<TemplateContext> doMacro
 	    (TemplateWriter tw, TemplateContext context);
     }
@@ -142,22 +164,44 @@ class TemplateWriter extends PrintWriter  {
 	final List<TemplateContext> doMacro
 	    (TemplateWriter tw, TemplateContext context) {
 	    // process the macro...
-	    process(tw, context);
+	    if (context!=null) process(tw, context);
 	    // no new contexts added, so return null.
 	    return null;
 	}
+	/** Expand the macro by writing to <code>tw</code>.  This method
+	 *  will only be invoked if output is not currently suppressed. */
 	abstract void process(TemplateWriter tw, TemplateContext context);
     }
-    static abstract class TemplateConditional extends TemplateMacro {
+    static abstract class TemplateForEach extends TemplateMacro {
 	final List<TemplateContext> doMacro
 	    (TemplateWriter tw, TemplateContext context) {
 	    // don't really push new contexts if we're not currently echoing.
-	    if (!context.echo) return Collections.singletonList(context);
+	    if (context==null) return EMPTY_CONTEXT_LIST;
 	    // otherwise, go ahead and process this.
 	    return process(tw, context);
 	}
+	/** Return a list of <code>TemplateContext</code>s; each one will
+	 *  be used in turn to process this block.  So if you return a
+	 *  list of size two, the block will be repeated twice, etc.  This
+	 *  method will only be invoked if output is not currently
+	 *  suppressed. */
 	abstract List<TemplateContext> process
 	    (TemplateWriter tw, TemplateContext context);
+	/** An empty list object, static for efficiency. */
+	static final List<TemplateContext> EMPTY_CONTEXT_LIST =
+	    Arrays.asList(new TemplateContext[0]);
+    }
+    static abstract class TemplateConditional extends TemplateForEach {
+	final List<TemplateContext> process
+	    (TemplateWriter tw, TemplateContext context) {
+	    assert context!=null;
+	    if (!isBlockEmitted(context)) return EMPTY_CONTEXT_LIST;
+	    else return Collections.singletonList(context);
+	}
+	/** Return true if this block following this conditional should be
+	 *  emitted, else return false.  This method will only be invoked
+	 *  if output is not currently suppressed. */
+	abstract boolean isBlockEmitted(TemplateContext context);
     }
     /** A map from macro names to definitions. */
     private static final Map<String, TemplateMacro> macroMap =

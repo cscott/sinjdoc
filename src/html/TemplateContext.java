@@ -22,7 +22,6 @@ class TemplateContext {
     public final ClassDoc curClass;
     public final MemberDoc curMember;
     public final URLContext curURL;
-    public final boolean echo;
     
     /** Creates a <code>TemplateContext</code> appropriate for a top-level
      *  overview page (no package- or class-specific information). */
@@ -48,24 +47,12 @@ class TemplateContext {
     public TemplateContext(RootDoc root, HTMLOptions options,
 			   URLContext curURL, PackageDoc curPackage,
 			   ClassDoc curClass, MemberDoc curMember) {
-	this(root,options,curURL,curPackage,curClass,curMember, true);
-    }
-    /** Private constructor to allow turning echo on/off. */
-    private TemplateContext(RootDoc root, HTMLOptions options,
-			    URLContext curURL,
-			    PackageDoc curPackage, ClassDoc curClass,
-			    MemberDoc curMember, boolean echo) {
 	this.root = root;
 	this.options = options;
 	this.curPackage = curPackage;
 	this.curClass = curClass;
 	this.curMember = curMember;
 	this.curURL = curURL;
-	this.echo = echo;
 	assert root!=null && options!=null && curURL!=null;
-    }
-    TemplateContext echoOff() {
-	return new TemplateContext(root,options,curURL,curPackage,curClass,
-				   curMember,false);
     }
 }
