@@ -10,9 +10,11 @@ import net.cscott.gjdoc.Tag;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 
     // parse raw comment text into tags using regexp.
     public List<Tag> tags() {
+	if (tagCache!=null) return tagCache;
 	List<Tag> result = new ArrayList<Tag>();
 	String raw = getRawCommentText();
 	PSourcePosition sp = getRawCommentPosition();
@@ -91,46 +94,75 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 				      sp.add(lastTagStart)));
 	}
 	// done!
-	return Collections.unmodifiableList(result);
+	tagCache = shrinkList(result);
+	return tagCache;
     }
+    private transient List<Tag> tagCache;
     private static final Pattern TAGPAT = Pattern.compile
 	("^\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
     private static final Pattern TAGPATSS = Pattern.compile
 	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
     /** Parse the raw text into a series of 'Text' and 'inline' tags. */
-    private static List<Tag> parseInline(String rawText, PSourcePosition sp,
-					 boolean stripStars) {
-	List<Tag> result = new ArrayList<Tag>();
+    private List<Tag> parseInline(String rawText, PSourcePosition sp,
+				  boolean stripStars) {
+	class TagInfo {
+	    public final String name;
+	    public final PSourcePosition pos;
+	    public final List<Tag> tags = new ArrayList<Tag>();
+	    TagInfo(String name, PSourcePosition pos) {
+		this.name = name; this.pos = pos;
+	    }
+	}
+	Stack<TagInfo> tagStack = new Stack<TagInfo>();
+	tagStack.push(new TagInfo(null, sp));
 	Matcher tagMatcher = INLINE.matcher(rawText);
 	int pos=0;
+	// find a tag start or end point.
 	while (tagMatcher.find()) {
 	    int start = tagMatcher.start();
-	    // section between pos and start becomes a text tag.
+	    // add text from last pos to start pos to currently-active tag.
 	    if (pos<start) {
 		String text = rawText.substring(pos, start);
 		if (stripStars) text = removeLeadingStars(text);
-		result.add(PTag.newTextTag(text, sp.add(pos)));
+		tagStack.peek().tags.add(PTag.newTextTag(text, sp.add(pos)));
 	    }
-	    // now this section becomes an inline tag.
-	    // XXX regexp doesn't handle nested inline tags properly.
-	    List<Tag> contents = parseInline(tagMatcher.group(2),
-					     sp.add(tagMatcher.start(2)),
-					     stripStars);
-	    result.add(PTag.newInlineTag(tagMatcher.group(1), contents,
-					 sp.add(tagMatcher.start(1))));
+	    // for start tag, add new pair to stack; for end, pop a pair.
+	    String tagName = tagMatcher.group(1);
+	    if (tagName!=null) { // start tag.
+		tagStack.push(new TagInfo(tagName, sp.add(start)));
+	    } else { // end tag.
+		if (tagStack.size()==1) { // don't allow mismatched ends.
+		    pc.reporter.printError(sp.add(start),
+					   "End brace without inline tag.");
+		} else {
+		    TagInfo ti = tagStack.pop();
+		    tagStack.peek().tags.add
+			(PTag.newInlineTag
+			 (ti.name, shrinkList(ti.tags), ti.pos));
+		}
+	    }
 	    pos = tagMatcher.end();
 	}
-	// any trailing text becomes a text tag.
-	if (pos < rawText.length()) {
+	// deal with trailing text.
+	if (pos<rawText.length()) {
 	    String text = rawText.substring(pos);
 	    if (stripStars) text = removeLeadingStars(text);
-	    result.add(PTag.newTextTag(text, sp.add(pos)));
+	    tagStack.peek().tags.add(PTag.newTextTag(text, sp.add(pos)));
+	}
+	// now deal with unmatched start tags.
+	while (tagStack.size()>1) {
+	    TagInfo ti = tagStack.pop();
+	    pc.reporter.printError(ti.pos, "Inline tag without end brace.");
+	    tagStack.peek().tags.add(PTag.newInlineTag
+				     (ti.name, shrinkList(ti.tags), ti.pos));
 	}
 	// done!
-	return Collections.unmodifiableList(result);
+	assert tagStack.size()==1;
+	assert tagStack.peek().name==null;
+	return shrinkList(tagStack.pop().tags);
     }
     private static final Pattern INLINE = Pattern.compile
-	("[{]@(\\S+)(?:\\s+([^}]*))?[}]");
+	("[{]@(\\S+)|[}]");
 
     // parse inlineTags() list into first sentence tags using breakiterator.
     // note that we look for the sentence boundary by throwing away all
@@ -182,7 +214,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	// add last tag to result.
 	if (lastTag!=null) result.add(lastTag);
 	// and we're done!
-	return Collections.unmodifiableList(result);
+	return shrinkList(result);
     }
     public List<Tag> inlineTags() {
 	List<Tag> result = new ArrayList<Tag>();
@@ -192,7 +224,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 		return result; // done!
 	    result.add(tag);
 	}
-	return Collections.unmodifiableList(result);
+	return shrinkList(result);
     }
     public final List<Tag> tags(String tagname) {
 	List<Tag> result = new ArrayList<Tag>();
@@ -201,7 +233,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	    if ((!tag.isText()) && tag.name().equals(tagname))
 		result.add(tag);
 	}
-	return Collections.unmodifiableList(result);
+	return shrinkList(result);
     }
     public final String commentText() {
 	// strip out all tags not of kind 'Text'.  append the rest.
@@ -224,4 +256,11 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     /** Pattern used by <code>removeLeadingStars()</code> method. */
     private static final Pattern LEADSTAR = Pattern.compile
 	("^[\\p{Blank}]*[*]+", Pattern.MULTILINE);
+    /** Convenience method to reduce memory requirements of list & make
+     *  immutable. */
+    private static <T> List<T> shrinkList(List<T> list) {
+	if (list instanceof ArrayList)
+	    ((ArrayList)list).trimToSize();
+	return Collections.unmodifiableList(list);
+    }
 }
