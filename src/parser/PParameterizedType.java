@@ -7,6 +7,7 @@ import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Type;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 /**
  * The <code>PParameterizedType</code> interface represents a parameterized
@@ -16,16 +17,28 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PParameterizedType
+class PParameterizedType
     implements net.cscott.gjdoc.ParameterizedType {
     final ClassType baseType;
     final List<Type> actualTypeArguments;
     PParameterizedType(ClassType baseType, List<Type> actualTypeArguments) {
 	this.baseType = baseType;
 	this.actualTypeArguments = actualTypeArguments;
+	assert actualTypeArguments.size()>0;
     }
     public ClassType getBaseType() { return baseType; }
     public List<Type> getActualTypeArguments() {
 	return Collections.unmodifiableList(actualTypeArguments);
+    }
+    public String toString() {
+	StringBuffer sb = new StringBuffer(getBaseType().toString());
+	sb.append('<');
+	for (Iterator<Type> it=getActualTypeArguments().iterator();
+	     it.hasNext(); ) {
+	    sb.append(it.next().toString());
+	    if (it.hasNext()) sb.append(',');
+	}
+	sb.append('>');
+	return sb.toString();
     }
 }
