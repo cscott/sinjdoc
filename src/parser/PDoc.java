@@ -258,8 +258,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
      * Compare based first on short name, then on fully-qualified name,
      * using the <code>java.text.Collator</code> appropriate for the locale.
      */
-    public final int compareTo(Object/*Doc*/ o) {
-	Doc d = (Doc) o;
+    public final int compareTo(Doc d) {
 	String q1 = this.name(), q2 = d.name();
 	int c = pc.collator.compare(q1, q2);// primary key.
 	if (c!=0) return c;

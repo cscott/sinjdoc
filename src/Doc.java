@@ -18,13 +18,13 @@ import java.util.List;
  * @version $Id$
  * @see com.sun.javadoc.Doc
  */
-public interface Doc extends ReferenceUnique, Comparable/*<Doc>*/ {
+public interface Doc extends ReferenceUnique, Comparable<Doc> {
     /** Return the text of the comment for this doc item, with all
      *  tags (including inline tags) removed. */
     public String commentText();
     /** Compares this <code>Doc</code> with the specified <code>Doc</code>
      *  for order. */
-    public int compareTo(Object/*Doc*/ d);
+    public int compareTo(Doc d);
     /**
      * Return the first sentence of the comment as tags.  This includes
      * inline tags embedded in the first sentence, but not regular tags
