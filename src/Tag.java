@@ -14,7 +14,7 @@ import java.util.List;
  * @see com.sun.javadoc.Tag
  */
 public interface Tag {
-    /** Returns true if this is an inline tag. */
+    /** Returns true if this is an inline tag. 'Text' tags are not inline. */
     public boolean isInline();
     /** Return the name of this tag. */
     public String name();
