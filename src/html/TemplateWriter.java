@@ -6,6 +6,7 @@ package net.cscott.gjdoc.html;
 import net.cscott.gjdoc.DocErrorReporter;
 
 import java.io.*;
+import java.util.*;
 /**
  * The <code>TemplateWriter</code> class emits chunks of template
  * interspersed with customized chunks.  It performs macro substitution
@@ -91,26 +92,61 @@ class TemplateWriter extends PrintWriter  {
 		if (Character.isLetter((char)r) && r!='@') continue;
 		// saw closing '@'.  is this a valid tag?
 		String tagName = tag.toString();
-		if (tagName.equals("@CHARSET@"))
-		    write(context.options.charSet.name());
-		else if (tagName.equals("@WINDOWTITLE@")) {
-		    if (context.options.windowTitle!=null)
-			write(context.options.windowTitle);
-		} else if (tagName.equals("@TITLESUFFIX@")) {
-		    if (context.options.windowTitle!=null)
-			write(" ("+context.options.windowTitle+")");
-		} else if (tagName.equals("@DOCTITLE@")) {
-		    if (context.options.docTitle!=null)
-			write(context.options.docTitle);
-		} else if (tagName.equals("@ROOT@")) {
-		    write(context.curURL.makeRelative(""));
-		} else if (tagName.equals("@SPLIT@"))
+		if (tagName.equals("@SPLIT@"))
 		    return true; // done.
+		else if (macroMap.containsKey(tagName))
+		    macroMap.get(tagName).process(this, this.context);
 		else // invalid tag.
 		    write(tag.toString());
 		break;
 	    }
 	}
 	return false; // eof found.
+    }
+
+    /** Encapsulates a macro definition. */
+    static abstract class TemplateAction {
+	abstract void process(TemplateWriter tw, TemplateContext context);
+    }
+    /** A map from macro names to definitions. */
+    private static final Map<String, TemplateAction> macroMap =
+	new HashMap<String,TemplateAction>();
+    /** Convenience method to register macro definitions. */
+    private static final void register(String name, TemplateAction action) {
+	assert name.startsWith("@") && name.endsWith("@");
+	macroMap.put(name, action);
+    }
+    static {
+	// macro definitions.  java is so noisy!
+	register("@CHARSET@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    tw.write(context.options.charSet.name());
+		}
+	    });
+	register("@WINDOWTITLE@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.windowTitle==null) return;
+		    tw.write(context.options.windowTitle);
+		}
+	    });
+	register("@TITLESUFFIX@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.windowTitle==null) return;
+		    tw.write(" (");
+		    tw.write(context.options.windowTitle);
+		    tw.write(")");
+		}
+	    });
+	register("@DOCTITLE@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    if (context.options.docTitle==null) return;
+		    tw.write(context.options.docTitle);
+		}
+	    });
+	register("@ROOT@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    tw.write(context.curURL.makeRelative(""));
+		}
+	    });
     }
 }
