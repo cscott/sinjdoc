@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
- * @param
  */
 class PThrowsTag extends PTag.Trailing
     implements net.cscott.gjdoc.ThrowsTag {
