@@ -164,7 +164,11 @@ action code {:
       // static and public.
       if (outer!=null && outer.isInterface())
 	  modifiers |= Modifier.PUBLIC | Modifier.STATIC;
-      
+      // nested enum classes are implicitly static
+      //  http://forum.java.sun.com/thread.jsp?forum=316&thread=438509
+      if (outer!=null && class_type==Sym.ENUM)
+	  modifiers |= Modifier.STATIC;
+
       // note that enum classes are 'ordinary classes' (as opposed to
       // interfaces) -- we don't invent a new 'enum class' type.
       PClassDoc cd = new PClassDoc(parser.rootDoc.pc, parser.expectedPackage,
