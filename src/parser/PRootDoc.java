@@ -31,8 +31,8 @@ public class PRootDoc extends PDoc
     final PSourcePosition overviewPosition;
     private final Map<String,PPackageDoc> packageMap =
 	new HashMap<String,PPackageDoc>();
-    private final Map<File,List<PClassDoc>> sourceFileMap =
-	new HashMap<File,List<PClassDoc>>();
+    private final Map<File,PCompilationUnit> sourceFileMap =
+	new HashMap<File,PCompilationUnit>();
     private final Map<String,PClassDoc> classMap =
 	new HashMap<String,PClassDoc>();
     PRootDoc(ParseControl pc) {
@@ -78,14 +78,14 @@ public class PRootDoc extends PDoc
 	assert packageMap.containsKey(name);
 	return packageMap.get(name);
     }
-    List<PClassDoc> findOrCreateClasses(File f, PPackageDoc pkg) {
+    PCompilationUnit findOrCreateClasses(File f, PPackageDoc pkg) {
 	if (!sourceFileMap.containsKey(f)) {
 	    assert f.exists() && f.isFile();
-	    List<PClassDoc> pcds = Arrays.asList(new PClassDoc[0]);
+	    PCompilationUnit pcu=new PCompilationUnit(f); // empty
 	    try {
 		printNotice("Parsing "+f);
-		pcds = Arrays.asList
-		    ((PClassDoc[])new Java15(this, f, pkg).parse().value);
+		pcu = (PCompilationUnit)
+		    new Java15(this, f, pkg).parse().value;
 	    } catch (java.io.FileNotFoundException e) {
 		assert false : "should never happen.";
 		printError("File not found: "+e);
@@ -93,19 +93,21 @@ public class PRootDoc extends PDoc
 		// syntax error, etc.
 		printError("Syntax error: "+e); // XXX use source pos
 	    }
-	    sourceFileMap.put(f, pcds);
-	    for (Iterator<PClassDoc> it=pcds.iterator(); it.hasNext(); ) {
+	    sourceFileMap.put(f, pcu);
+	    for (Iterator<PClassDoc> it=pcu.classes.iterator();
+		 it.hasNext(); ) {
 		PClassDoc pcd = it.next();
 		classMap.put(pcd.qualifiedName(), pcd);
 	    }
-	}		
+	}
 	return sourceFileMap.get(f);
     }
     public List<ClassDoc> specifiedClasses() {
 	List<ClassDoc> result = new ArrayList<ClassDoc>
 	    (pc.sourceFiles.size());
 	for (Iterator<File> it=pc.sourceFiles.iterator(); it.hasNext(); )
-	    result.addAll(findOrCreateClasses(it.next(),null/*not included*/));
+	    result.addAll(findOrCreateClasses(it.next(),null/*not included*/)
+			  .classes);
 	return Collections.unmodifiableList(result);
     }
     public List<PackageDoc> specifiedPackages() {

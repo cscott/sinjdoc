@@ -1,0 +1,25 @@
+// PCompilationUnit.java, created Mon Mar 24 14:44:10 2003 by cananian
+// Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
+// Licensed under the terms of the GNU GPL; see COPYING for details.
+package net.cscott.gjdoc.parser;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The <code>PCompilationUnit</code> class encapsulates the information
+ * associated with a compilation unit (source file).
+ *
+ * @author  C. Scott Ananian (cscott@cscott.net)
+ * @version $Id$
+ */
+
+class PCompilationUnit {
+    final File file;
+    final List<String> singleTypeImport = new ArrayList<String>();
+    final List<PPackageDoc> onDemandImport = new ArrayList<PPackageDoc>();
+    final List<PClassDoc> classes = new ArrayList<PClassDoc>();
+
+    PCompilationUnit(File file) { this.file = file; }
+}// PCompilationUnit

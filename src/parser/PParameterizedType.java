@@ -14,8 +14,9 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PParameterizedType
+abstract class PParameterizedType extends PClassType
     implements net.cscott.gjdoc.ParameterizedType {
+    PParameterizedType() { super(null,null,null,null,null); /*XXX*/ }
     public abstract List<Type> getActualTypeArguments();
     public abstract Type getRawClass();
 }

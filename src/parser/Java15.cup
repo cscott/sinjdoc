@@ -25,17 +25,16 @@ JDK 1.5 Features added:
   an LALR(1) grammar.
 */
 parser code  {: 
-  File file;
+  PCompilationUnit compilationUnit;
   PRootDoc rootDoc;
   PPackageDoc expectedPackage;
   Lexer lexer;
   Stack<PClassDoc> outerClasses = new Stack<PClassDoc>();
-  List<PClassDoc> allClasses = new ArrayList<PClassDoc>();
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
       throws java.io.FileNotFoundException {
       this();
-      this.file = file;
+      this.compilationUnit = new PCompilationUnit(file);
       this.rootDoc = rootDoc;
       this.lexer = new Lexer
 	  (new BufferedReader(new FileReader(file)), rootDoc.pc.sourceVersion);
@@ -43,7 +42,7 @@ parser code  {:
   }
 
   public PSourcePosition sp(int leftPos) {
-      return new PSourcePosition(file, leftPos);
+      return new PSourcePosition(compilationUnit.file, leftPos);
   }
   public void syntax_error(java_cup.runtime.Symbol current) {
       rootDoc.printError(sp(current.left), "Syntax error ("+current.sym+")");
@@ -57,7 +56,14 @@ action code {:
   private void doTypeDeclaration(int modifiers, String name,
 				 boolean isInterface) {
 	System.out.println("New type: "+name);
+	// XXX should create an eager class type for this.
+	// if outerClasses.empty(), then add this to the package; else
+	// add it to its enclosing class.
+	// outerClasses.push(this)
+	// also open a new environment scope for type variables?
   }
+  // when done with typeDeclaration, outerClasses.pop() and close the
+  // type variable environment scope.
 :};
 
 scan with {: return lexer.nextToken(); :};
@@ -128,7 +134,7 @@ terminal ASSERT; // assert_statement
 terminal PLT;
 
 // 19.2) The Syntactic Grammar
-non terminal PClassDoc[] goal;
+non terminal PCompilationUnit goal;
 // 19.3) Lexical Structure
 non terminal literal;
 // 19.4) Types, Values, and Variables
@@ -292,9 +298,7 @@ start with goal;
 
 // 19.2) The Syntactic Grammar
 goal ::=	compilation_unit
-		{: RESULT=parser.allClasses.toArray
-			(new PClassDoc[parser.allClasses.size()]);
-		:}
+		{: RESULT=parser.compilationUnit; :}
 	;
 
 // 19.3) Lexical Structure.

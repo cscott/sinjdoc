@@ -14,7 +14,9 @@ Sym.java \
 FileUtil.java \
 ParseControl.java \
 PClassDoc.java \
+PClassType.java \
 PClassTypeVariable.java \
+PCompilationUnit.java \
 PConstructorDoc.java \
 PDoc.java \
 PExecutableMemberDoc.java \
