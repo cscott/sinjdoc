@@ -17,6 +17,7 @@ PClassTypeVariable.java \
 PConstructorDoc.java \
 PDoc.java \
 PExecutableMemberDoc.java \
+PFile.java \
 PFieldDoc.java \
 PMemberDoc.java \
 PMethodDoc.java \
