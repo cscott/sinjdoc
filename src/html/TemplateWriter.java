@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.html.ReplayReader.Mark;
 
 import java.io.*;
 import java.util.*;
@@ -16,8 +17,9 @@ import java.util.*;
  * @version $Id$
  */
 class TemplateWriter extends PrintWriter  {
-    final Reader templateReader;
-    final TemplateContext context;
+    final Stack<Pair<Mark,List<TemplateContext>>> contextStack =
+	new Stack<Pair<Mark,List<TemplateContext>>>();
+    final ReplayReader templateReader;
 
     /** Creates a <code>TemplateWriter</code> which uses the specified
      *  <code>Reader</code> as a template and writes to the provides
@@ -26,8 +28,9 @@ class TemplateWriter extends PrintWriter  {
     TemplateWriter(Writer delegate, Reader templateReader,
 		   TemplateContext context) {
         super(delegate);
-	this.templateReader = templateReader;
-	this.context = context;
+	this.templateReader = new ReplayReader(templateReader);
+	contextStack.push(new Pair<Mark,List<TemplateContext>>
+			  (null, Collections.singletonList(context)));
     }
     /** Creates a <code>TemplateWriter</code> which uses the reader provided
      *  as a template and writes to the URL specified by the template
@@ -42,12 +45,15 @@ class TemplateWriter extends PrintWriter  {
     TemplateWriter(String resourceName, HTMLUtil hu, TemplateContext context) {
 	this(hu.resourceReader(resourceName), hu, context);
     }
+    private TemplateContext context() {
+	return contextStack.peek().right.get(0);
+    }
     /** Copy all remaining text from the template and close the files. */
     public void copyRemainder(DocErrorReporter reporter) {
 	try {
 	    copyRemainder();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context.curURL+": "+e);
+	    reporter.printError("Couldn't emit "+context().curURL+": "+e);
 	}
     }
     /** Read from the template, performing macro substition, until the
@@ -58,7 +64,7 @@ class TemplateWriter extends PrintWriter  {
 	try {
 	    return copyToSplit();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context.curURL+": "+e);
+	    reporter.printError("Couldn't emit "+context().curURL+": "+e);
 	    return false;
 	}
     }
@@ -93,12 +99,34 @@ class TemplateWriter extends PrintWriter  {
 		    continue; // part of the tag, keep going.
 		// saw closing '@'.  is this a valid tag?
 		String tagName = tag.toString();
-		if (tagName.equals("@SPLIT@"))
-		    return true; // done.
-		else if (macroMap.containsKey(tagName))
-		    macroMap.get(tagName).process(this, this.context);
-		else // invalid tag.
-		    write(tag.toString());
+		if (tagName.equals("@SPLIT@")) {
+		    if (context().echo) return true; // done.
+		} else if (tagName.equals("@END@")) {
+		    // pop context. & mark.
+		    if (contextStack.peek().right.size()>1) {
+			Pair<Mark,List<TemplateContext>> opair =
+			    contextStack.pop(), npair =
+			    new Pair<Mark,List<TemplateContext>>
+			    (opair.left,
+			     opair.right.subList(1,opair.right.size()));
+			contextStack.push(npair);
+			// reset to mark.
+			templateReader.reset(opair.left);
+		    } else if (contextStack.size()>1) {
+			contextStack.pop();
+		    } else assert false : "too many @END@ tags";
+		} else if (macroMap.containsKey(tagName)) {
+		    List<TemplateContext> ltc =
+			macroMap.get(tagName).doMacro(this, context());
+		    if (ltc!=null) {
+			// only need to make mark if ltc.size()>1.
+			Mark m = (ltc.size()>1) ? templateReader.getMark()
+			    : null;
+			contextStack.push(new Pair<Mark,List<TemplateContext>>
+					  (m, ltc));
+		    }
+		} else // invalid tag.
+		    if (context().echo) write(tag.toString());
 		break;
 	    }
 	}
@@ -106,14 +134,36 @@ class TemplateWriter extends PrintWriter  {
     }
 
     /** Encapsulates a macro definition. */
-    static abstract class TemplateAction {
+    static abstract class TemplateMacro {
+	abstract List<TemplateContext> doMacro
+	    (TemplateWriter tw, TemplateContext context);
+    }
+    static abstract class TemplateAction extends TemplateMacro {
+	final List<TemplateContext> doMacro
+	    (TemplateWriter tw, TemplateContext context) {
+	    // process the macro...
+	    process(tw, context);
+	    // no new contexts added, so return null.
+	    return null;
+	}
 	abstract void process(TemplateWriter tw, TemplateContext context);
     }
+    static abstract class TemplateConditional extends TemplateMacro {
+	final List<TemplateContext> doMacro
+	    (TemplateWriter tw, TemplateContext context) {
+	    // don't really push new contexts if we're not currently echoing.
+	    if (!context.echo) return Collections.singletonList(context);
+	    // otherwise, go ahead and process this.
+	    return process(tw, context);
+	}
+	abstract List<TemplateContext> process
+	    (TemplateWriter tw, TemplateContext context);
+    }
     /** A map from macro names to definitions. */
-    private static final Map<String, TemplateAction> macroMap =
-	new HashMap<String,TemplateAction>();
+    private static final Map<String, TemplateMacro> macroMap =
+	new HashMap<String,TemplateMacro>();
     /** Convenience method to register macro definitions. */
-    private static final void register(String name, TemplateAction action) {
+    private static final void register(String name, TemplateMacro action) {
 	assert name.startsWith("@") && name.endsWith("@");
 	macroMap.put(name, action);
     }
