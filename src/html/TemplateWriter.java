@@ -28,13 +28,10 @@ class TemplateWriter extends PrintWriter  {
 	this.options = options;
 	this.context = context;
     }
+    /** Copy all remaining text from the template and close the files. */
     public void copyRemainder(DocErrorReporter reporter) {
 	try {
-	    while (copyToSplit())
-		/* repeat */;
-	    flush();
-	    close();
-	    templateReader.close();
+	    copyRemainder();
 	} catch (IOException e) {
 	    reporter.printError("Couldn't emit "+context+": "+e);
 	}
@@ -43,7 +40,29 @@ class TemplateWriter extends PrintWriter  {
      *  occurrence of the string @SPLIT@ or end-of-file, whichever comes
      *  first.
      * @return true if split found, false if EOF found first. */
-    public boolean copyToSplit() throws IOException {
+    public boolean copyToSplit(DocErrorReporter reporter) {
+	try {
+	    return copyToSplit();
+	} catch (IOException e) {
+	    reporter.printError("Couldn't emit "+context+": "+e);
+	    return false;
+	}
+    }
+    /** Copy all remaining text from the template and close the files. */
+    void copyRemainder() throws IOException {
+	try {
+	    while (copyToSplit())
+		/* repeat */;
+	} finally {
+	    close();
+	    templateReader.close();
+	}
+    }
+    /** Read from the template, performing macro substition, until the
+     *  occurrence of the string @SPLIT@ or end-of-file, whichever comes
+     *  first.
+     * @return true if split found, false if EOF found first. */
+    boolean copyToSplit() throws IOException {
 	char[] buf = new char[1024];
 	int r; boolean eof=false;
 	while (!eof) {
