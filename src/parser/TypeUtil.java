@@ -268,7 +268,9 @@ abstract class TypeUtil {
 	    public Type visit(ParameterizedType t) {
 		// return superclass of raw type, with type variable
 		// substitution.
-		return subst(t, superclass(t.getBaseType()));
+		Type sc = superclass(t.getBaseType());
+		if (sc==null) return null;//prob'ly bogus; Object has no params
+		return subst(t, sc);
 	    }
 	    public Type visit(TypeVariable t) {
 		// return type of non-interface bound, if there is one.
