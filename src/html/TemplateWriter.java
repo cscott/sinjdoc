@@ -706,6 +706,20 @@ class TemplateWriter extends PrintWriter  {
 		    };
 		}
 	    });
+	// iterator over included nested types of the class.
+	registerForAll("NESTED", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    assert c.curClass!=null;
+		    return new FilterList<ClassDoc,TemplateContext>
+			(sorted(visible(c.curClass.innerClasses()))) {
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
 	// iterator over included fields of the class.
 	registerForAll("FIELDS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
@@ -751,7 +765,7 @@ class TemplateWriter extends PrintWriter  {
     }
 
     /** Helper function. */
-    private static <D extends MemberDoc> List<D> visible(Collection<D> l) {
+    private static <D extends Doc> List<D> visible(Collection<D> l) {
 	List<D> result = new ArrayList<D>(l);
 	for (Iterator<D> it=result.iterator(); it.hasNext(); )
 	    if (!it.next().isIncluded()) it.remove();
