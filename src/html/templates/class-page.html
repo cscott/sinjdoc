@@ -68,10 +68,12 @@
      <a href="CharBuffer.html">CharBuffer</a>
    </p>
 
-   <p class="declaration">@MODIFIERS@ interface <span
-class="className">@CLASSSHORTNAME@@TYPEPARAMS_DECL@</span> <span class="extends">extends <a
-href="AbstractCollection.html">AbstractCollection</a></span> <span
-class="implements">implements <a href="List.html">List</a></span></p>
+   <p class="declaration">@MODIFIERS@
+   @IF_INTERFACE@ interface @END@ @IFNOT_INTERFACE@ class @END@
+   <span class="className">@CLASSSHORTNAME@@TYPEPARAMS_DECL@</span>
+   <span class="extends">extends <a href="AbstractCollection.html">AbstractCollection</a></span>
+   <span class="implements">implements <a href="List.html">List</a></span>
+   </p>
 
    <div class="description">
    @TAGS@
