@@ -20,7 +20,7 @@ import java.util.List;
 public interface PackageDoc extends Doc {
     /** Return all classes in this package, including exceptions, errors, 
      *  and interfaces, and classes which aren't being documented. */
-    public List<Type> allClasses();
+    public List<ClassType> allClasses();
     /**
      * Return all included classes and interfaces in this package,
      * including exceptions and errors. */

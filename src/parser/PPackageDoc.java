@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.Type;
 
@@ -24,7 +25,7 @@ import java.util.List;
 class PPackageDoc extends PDoc
     implements net.cscott.gjdoc.PackageDoc {
     // package-local code can add classes to this array.
-    final List<Type> classes = new ArrayList<Type>();
+    final List<ClassType> classes = new ArrayList<ClassType>();
     final String name;
     final boolean isIncluded;
     final String packageText;
@@ -49,15 +50,14 @@ class PPackageDoc extends PDoc
     // PackageDoc implementation:
     /** @return false */
     public final boolean shouldStripStars() { return false; }
-    public List<Type> allClasses() {
+    public List<ClassType> allClasses() {
 	return Collections.unmodifiableList(classes);
     }
     public List<ClassDoc> includedClasses() {
-	List<Type> all = allClasses();
+	List<ClassType> all = allClasses();
 	List<ClassDoc> result = new ArrayList<ClassDoc>(all.size());
-	for (Iterator<Type> it=all.iterator(); it.hasNext(); ) {
-	    Type ty = it.next();
-	    ClassDoc cd = ty.asClassDoc();
+	for (Iterator<ClassType> it=all.iterator(); it.hasNext(); ) {
+	    ClassDoc cd = it.next().asClassDoc();
 	    if (cd==null || !cd.isIncluded()) continue;
 	    result.add(cd);
 	}

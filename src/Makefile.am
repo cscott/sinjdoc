@@ -10,7 +10,9 @@ JAVAROOT=$(top_builddir)/classes
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
+ArrayType.java \
 ClassDoc.java \
+ClassType.java \
 ClassTypeVariable.java \
 ConstructorDoc.java \
 Doc.java \

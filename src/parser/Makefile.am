@@ -14,6 +14,7 @@ Sym.java \
 FileUtil.java \
 TypeContext.java \
 ParseControl.java \
+PArrayType.java \
 PClassDoc.java \
 PClassType.java \
 PClassTypeVariable.java \
@@ -21,18 +22,17 @@ PCompilationUnit.java \
 PConstructorDoc.java \
 PDoc.java \
 PEagerClassType.java \
-PEagerParameterizedType.java \
 PExecutableMemberDoc.java \
 PFile.java \
 PFieldDoc.java \
 PLazyClassType.java \
-PLazyParameterizedType.java \
 PMemberDoc.java \
 PMethodDoc.java \
 PMethodTypeVariable.java \
 PPackageDoc.java \
 PParamTag.java \
 PParameter.java \
+PParameterizedType.java \
 PProgramElementDoc.java \
 PRootDoc.java \
 PSeeTag.java \

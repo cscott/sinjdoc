@@ -3,6 +3,9 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.ClassTypeVariable;
+
+import java.util.List;
 /**
  * The <code>PEagerClassType</code> class represents a fully-resolved
  * non-parameterized class type.
@@ -12,10 +15,10 @@ package net.cscott.gjdoc.parser;
 public class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.
-    PEagerClassType (PRootDoc rootDoc,
-			     String packageName, String className,
-			     int dimension) {
-	super(rootDoc, dimension);
+    PEagerClassType(PRootDoc rootDoc,
+		    String packageName, String className,
+		    List<ClassTypeVariable> typeParameters) {
+	super(rootDoc, typeParameters);
 	this.packageName = packageName.intern();
 	this.className = className.intern();
     }

@@ -4,9 +4,13 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
+import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.Type;
 import java.io.File;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 /**
  * The <code>PClassType</code> class represents an abstract type
  * name that can possibly be converted into a <code>ClassDoc</code>
@@ -15,23 +19,20 @@ import java.util.Iterator;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PClassType implements Type {
+abstract class PClassType implements ClassType {
     final PRootDoc rootDoc;
-    final int dimension;
-    PClassType(PRootDoc rootDoc, int dimension) {
+    final List<ClassTypeVariable> typeParameters;
+    PClassType(PRootDoc rootDoc, List<ClassTypeVariable> typeParameters) {
 	this.rootDoc = rootDoc;
-	this.dimension = dimension;
+	this.typeParameters = typeParameters;
+    }
+    public List<ClassTypeVariable> typeParameters() {
+	return Collections.unmodifiableList(typeParameters);
     }
     public final ClassDoc asClassDoc() {
 	return rootDoc.classNamed(qualifiedTypeName());
     }
-    public final String dimension() {
-	StringBuffer sb=new StringBuffer();
-	for (int i=0; i<dimension; i++)
-	    sb.append("[]");
-	return sb.toString();
-    }
     public final String toString() {
-	return typeName()+dimension();
+	return typeName();
     }
 }// PClassType

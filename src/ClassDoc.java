@@ -18,17 +18,10 @@ import java.util.List;
  * @version $Id$
  * @see com.sun.javadoc.ClassDoc
  */
-public interface ClassDoc extends ProgramElementDoc, Type {
-
-    /**
-     * Returns a list of <code>ClassTypeVariable</code> objects that
-     * represent the type variables declared by this class or interface
-     * represented by this <code>ClassDoc</code> object, in declaration
-     * order.  Returns a zero-length list if the underlying class or
-     * interface declares no type variables.
-     */
-    public List<ClassTypeVariable> typeParameters();
-
+public interface ClassDoc extends ProgramElementDoc {
+    /** Return the <code>ClassType</code> corresponding to this
+     *  <code>ClassDoc</code>. */
+    public ClassType type();
     /**
      * Return visible constructors in class.  An array containing the default
      * no-arg constructor is returned if no other constructors exist.
@@ -53,7 +46,7 @@ public interface ClassDoc extends ProgramElementDoc, Type {
      * Get the list of classes declared as imported.  These are called
      * "simple-type-import declarations" in the JLS.
      */
-    public List<Type> importedClasses();
+    public List<ClassType> importedClasses();
     /**
      * Get the list of packages declared as imported.  These are called
      * "type-import-on-demand declarations" in the JLS.

@@ -4,7 +4,9 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.Type;
 
+import java.util.List;
 /**
  * The <code>PClassTypeVariable</code> interface represents a type variable
  * declared as a formal parameter to a generic class or interface.
@@ -12,7 +14,13 @@ import net.cscott.gjdoc.ClassDoc;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PClassTypeVariable extends PTypeVariable
+class PClassTypeVariable extends PTypeVariable
     implements net.cscott.gjdoc.ClassTypeVariable {
-    public abstract ClassDoc declaringClass();
+    final ClassDoc declaringClass;
+    PClassTypeVariable(ClassDoc declaringClass,
+		       String name, List<Type> bounds) {
+	super(name, bounds);
+	this.declaringClass = declaringClass;
+    }
+    public ClassDoc declaringClass() { return declaringClass; }
 }

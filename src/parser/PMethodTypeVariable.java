@@ -4,7 +4,9 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.MethodDoc;
+import net.cscott.gjdoc.Type;
 
+import java.util.List;
 /**
  * The <code>PMethodTypeVariable</code> interface represents a type
  * variable declared as a formal parameter to a generic method.
@@ -12,7 +14,13 @@ import net.cscott.gjdoc.MethodDoc;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PMethodTypeVariable extends PTypeVariable
+class PMethodTypeVariable extends PTypeVariable
     implements net.cscott.gjdoc.MethodTypeVariable {
-    public abstract MethodDoc declaringMethod();
+    final MethodDoc declaringMethod;
+    PMethodTypeVariable(MethodDoc declaringMethod,
+			String name, List<Type> bounds) {
+	super(name, bounds);
+	this.declaringMethod = declaringMethod;
+    }
+    public MethodDoc declaringMethod() { return declaringMethod; }
 }

@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.ConstructorDoc;
 import net.cscott.gjdoc.FieldDoc;
@@ -28,12 +29,12 @@ import java.util.List;
 abstract class PClassDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.ClassDoc {
     PClassDoc(ParseControl pc) { super(pc); }
-    public abstract List<ClassTypeVariable> typeParameters();
+    public abstract ClassType type();
     public abstract List<ConstructorDoc> constructors();
     public abstract boolean definesSerializableFields();
     public abstract List<FieldDoc> fields();
     public abstract ClassDoc findClass(String className);
-    public abstract List<Type> importedClasses();
+    public abstract List<ClassType> importedClasses();
     public abstract List<PackageDoc> importedPackages();
     public abstract List<ClassDoc> innerClasses();
     public abstract List<Type> interfaces();

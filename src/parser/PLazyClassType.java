@@ -4,9 +4,13 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
+import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.Type;
+
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 /**
  * The <code>PLazyClassType</code> class represents an unresolved class
  * type.  Resolution of the exact type specified is deferred until
@@ -17,11 +21,12 @@ import java.util.Iterator;
  * @version $Id$
  */
 class PLazyClassType extends PClassType {
-    Type cache;
+    ClassType cache;
     TypeContext typeContext;
     String typeName;
-    PLazyClassType(TypeContext typeContext, String typeName, int dimension) {
-	super(typeContext.rootDoc, dimension);
+    PLazyClassType(TypeContext typeContext, String typeName,
+		   List<ClassTypeVariable> typeParameters) {
+	super(typeContext.rootDoc, typeParameters);
 	this.cache = null;
 	this.typeContext = typeContext;
 	this.typeName = typeName;
@@ -37,7 +42,8 @@ class PLazyClassType extends PClassType {
     }
     private void lookup() {
 	assert cache==null && isValid();
-	cache = typeContext.lookupTypeName(typeName, dimension);
+	cache = (ClassType) // XXX what if this is a type variable???
+	    typeContext.lookupTypeName(typeName, typeParameters);
 	typeContext=null;
 	typeName=null;
 	assert cache!=null && isValid();

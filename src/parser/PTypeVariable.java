@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.Type;
 
+import java.util.Collections;
 import java.util.List;
 /**
  * The <code>PTypeVariable</code> interface represents a type
@@ -19,6 +20,14 @@ import java.util.List;
  */
 abstract class PTypeVariable
     implements net.cscott.gjdoc.TypeVariable {
-    public abstract List<Type> getBounds();
-    public abstract String getName();
+    final String name;
+    final List<Type> bounds;
+    PTypeVariable(String name, List<Type> bounds) {
+	this.name = name;
+	this.bounds = bounds;
+    }
+    public String getName() { return name; }
+    public List<Type> getBounds() {
+	return Collections.unmodifiableList(bounds);
+    }
 }

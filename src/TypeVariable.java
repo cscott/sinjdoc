@@ -19,7 +19,7 @@ public interface TypeVariable extends Type {
     /**
      * Return the bounds on this type variable.  If there are no bounds
      * specified, returns an array of length one containing the
-     * <code>Type</code> for <code>java.lang.Object</code>. */
+     * <code>ClassType</code> for <code>java.lang.Object</code>. */
     public List<Type> getBounds();
     /** Return the name of this type variable. */
     public String getName();
