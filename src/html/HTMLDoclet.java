@@ -23,6 +23,8 @@ public class HTMLDoclet extends Doclet {
     public String getName() { return "Standard"; }
 
     public boolean start(RootDoc root) {
+	// parse options.
+	options.parseOptions(root.options());
 	// look at overview document.
 	System.out.println("OVERVIEW TAGS: "+root.tags());
 	// look at packages

@@ -4,6 +4,8 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.DocErrorReporter;
+import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,9 +21,35 @@ import java.util.Map;
  * @version $Id$
  */
 class HTMLOptions {
-    boolean emitAuthor=false;
+    File docRoot=new File(".");
+    File helpFile=null;
+    File stylesheetFile=null;
+    boolean emitAuthorTag=false;
+    boolean emitDeprecatedTag=true;
+    boolean emitDeprecatedPage=true;
+    boolean emitHelpPage=true;
+    boolean emitIndexPage=true;
+    boolean emitNavBar=true;
+    boolean emitSinceTag=true;
+    boolean emitTreePage=true;
+    boolean emitUsePage=false;
+    boolean emitVersionTag=false;
+    String docTitle=null;
+    String windowTitle=null;
+    String header;
+    String footer;
+    String bottom;
+    Charset charSet=null;
 
 
+    public void parseOptions(List<List<String>> options) {
+	for (Iterator<List<String>> it=options.iterator(); it.hasNext(); ) {
+	    List<String> anOption = it.next();
+	    optionMap.get(anOption.get(0)).process(anOption);
+	}
+	// now deal with defaults.
+	if (windowTitle==null) windowTitle=docTitle;
+    }
     public boolean validOption(List<String> optionWithArgs,
 			       DocErrorReporter reporter) {
 	return optionMap.get(optionWithArgs.get(0)).validate
@@ -54,30 +82,65 @@ class HTMLOptions {
     {
 	// options will be printed for help in the order in which they
 	// are created here.
-	addOption(new IgnoreOption("-d", "<directory>", 2,
-				   "Destination directory for output files"));
-	addOption(new IgnoreOption("-use", "", 1,
-				   "Create class and package usage pages"));
-	addOption(new IgnoreOption("-version", "", 1,
-				   "Include @version paragraphs"));
-	addOption(new IgnoreOption("-author", "", 1,
-				   "Include @author paragraphs"));
+	addOption(new Option("-d", "<directory>", 2,
+			     "Destination directory for output files") {
+		void process(List<String> optionWithArgs) {
+		    docRoot = new File(optionWithArgs.get(1));
+		}
+	    });
+	addOption(new Option("-use", "", 1,
+			     "Create class and package usage pages") {
+		void process(List<String> optionWithArgs) {
+		    emitUsePage = true;
+		}
+	    });
+	addOption(new Option("-version", "", 1,
+			     "Include @version paragraphs") {
+		void process(List<String> optionWithArgs) {
+		    emitVersionTag = true;
+		}
+	    });
+	addOption(new Option("-author", "", 1,
+			     "Include @author paragraphs") {
+		void process(List<String> optionWithArgs) {
+		    emitAuthorTag = true;
+		}
+	    });
 	addOption(new IgnoreOption("-docfilessubdirs", "", 1,
 				   "Recursively copy doc-file "+
 				   "subdirectories"));
 	addOption(new IgnoreOption("-splitindex", "", 1,
 				   "Split index into one page per letter"));
-	addOption(new IgnoreOption("-windowtitle", "<text>", 2,
-				   "Browser window title for the "+
-				   "documentation"));
-	addOption(new IgnoreOption("-doctitle", "<html-code>", 2,
-				   "Title for the overview page"));
-	addOption(new IgnoreOption("-header", "<html-code>", 2,
-				   "Header text to include on each page"));
-	addOption(new IgnoreOption("-footer", "<html-code>", 2,
-				   "Footer text to include on each page"));
-	addOption(new IgnoreOption("-bottom", "<html-code>", 2,
-				   "Bottom text to include on each page"));
+	addOption(new Option("-windowtitle", "<text>", 2,
+			     "Browser window title for the documentation") {
+		void process(List<String> optionWithArgs) {
+		    windowTitle = optionWithArgs.get(1);
+		}
+	    });
+	addOption(new Option("-doctitle", "<html-code>", 2,
+			     "Title for the overview page") {
+		void process(List<String> optionWithArgs) {
+		    docTitle = optionWithArgs.get(1);
+		}
+	    });
+	addOption(new Option("-header", "<html-code>", 2,
+			     "Header text to include on each page") {
+		void process(List<String> optionWithArgs) {
+		    header = optionWithArgs.get(1);
+		}
+	    });
+	addOption(new Option("-footer", "<html-code>", 2,
+			     "Footer text to include on each page") {
+		void process(List<String> optionWithArgs) {
+		    footer = optionWithArgs.get(1);
+		}
+	    });
+	addOption(new Option("-bottom", "<html-code>", 2,
+			     "Bottom text to include on each page") {
+		void process(List<String> optionWithArgs) {
+		    bottom = optionWithArgs.get(1);
+		}
+	    });
 	addOption(new IgnoreOption("-link", "<url>", 2,
 				   "Create links to javadoc output at <url>"));
 	addOption(new IgnoreOption("-linkoffline", "<url> <url2>", 3,
@@ -92,24 +155,51 @@ class HTMLOptions {
 	addOption(new IgnoreOption("-nocomment", "", 1,
 				   "Suppress description and tags, generate "+
 				   "only declarations"));
-	addOption(new IgnoreOption("-nodeprecated", "", 1,
-				   "Do not include @deprecated information"));
+	addOption(new Option("-nodeprecated", "", 1,
+			     "Do not include @deprecated information") {
+		void process(List<String> optionWithArgs) {
+		    emitDeprecatedTag=false;
+		}
+	    });
 	addOption(new IgnoreOption("-noqualifier", "<name1>:<name2>:...", 2,
 				   "Exclude the list of qualifiers from the "+
 				   "output"));
-	addOption(new IgnoreOption("-nosince", "", 1,
-				   "Do not include @since information"));
-	addOption(new IgnoreOption("-nodeprecatedlist", "", 1,
-				   "Do not generate page listing deprecated "+
-				   "API"));
-	addOption(new IgnoreOption("-notree", "", 1,
-				   "Do not generate class hierarchy"));
-	addOption(new IgnoreOption("-noindex", "", 1,
-				   "Do not generate index"));
-	addOption(new IgnoreOption("-nohelp", "", 1,
-				   "Do not generate help link"));
-	addOption(new IgnoreOption("-nonavbar", "", 1,
-				   "Do not generate navigation bar"));
+	addOption(new Option("-nosince", "", 1,
+			     "Do not include @since information") {
+		void process(List<String> optionWithArgs) {
+		    emitSinceTag=false;
+		}
+	    });
+	addOption(new Option("-nodeprecatedlist", "", 1,
+			     "Do not generate page listing deprecated API") {
+		void process(List<String> optionWithArgs) {
+		    emitDeprecatedPage=false;
+		}
+	    });
+	addOption(new Option("-notree", "", 1,
+			     "Do not generate class hierarchy") {
+		void process(List<String> optionWithArgs) {
+		    emitTreePage=false;
+		}
+	    });
+	addOption(new Option("-noindex", "", 1,
+			     "Do not generate index") {
+		void process(List<String> optionWithArgs) {
+		    emitIndexPage=false;
+		}
+	    });
+	addOption(new Option("-nohelp", "", 1,
+			     "Do not generate help link") {
+		void process(List<String> optionWithArgs) {
+		    emitHelpPage=false;
+		}
+	    });
+	addOption(new Option("-nonavbar", "", 1,
+				   "Do not generate navigation bar") {
+		void process(List<String> optionWithArgs) {
+		    emitNavBar=false;
+		}
+	    });
 	addOption(new IgnoreOption("-serialwarn", "", 1,
 				   "Generate warning about @serial tag"));
 	addOption(new IgnoreOption("-tag", "<name>:<locations>:<header>", 2,
@@ -118,20 +208,40 @@ class HTMLOptions {
 				   "Fully-qualified name of a Taglet class"));
 	addOption(new IgnoreOption("-tagletpath", "<pathlist>", 2,
 				   "Classpath for taglets"));
-	addOption(new IgnoreOption("-charset", "<charset>", 2,
-				   "Charset for cross-platform viewing of "+
-				   "generated documentation"));
-	addOption(new IgnoreOption("-helpfile", "<file>", 2,
-				   "Source document for help page"));
+	addOption(new CharsetOption("-charset", "<charset>", 2,
+				    "Charset for cross-platform viewing of "+
+				    "generated documentation") {
+		void process(List<String> optionWithArgs) {
+		    charSet = Charset.forName(optionWithArgs.get(1));
+		}
+	    });
+	addOption(new FileOption("-helpfile", "<file>", 2,
+				 "Source document for help page") {
+		void process(List<String> optionWithArgs) {
+		    helpFile = new File(optionWithArgs.get(1));
+		}
+	    });
 	addOption(new IgnoreOption("-linksource", "", 1,
 				   "Generate HTML for annotated java source"));
-	addOption(new IgnoreOption("-stylesheetfile", "<path>", 2,
-				   "Alternate style sheet for generated "+
-				   "documentation"));
-	addOption(new IgnoreOption("-docencoding", "<name>", 2,
-				   "Output encoding name"));
-	addOption(new IgnoreOption("-title", "<name>", 2,
-				   "Deprecated synonym for -doctitle"));
+	addOption(new FileOption("-stylesheetfile", "<path>", 2,
+				 "Alternate style sheet for generated "+
+				 "documentation") {
+		void process(List<String> optionWithArgs) {
+		    stylesheetFile = new File(optionWithArgs.get(1));
+		}
+	    });
+	addOption(new CharsetOption("-docencoding", "<name>", 2,
+			     "Output encoding name (synonym of -charset)") {
+		void process(List<String> optionWithArgs) {
+		    charSet = Charset.forName(optionWithArgs.get(1));
+		}
+	    });
+	addOption(new Option("-title", "<name>", 2,
+				   "Deprecated synonym for -doctitle") {
+		void process(List<String> optionWithArgs) {
+		    docTitle = optionWithArgs.get(1);
+		}
+	    });
     }
 
     private abstract class Option implements Comparable<Option> {
@@ -160,7 +270,38 @@ class HTMLOptions {
 	}
     }
     private int optionCounter=0;
-    private class IgnoreOption extends Option {
+    private abstract class FileOption extends Option {
+	FileOption(String optionName, String argSummary, int len,
+		   String optionHelp) {
+	    super(optionName, argSummary, len, optionHelp);
+	    assert len==2;
+	}
+	boolean validate(List<String> optionWithArgs,
+			 DocErrorReporter reporter) {
+	    File f = new File(optionWithArgs.get(1));
+	    if (f.exists() && f.isFile()) return true;
+	    reporter.printError("Can't read "+f);
+	    return false;
+	}
+    }
+    private abstract class CharsetOption extends Option {
+	CharsetOption(String optionName, String argSummary, int len,
+		      String optionHelp) {
+	    super(optionName, argSummary, len, optionHelp);
+	    assert len==2;
+	}
+	boolean validate(List<String> optionWithArgs,
+			 DocErrorReporter reporter) {
+	    try {
+		Charset cs = Charset.forName(optionWithArgs.get(1));
+		return true; // valid charset.
+	    } catch (IllegalArgumentException e) {
+		reporter.printError(e.toString());
+		return false;
+	    }
+	}
+    }
+    private final class IgnoreOption extends Option {
 	IgnoreOption(String optionName, String argSummary, int len,
 		     String optionHelp) {
 	    super(optionName, argSummary, len, "[ignored]");
