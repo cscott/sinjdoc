@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -109,6 +110,8 @@ parser code  {:
   Stack<TypeContext> typeContexts = new Stack<TypeContext>();
   Map<String,PTypeVariable> additionalTypeVariables =
       new LinkedHashMap<String,PTypeVariable>();
+  Map<String,Type> falseTypeVariables = new LinkedHashMap<String,Type>();
+  boolean inTypeParamDecl=false;
   boolean isClassTypeVariable=false;
   private PSourcePosition startPos;
   int unnamedContext=0;
@@ -180,15 +183,52 @@ action code {:
       parser.outerClasses.push(cd);
       // new environment scope for type variables.
       assert parser.additionalTypeVariables.isEmpty();
+      assert !parser.inTypeParamDecl; // not yet in type parameter declaration
       parser.isClassTypeVariable=true; // type vars go in this class!
       // add implicit members and proper superclass to enum classes
       if (class_type==Sym.ENUM) fixupEnum(pos);
   }
-  // just before class body
-  private void midTypeDeclaration() {
-      parser.typeContexts.push(parser.outerClasses.peek().typeContext);
-      parser.additionalTypeVariables.clear(); // type vars now in type context
+  private void postTypeParam(PExecutableMemberDoc emd) {
+      assert parser.isClassTypeVariable ? emd==null : emd!=null;
+      assert !parser.inTypeParamDecl; // should be out of type param by now.
+      // fixup false type parameters: go through bounds of type parameters
+      // and substitute for false types.
+
+      // create substitution map: false type variables to proper real types.
+      Map<TypeVariable,Type> substMap = new HashMap<TypeVariable,Type>();
+      for (Map.Entry<String,Type> ftvE : parser.falseTypeVariables.entrySet()){
+	  String ftvName = ftvE.getKey();
+	  PTypeVariable ftv = parser.additionalTypeVariables.get(ftvName);
+	  parser.additionalTypeVariables.remove(ftvName);
+	  assert ftv.bounds.size()==0;
+	  Type realType = ftvE.getValue();
+	  substMap.put(ftv, realType);
+      }
+      // now do substitution of real types for false type variables.
+      for (PTypeVariable tv : parser.additionalTypeVariables.values()) {
+	  assert tv.bounds.size() > 0;
+	  // do the substitution
+	  tv.setBounds(TypeUtil.subst(substMap, tv.getBounds()));
+	  assert tv.bounds.size() > 0;
+	  // finish init of class/method
+	  if (emd!=null) { // finish init of method parameters.
+	      PMethodTypeVariable mtv = (PMethodTypeVariable) tv;
+	      mtv.declaringMethod = emd;
+	      emd.typeParameters.add(mtv);
+	  } else { // finish init of class parameters
+	      PClassTypeVariable ctv = (PClassTypeVariable) tv;
+	      parser.outerClasses.peek().typeParameters.add(ctv);
+	  }
+      }
+      parser.additionalTypeVariables.clear(); // type vars now in class/method
+      parser.falseTypeVariables.clear(); // reset for next.
       parser.isClassTypeVariable=false; // type vars now belong to some method
+      parser.inTypeParamDecl=false; // no longer in type parameter declaration
+  }
+  // just before class body: start new type context.
+  private void preClassBody() {
+      assert parser.additionalTypeVariables.isEmpty();//should have been reset
+      parser.typeContexts.push(parser.outerClasses.peek().typeContext);
   }
   // after class body
   private void endTypeDeclaration() {
@@ -309,13 +349,8 @@ action code {:
 	  emd = pmd;
       }
       // fixup the MethodTypeVariables and add them to the MethodDoc
-      for (PTypeVariable tv : parser.additionalTypeVariables.values()) {
-	  PMethodTypeVariable mtv = (PMethodTypeVariable) tv;
-	  mtv.declaringMethod = emd;
-	  emd.typeParameters.add(mtv);
-      }
+      postTypeParam(emd);
       // let's skip creating a new type context for the method.
-      parser.additionalTypeVariables.clear(); // type vars now in method.
   }
 
   ClassType eagerClassType(String pkgName, String clsName) {
@@ -325,8 +360,22 @@ action code {:
       return parser.typeContexts.peek().lookupClassTypeName(name,true/*lazy*/);
   }
   Type lookupType(String name) {
-      if (parser.additionalTypeVariables.containsKey(name))
+      // special case types named in type parameters: these may be forward
+      // references.
+      if (parser.additionalTypeVariables.containsKey(name) &&
+	  (parser.inTypeParamDecl ||
+	   !parser.falseTypeVariables.containsKey(name)))
 	  return parser.additionalTypeVariables.get(name);
+      else if (parser.inTypeParamDecl && name.indexOf('.')==-1) {
+	  // make a 'false' type parameter.  we'll substitute out later
+	  assert !parser.falseTypeVariables.containsKey(name);
+	  createTypeVariable(name);
+	  parser.falseTypeVariables.put
+	      (name, parser.typeContexts.peek().lookupTypeName
+	       (name, true/*lazy*/));
+	  assert parser.additionalTypeVariables.containsKey(name);
+	  return parser.additionalTypeVariables.get(name);
+      }
       return parser.typeContexts.peek().lookupTypeName(name, true/*lazy*/);
   }
   ParameterizedType joinWithParam(ParameterizedType pt, String inner) {
@@ -351,10 +400,17 @@ action code {:
 					typeArgs);
       }
       if (ty instanceof TypeVariable) {
-	  parser.rootDoc.printError
-	      (sp(pos), "Type variable cannot be parameterized");
-	  // try to use var name as class name to continue.
-	  ty = lookupClassType(((TypeVariable)ty).getName());
+	  TypeVariable tv = (TypeVariable) ty;
+	  if (parser.falseTypeVariables.containsKey(tv.getName()))
+	      // xxx: might want to check that this 'false' type var isn't
+	      // later made 'real'?
+	      ty = parser.falseTypeVariables.get(tv.getName());
+	  else {
+	      parser.rootDoc.printError
+		  (sp(pos), "Type variable "+tv+" cannot be parameterized");
+	      // try to use var name as class name to continue.
+	      ty = lookupClassType(tv.getName());
+	  }
       }
       assert ty instanceof ClassType;
       ClassType ct = (ClassType) ty;
@@ -374,17 +430,33 @@ action code {:
       return new PParameterizedType(ct, outer, typeArgs);
   }
   void addTypeVariable(String name) {
+      assert name.indexOf('.')==-1;
+      parser.inTypeParamDecl=true;
+      // this type variable possibly already created as a 'false'
+      // type variable (to handle forward reference).  Just mark the
+      // existing false type var as real.
+      if (parser.falseTypeVariables.containsKey(name))
+	  // already created; mark as real.
+	  parser.falseTypeVariables.remove(name);
+      else
+	  // create new type var.
+	  createTypeVariable(name);
+  }
+  void createTypeVariable(String name) {
+      assert name.indexOf('.')==-1 && parser.inTypeParamDecl;
       // are we in method or class context?
       if (parser.isClassTypeVariable) { // class context
 	  PClassDoc parent = parser.outerClasses.peek();
 	  PClassTypeVariable ctv = new PClassTypeVariable(parent, name);
-	  parent.typeParameters.add(ctv);
 	  parser.additionalTypeVariables.put(name, ctv);
+	  // wait until postTypeParam() to add to parent, since this may
+	  // end up being a false type variable.
       } else {  // method context
 	  PMethodTypeVariable mtv = new PMethodTypeVariable(name);
 	  parser.additionalTypeVariables.put(name, mtv);
 	  // have to wait until we see the name of the method and create
 	  // the methodDoc before we can add set the declaringMethod field
+	  // this will be done in postTypeParam()
       }
   }
   void addTypeVariableBounds(String name, List<Type> bounds) {
@@ -1003,8 +1075,10 @@ modifier ::=	PUBLIC
 class_declaration ::= 
 	modifiers_opt:m CLASS IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, Sym.CLASS, idleft);:}
-          type_parameters_opt super_opt interfaces_opt
-		{: midTypeDeclaration(); :}
+          type_parameters_opt
+		{: postTypeParam(null); :}
+	  super_opt interfaces_opt
+		{: preClassBody(); :}
 	  class_body
 		{: endTypeDeclaration(); :}
 	;
@@ -1049,8 +1123,10 @@ class_member_declaration ::=
 	/* repeat the prod for 'class_declaration' here: */
 	|	modifiers_opt:m CLASS IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, Sym.CLASS, idleft);:}
-		 type_parameters_opt super_opt interfaces_opt
-		{: midTypeDeclaration(); :}
+		 type_parameters_opt
+		{: postTypeParam(null); :}
+		 super_opt interfaces_opt
+		{: preClassBody(); :}
 		 class_body
 		{: endTypeDeclaration(); :}
 	|	enum_declaration
@@ -1061,9 +1137,10 @@ class_member_declaration ::=
 // JSR-201) Enum Declaration
 enum_declaration ::=
 		modifiers_opt:m ENUM IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, Sym.ENUM, idleft); :}
+		{: startTypeDeclaration(m.intValue(), id, Sym.ENUM, idleft);
+		   postTypeParam(null); :}
 			interfaces_opt
-		{: midTypeDeclaration(); :}
+		{: preClassBody(); :}
 			enum_body
 		{: endTypeDeclaration(); :}
 	;
@@ -1203,7 +1280,11 @@ constructor_declaration ::=
 	;
 constructor_declarator ::=
 		simple_name:n LPAREN formal_parameter_list_opt:fpl RPAREN
-		{: /* assume that simple_name matches the class name */
+		{: /* check that simple_name matches the class name */
+		   if (!n.equals(parser.outerClasses.peek().name()))
+		       parser.rootDoc.printError(sp(nleft),
+						 "invalid method declaration;"+
+						 " return type required");
 		   RESULT=new MethodDeclarator(null,nleft,fpl); :}
 	;
 constructor_body ::=
@@ -1232,8 +1313,10 @@ explicit_constructor_invocation ::=
 interface_declaration ::=
 		modifiers_opt:m INTERFACE IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, Sym.INTERFACE, idleft); :}
-		 type_parameters_opt extends_interfaces_opt
-		{: midTypeDeclaration(); :}
+		 type_parameters_opt
+		{: postTypeParam(null); :}
+		 extends_interfaces_opt
+		{: preClassBody(); :}
 		 interface_body
 		{: endTypeDeclaration(); :}
 	;
@@ -1526,14 +1609,16 @@ class_instance_creation_expression ::=
 	|	NEW class_or_interface_type:ty LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
 		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, tyleft);
-		   midTypeDeclaration(); :}
+		   postTypeParam(null);
+		   preClassBody(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
 	|	NEW type_arguments class_or_interface_type LPAREN argument_list_opt RPAREN
 	|	NEW type_arguments class_or_interface_type:ty LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
 		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, tyleft);
-		   midTypeDeclaration(); :}
+		   postTypeParam(null);
+		   preClassBody(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
 	|	primary DOT NEW type_arguments_opt IDENTIFIER type_arguments_opt
@@ -1542,7 +1627,8 @@ class_instance_creation_expression ::=
 			LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
 		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, idleft);
-		   midTypeDeclaration(); :}
+		   postTypeParam(null);
+		   preClassBody(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
 	|	name DOT NEW type_arguments_opt IDENTIFIER type_arguments_opt
@@ -1551,7 +1637,8 @@ class_instance_creation_expression ::=
 			LPAREN argument_list_opt RPAREN
 		{: startUnnamedContext();
 		   startTypeDeclaration(0, newAnonClassName(), Sym.CLASS, idleft);
-		   midTypeDeclaration(); :}
+		   postTypeParam(null);
+		   preClassBody(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
 	;
@@ -1769,7 +1856,9 @@ type_parameter_list ::=
 	;
 type_parameter_list_1 ::=
 		type_parameter_1
+		{: parser.inTypeParamDecl=false; :}
 	|	type_parameter_list COMMA type_parameter_1
+		{: parser.inTypeParamDecl=false; :}
 	;
 type_parameter ::=
 		type_variable:id type_bound_opt:tl
