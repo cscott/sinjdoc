@@ -1,6 +1,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.lexer.Lexer;
+import net.cscott.gjdoc.Type;
 import java_cup.runtime.*;
 import java.lang.reflect.Modifier;
 import java.io.BufferedReader;
@@ -30,6 +31,7 @@ parser code  {:
   PPackageDoc expectedPackage;
   Lexer lexer;
   Stack<PClassDoc> outerClasses = new Stack<PClassDoc>();
+  Stack<TypeContext> typeContexts = new Stack<TypeContext>();
   private PSourcePosition startPos;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
@@ -57,6 +59,7 @@ action code {:
   private static String combineWithDot(String a, String b) {
       return (a==null)?b:(b==null)?a:(a+"."+b);
   }
+  // before type parameters and superclass/interfaces declarations
   private void startTypeDeclaration(int modifiers, String name,
 				    boolean isInterface, int pos) {
       // Create classDoc object.
@@ -77,10 +80,25 @@ action code {:
       parser.outerClasses.push(cd);
       // XXX new environment scope for type variables?
   }
+  // just before class body
+  private void midTypeDeclaration() {
+      // new type context.
+      parser.typeContexts.push(parser.outerClasses.peek().typeContext);
+  }
+  // after class body
   private void endTypeDeclaration() {
+      parser.typeContexts.pop();
       parser.outerClasses.pop();
       // XXX close type variable environment scope?
   }
+
+  PClassType lookup(String name) {
+      return new PLazyClassType(parser.typeContexts.peek(), name);
+  }
+  static class TypeList extends ArrayList<Type> {
+	TypeList() { super(1); }
+	TypeList(Type ty) { super(2); add(ty); }
+ }
 :};
 
 scan with {: return lexer.nextToken(); :};
@@ -155,12 +173,12 @@ non terminal PCompilationUnit goal;
 // 19.3) Lexical Structure
 non terminal literal;
 // 19.4) Types, Values, and Variables
-non terminal type, primitive_type, numeric_type;
-non terminal integral_type, floating_point_type;
-non terminal reference_type;
-non terminal class_or_interface_type;
-non terminal class_type, interface_type;
-non terminal array_type;
+non terminal Type type, reference_type;
+non terminal PClassType primitive_type, numeric_type;
+non terminal PClassType integral_type, floating_point_type;
+non terminal Type class_or_interface_type;
+non terminal Type class_type, interface_type;
+non terminal Type array_type;
 // 19.5) Names
 non terminal String name, simple_name, qualified_name;
 // 19.6) Packages
@@ -175,8 +193,10 @@ non terminal type_declaration;
 // 19.7) Productions used only in the LALR(1) grammar
 non terminal Integer modifiers_opt, modifiers, modifier;
 // 19.8.1) Class Declaration
-non terminal class_declaration, super, super_opt;
-non terminal interfaces, interfaces_opt, interface_type_list;
+non terminal class_declaration, super_opt;
+non terminal Type super;
+non terminal TypeList interfaces, interface_type_list;
+non terminal interfaces_opt;
 non terminal class_body;
 non terminal class_body_declarations, class_body_declarations_opt;
 non terminal class_body_declaration, class_member_declaration;
@@ -238,7 +258,8 @@ non terminal primary, primary_no_new_array;
 non terminal class_instance_creation_expression;
 non terminal argument_list_opt, argument_list;
 non terminal array_creation_expression;
-non terminal dim_exprs, dim_expr, dims_opt, dims;
+non terminal dim_exprs, dim_expr;
+non terminal Integer dims_opt, dims;
 non terminal field_access, method_invocation, array_access;
 non terminal postfix_expression;
 non terminal postincrement_expression, postdecrement_expression;
@@ -255,11 +276,10 @@ non terminal assignment_operator;
 non terminal expression;
 // JSR-14 2.1) Type Syntax 2.3) Handling Consecutive Type Brackets
 non terminal type_variable;
-non terminal type_arguments, type_arguments_opt;
-non terminal reference_type_list;
-non terminal reference_type_list_1, reference_type_1;
-non terminal reference_type_list_2, reference_type_2;
-non terminal reference_type_list_3, reference_type_3;
+non terminal TypeList type_arguments, type_arguments_opt;
+non terminal TypeList reference_type_list;
+non terminal Type reference_type_1, reference_type_2, reference_type_3;
+non terminal TypeList reference_type_list_1, reference_type_list_2, reference_type_list_3;
 // JSR-14 2.2) Parameterized Type Declarations 2.3) Handling Consecutive...
 non terminal type_parameters, type_parameters_opt;
 non terminal type_parameter, type_parameter_list;
@@ -328,85 +348,131 @@ literal ::=	INTEGER_LITERAL
 	;
 
 // 19.4) Types, Values, and Variables
-type	::=	primitive_type
-	|	reference_type
+type	::=	primitive_type:ty
+		{: RESULT=ty; :}
+	|	reference_type:ty
+		{: RESULT=ty; :}
 	;
 primitive_type ::=
-		numeric_type
+		numeric_type:ty
+		{: RESULT=ty; :}
 	|	BOOLEAN
+		{: RESULT=parser.rootDoc.pc.BOOLEAN; :}
 	;
-numeric_type::=	integral_type
-	|	floating_point_type
+numeric_type::=	integral_type:ty
+		{: RESULT=ty; :}
+	|	floating_point_type:ty
+		{: RESULT=ty; :}
 	;
 integral_type ::= 
 		BYTE 
+		{: RESULT=parser.rootDoc.pc.BYTE; :}
 	|	SHORT 
+		{: RESULT=parser.rootDoc.pc.SHORT; :}
 	|	INT 
+		{: RESULT=parser.rootDoc.pc.INT; :}
 	|	LONG 
+		{: RESULT=parser.rootDoc.pc.LONG; :}
 	|	CHAR 
+		{: RESULT=parser.rootDoc.pc.CHAR; :}
 	;
 floating_point_type ::= 
 		FLOAT 
+		{: RESULT=parser.rootDoc.pc.FLOAT; :}
 	|	DOUBLE
+		{: RESULT=parser.rootDoc.pc.DOUBLE; :}
 	;
 
 reference_type ::=
-		class_or_interface_type
+		class_or_interface_type:ty
+		{: RESULT=ty; :}
 /* note that the 'type_variable' production will come out of the grammar
  * as a 'class_or_interface_type' with a 'simple_name'.  The semantic
  * checker will have to resolve whether this is a class name or a type
  * variable */
-	|	array_type
+	|	array_type:ty
+		{: RESULT=ty; :}
 	;
 type_variable ::=
 		IDENTIFIER
 	;
 class_or_interface_type ::=
-		name type_arguments_opt
+		name:n type_arguments_opt:tl
+		{: tl.trimToSize(); PClassType ty = lookup(n);
+		   if (tl.size()==0) RESULT=ty;
+		   else RESULT=new PParameterizedType(ty, tl);
+		:}
 	;
 
-class_type ::=	class_or_interface_type;
-interface_type ::= class_or_interface_type;		
-
-array_type ::=	primitive_type dims
-	|	name dims
-	|	name type_arguments dims
+class_type ::=	class_or_interface_type:ty
+		{: RESULT=ty; :}
+	;
+interface_type ::= class_or_interface_type:ty
+		{: RESULT=ty; :}
 	;
 
-type_arguments_opt ::= type_arguments | ;
+array_type ::=	primitive_type:ty dims:d
+		{: RESULT=new PArrayType(ty, d.intValue()); :}
+	|	name:n dims:d
+		{: RESULT=new PArrayType(lookup(n), d.intValue()); :}
+	|	name:n type_arguments:tl dims:d
+		{: tl.trimToSize(); RESULT=new PArrayType(new PParameterizedType(lookup(n), tl), d.intValue()); :}
+	;
+
+type_arguments_opt ::= type_arguments:tl
+		{: RESULT=tl; :}
+	|
+		{: RESULT=new TypeList(); :}
+	;
 type_arguments ::=
-		PLT reference_type_list_1
+		PLT reference_type_list_1:tl
+		{: RESULT=tl; :}
 	;
 reference_type_list ::=
-		reference_type
-	|	reference_type_list COMMA reference_type
+		reference_type:ty
+		{: RESULT=new TypeList(ty); :}
+	|	reference_type_list:tl COMMA reference_type:ty
+		{: tl.add(ty); RESULT=tl; :}
 	;
 reference_type_list_1 ::=
-		reference_type_1
-	|	reference_type_list COMMA reference_type_1
+		reference_type_1:ty
+		{: RESULT=new TypeList(ty); :}
+	|	reference_type_list:tl COMMA reference_type_1:ty
+		{: tl.add(ty); RESULT=tl; :}
 	;
 reference_type_list_2 ::=
-		reference_type_2
-	|	reference_type_list COMMA reference_type_2
+		reference_type_2:ty
+		{: RESULT=new TypeList(ty); :}
+	|	reference_type_list:tl COMMA reference_type_2:ty
+		{: tl.add(ty); RESULT=tl; :}
 	;
 reference_type_list_3 ::=
-		reference_type_3
-	|	reference_type_list COMMA reference_type_3
+		reference_type_3:ty
+		{: RESULT=new TypeList(ty); :}
+	|	reference_type_list:tl COMMA reference_type_3:ty
+		{: tl.add(ty); RESULT=tl; :}
 	;
 // note the LT in place of the PLT, since the following RSHIFT will
 // confuse the lexer lookahead.
 reference_type_1 ::=
-		reference_type GT
-	|	name LT reference_type_list_2
-	|	name PLT reference_type_list_2
+		reference_type:ty GT
+		{: RESULT=ty; :}
+	|	name:n LT reference_type_list_2:tl
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+	|	name:n PLT reference_type_list_2:tl
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
 	;
 reference_type_2 ::=
-		reference_type RSHIFT
-	|	name LT reference_type_list_3
-	|	name PLT reference_type_list_3
+		reference_type:ty RSHIFT
+		{: RESULT=ty; :}
+	|	name:n LT reference_type_list_3:tl
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+	|	name:n PLT reference_type_list_3:tl
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
 	;
 reference_type_3 ::=
-		reference_type URSHIFT
+		reference_type:ty URSHIFT
+		{: RESULT=ty; :}
 	;
 
 // 19.5) Names
@@ -439,6 +505,9 @@ compilation_unit ::=
 		  parser.expectedPackage=parser.rootDoc.findOrCreatePackage
 			(pkgName, false/* not expected to be included*/);
 		assert parser.expectedPackage!=null;
+		parser.typeContexts.push(new TypeContext
+		    (parser.rootDoc.pc, parser.expectedPackage,
+		     parser.compilationUnit, null, null));
 		:}
 		import_declarations_opt
 		type_declarations_opt
@@ -521,22 +590,31 @@ modifier ::=	PUBLIC
 class_declaration ::= 
 	modifiers_opt:m CLASS IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
-          type_parameters_opt super_opt interfaces_opt class_body
+          type_parameters_opt super_opt interfaces_opt
+		{: midTypeDeclaration(); :}
+	  class_body
 		{: endTypeDeclaration(); :}
 	;
-super ::=	EXTENDS class_type
+super ::=	EXTENDS class_type:ty
+		{: RESULT=ty; :}
 	;
 super_opt ::=	
-	|	super
+		{: parser.outerClasses.peek().superclass=new PEagerClassType(parser.rootDoc.pc, "java.lang", "Object"); :}
+	|	super:ty
+		{: parser.outerClasses.peek().superclass=ty; :}
 	;
-interfaces ::=	IMPLEMENTS interface_type_list
+interfaces ::=	IMPLEMENTS interface_type_list:tl
+		{: RESULT=tl; :}
 	;
 interfaces_opt::=
-	|	interfaces 
+	|	interfaces:tl
+		{: parser.outerClasses.peek().interfaces.addAll(tl); :}
 	;
 interface_type_list ::= 
-		interface_type
-	|	interface_type_list COMMA interface_type
+		interface_type:ty
+		{: RESULT=new TypeList(ty); :}
+	|	interface_type_list:tl COMMA interface_type:ty
+		{: tl.add(ty); RESULT=tl; :}
 	;
 class_body ::=	LBRACE class_body_declarations_opt RBRACE 
 	;
@@ -558,7 +636,9 @@ class_member_declaration ::=
 	/* repeat the prod for 'class_declaration' here: */
 	|	modifiers_opt:m CLASS IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
-		 type_parameters_opt super_opt interfaces_opt class_body
+		 type_parameters_opt super_opt interfaces_opt
+		{: midTypeDeclaration(); :}
+		 class_body
 		{: endTypeDeclaration(); :}
 	|	interface_declaration
 	|	SEMICOLON
@@ -666,15 +746,19 @@ explicit_constructor_invocation ::=
 interface_declaration ::=
 		modifiers_opt:m INTERFACE IDENTIFIER:id
 		{: startTypeDeclaration(m.intValue(), id, true, idleft); :}
-		 type_parameters_opt extends_interfaces_opt interface_body
+		 type_parameters_opt extends_interfaces_opt
+		{: midTypeDeclaration(); :}
+		 interface_body
 		{: endTypeDeclaration(); :}
 	;
 extends_interfaces_opt ::=
 	|	extends_interfaces
 	;
 extends_interfaces ::=
-		EXTENDS interface_type
-	|	extends_interfaces COMMA interface_type
+		EXTENDS interface_type:ty
+		{: parser.outerClasses.peek().interfaces.add(ty); :}
+	|	extends_interfaces COMMA interface_type:ty
+		{: parser.outerClasses.peek().interfaces.add(ty); :}
 	;
 interface_body ::=
 		LBRACE interface_member_declarations_opt RBRACE
@@ -970,10 +1054,14 @@ dim_exprs ::=	dim_expr
 dim_expr ::=	LBRACK expression RBRACK
 	;
 dims_opt ::=
-	|	dims
+		{: RESULT=new Integer(0); :}
+	|	dims:d
+		{: RESULT=d; :}
 	;
 dims ::=	LBRACK RBRACK
-	|	dims LBRACK RBRACK
+		{: RESULT=new Integer(1); :}
+	|	dims:d LBRACK RBRACK
+		{: RESULT=new Integer(d.intValue()+1); :}
 	;
 field_access ::=
 		primary DOT IDENTIFIER
