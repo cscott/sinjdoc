@@ -12,7 +12,7 @@ parameterized types, and others were introduced to clean up
 or restructure the interface in places where I found it lacking.
 <p>
 More information about @PACKAGE_NAME@ can be found at
-<a href="http://cag.lcs.mit.edu/~cananian/Projects/GJ/">http://cag.lcs.mit.edu/~cananian/Projects/GJ/</a>.
+<a href="http://cscott.net/Projects/GJ/#sinjdoc" target="_top">http://cscott.net/Projects/GJ/</a>.
 @author C. Scott Ananian (cscott@cscott.net)
 </body>
 </html>
