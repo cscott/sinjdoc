@@ -7,6 +7,7 @@ TEMPLATE_FILES = \
 package-frame.html \
 allclasses-frame.html \
 overview-frame.html \
+overview-summary.html \
 index-packages.html \
 index-nopackages.html \
 stylesheet.css
