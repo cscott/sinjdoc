@@ -40,7 +40,7 @@ public class HTMLDoclet extends Doclet {
 	if (styleReader==null) styleReader=hu.resourceReader("stylesheet.css");
 	// get a writer for the emitted style sheet.
 	TemplateContext context = new TemplateContext
-	    (root, options, new URLContext("stylesheet.css"), null, null);
+	    (root, options, new URLContext("stylesheet.css"));
 	TemplateWriter styleWriter=new TemplateWriter(styleReader,hu,context);
 	// copy from template.
 	styleWriter.copyRemainder(root);
@@ -54,7 +54,7 @@ public class HTMLDoclet extends Doclet {
 	//   multiple packages specified: use index-packages.html
 	//(remember to use <unnamed package> in package list where appropriate)
 	TemplateContext context = new TemplateContext
-	    (root, options, new URLContext("index.html"), null, null);
+	    (root, options, new URLContext("index.html"));
 	int numPackages = root.specifiedPackages().size();
 	TemplateWriter indexWriter;
 	String mainURL;
@@ -91,7 +91,7 @@ public class HTMLDoclet extends Doclet {
 	Collections.sort(pkgList, new DocComparator<PackageDoc>());
 	// okay, emit the overview-frame header:
 	TemplateContext context = new TemplateContext
-	    (root, options, new URLContext("overview-frame.html"), null, null);
+	    (root, options, new URLContext("overview-frame.html"));
 	TemplateWriter tw=new TemplateWriter("overview-frame.html",hu,context);
 	tw.copyToSplit(root);
 	// now emit the sorted package list.
@@ -107,7 +107,7 @@ public class HTMLDoclet extends Doclet {
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
 	TemplateContext context = new TemplateContext
-	    (root, options, new URLContext("overview-summary.html"),null,null);
+	    (root, options, new URLContext("overview-summary.html"));
 	TemplateWriter tw = new TemplateWriter
 	    ("overview-summary.html"/*resource*/, hu, context);
 	tw.copyToSplit(root);
@@ -160,7 +160,7 @@ public class HTMLDoclet extends Doclet {
 	Collections.sort(clsList, new DocComparator<ClassDoc>());
 	// now emit!
 	TemplateContext context = new TemplateContext
-	    (root, options, new URLContext("allclasses-frame.html"),null,null);
+	    (root, options, new URLContext("allclasses-frame.html"));
 	TemplateWriter tw = new TemplateWriter
 	    ("allclasses-frame.html", hu, context);
 	tw.copyToSplit(root);
@@ -171,7 +171,7 @@ public class HTMLDoclet extends Doclet {
     void makePackageFrame(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext(hu.toURL(pd, "package-frame.html")),
-	     pd, null);
+	     pd);
 	TemplateWriter tw = new TemplateWriter
 	    ("package-frame.html"/*resource*/, hu, context);
 	tw.copyToSplit(root);
@@ -200,13 +200,13 @@ public class HTMLDoclet extends Doclet {
     void makePackageSummary(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
 	    (root,options, new URLContext(hu.toURL(pd,"package-summary.html")),
-	     pd, null);
+	     pd);
 	// xxx do me.
     }
     void makePackageTree(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext(hu.toURL(pd, "package-tree.html")),
-	     pd, null);
+	     pd);
 	// xxx do me.
     }
     void makeClassPage(RootDoc root, HTMLUtil hu, ClassDoc cd) {

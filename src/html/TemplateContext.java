@@ -24,12 +24,33 @@ class TemplateContext {
     public final URLContext curURL;
     public final boolean echo;
     
-    /** Creates a <code>TemplateContext</code>. */
-    public TemplateContext(RootDoc root, HTMLOptions options,URLContext curURL,
-			   PackageDoc curPackage, ClassDoc curClass) {
-	this(root,options,curURL,curPackage,curClass,null, true);
+    /** Creates a <code>TemplateContext</code> appropriate for a top-level
+     *  overview page (no package- or class-specific information). */
+    public TemplateContext(RootDoc root, HTMLOptions options,
+			   URLContext curURL) {
+	this(root,options,curURL,null);
     }
-    /** Creates a <code>TemplateContext</code>. */
+    /** Creates a <code>TemplateContext</code> appropriate for a
+     *  package information page (no class-specific information). */
+    public TemplateContext(RootDoc root, HTMLOptions options,
+			   URLContext curURL, PackageDoc curPackage) {
+	this(root,options,curURL,curPackage,null);
+    }
+    /** Creates a <code>TemplateContext</code> appropriate for a
+     *  class information page (no member-specific information). */
+    public TemplateContext(RootDoc root, HTMLOptions options,
+			   URLContext curURL, PackageDoc curPackage,
+			   ClassDoc curClass) {
+	this(root,options,curURL,curPackage,curClass,null);
+    }
+    /** Creates a <code>TemplateContext</code> appropriate for
+     *  formatting member-specific information. */
+    public TemplateContext(RootDoc root, HTMLOptions options,
+			   URLContext curURL, PackageDoc curPackage,
+			   ClassDoc curClass, MemberDoc curMember) {
+	this(root,options,curURL,curPackage,curClass,curMember, true);
+    }
+    /** Private constructor to allow turning echo on/off. */
     private TemplateContext(RootDoc root, HTMLOptions options,
 			    URLContext curURL,
 			    PackageDoc curPackage, ClassDoc curClass,
