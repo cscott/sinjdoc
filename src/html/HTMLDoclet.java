@@ -35,7 +35,7 @@ public class HTMLDoclet extends Doclet {
 		 it2.hasNext(); ) {
 		ClassDoc cd = it2.next().asClassDoc();
 		if (cd==null) continue;
-		System.out.println("CLASSDOC: "+cd.qualifiedName()+", super="+cd.superclass()+", interfaces="+cd.interfaces());
+		System.out.println("CLASSDOC: "+cd.qualifiedName()+", super="+cd.superclass()+", interfaces="+cd.interfaces()+", comment="+cd.firstSentenceTags());
 	    }
 	}
 	// create main index page
