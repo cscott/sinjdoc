@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.MemberDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.RootDoc;
 
@@ -19,16 +20,31 @@ class TemplateContext {
     public final HTMLOptions options;
     public final PackageDoc curPackage;
     public final ClassDoc curClass;
+    public final MemberDoc curMember;
     public final URLContext curURL;
+    public final boolean echo;
     
     /** Creates a <code>TemplateContext</code>. */
     public TemplateContext(RootDoc root, HTMLOptions options,URLContext curURL,
 			   PackageDoc curPackage, ClassDoc curClass) {
+	this(root,options,curURL,curPackage,curClass,null, true);
+    }
+    /** Creates a <code>TemplateContext</code>. */
+    private TemplateContext(RootDoc root, HTMLOptions options,
+			    URLContext curURL,
+			    PackageDoc curPackage, ClassDoc curClass,
+			    MemberDoc curMember, boolean echo) {
 	this.root = root;
 	this.options = options;
 	this.curPackage = curPackage;
 	this.curClass = curClass;
+	this.curMember = curMember;
 	this.curURL = curURL;
+	this.echo = echo;
 	assert root!=null && options!=null && curURL!=null;
+    }
+    TemplateContext echoOff() {
+	return new TemplateContext(root,options,curURL,curPackage,curClass,
+				   curMember,false);
     }
 }
