@@ -84,8 +84,8 @@ public class PRootDoc extends PDoc
 	    List<PClassDoc> pcds = Arrays.asList(new PClassDoc[0]);
 	    try {
 		printNotice("Parsing "+f);
-		pcds = (List/*<PClassDoc>*/)
-		    new Java15(this, f).parse().value;
+		pcds = Arrays.asList
+		    ((PClassDoc[])new Java15(this, f).parse().value);
 	    } catch (java.io.FileNotFoundException e) {
 		assert false : "should never happen.";
 		printError("File not found: "+e);

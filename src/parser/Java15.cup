@@ -108,7 +108,7 @@ terminal ASSERT; // assert_statement
 terminal PLT;
 
 // 19.2) The Syntactic Grammar
-non terminal List goal;
+non terminal PClassDoc[] goal;
 // 19.3) Lexical Structure
 non terminal literal;
 // 19.4) Types, Values, and Variables
@@ -272,7 +272,7 @@ start with goal;
 
 // 19.2) The Syntactic Grammar
 goal ::=	compilation_unit
-	{: RESULT=Arrays.asList(new PClassDoc[0]); :}
+	{: RESULT=new PClassDoc[0]; :}
 	;
 
 // 19.3) Lexical Structure.
