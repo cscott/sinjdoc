@@ -269,7 +269,9 @@ class TemplateWriter extends PrintWriter  {
     private static final void register(String name, TemplateMacro action) {
 	assert (!name.startsWith("@")) && (!name.endsWith("@"));
 	assert name.startsWith("IF")==(action instanceof TemplateConditional);
-	macroMap.put("@"+name+"@", action);
+	name = "@"+name+"@";
+	assert !macroMap.containsKey(name) : "duplicate macro: "+name;
+	macroMap.put(name, action);
     }
     private static final void registerConditional(String name,
 						  final TemplateConditional c){
@@ -278,6 +280,16 @@ class TemplateWriter extends PrintWriter  {
 		boolean isBlockEmitted(TemplateContext context,
 				       boolean isFirst, boolean isLast) {
 		    return !c.isBlockEmitted(context, isFirst, isLast);
+		}
+	    });
+    }
+    private static final void registerForAll(String name,
+					     final TemplateForAll c) {
+	register("FORALL_"+name, c);
+	registerConditional(name, new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext context,
+				       boolean isFirst, boolean isLast) {
+		    return c.process(null,context,isFirst,isLast).size() > 0;
 		}
 	    });
     }
@@ -597,7 +609,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over all package groups
-	register("FORALL_GROUPS", new TemplateSimpleForAll() {
+	registerForAll("GROUPS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    return new FilterList<PackageGroup,TemplateContext>
 			(c.options.groups) {
@@ -609,7 +621,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over all packages with documented classes
-	register("FORALL_PACKAGES", new TemplateSimpleForAll() {
+	registerForAll("PACKAGES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    List<PackageDoc> pkgs =
 			(c.curGroup!=null) ? c.curGroup.packages() :
@@ -624,7 +636,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included classes (of the package).
-	register("FORALL_CLASSES", new TemplateSimpleForAll() {
+	registerForAll("CLASSES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    // if no package, then all in root. else all in pkg.
 		    Collection<ClassDoc> l = (c.curPackage==null) ?
@@ -639,7 +651,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included interfaces of the package.
-	register("FORALL_INTERFACES", new TemplateSimpleForAll() {
+	registerForAll("INTERFACES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    // xxx in non-package context, all interfaces in root?
 		    return new FilterList<ClassDoc,TemplateContext>
@@ -653,7 +665,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included ordinary classes of the package.
-	register("FORALL_ORDINARYCLASSES", new TemplateSimpleForAll() {
+	registerForAll("ORDINARYCLASSES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    // xxx in non-package context, all o-classes in root?
 		    return new FilterList<ClassDoc,TemplateContext>
@@ -667,7 +679,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included exceptions of the package.
-	register("FORALL_EXCEPTIONS", new TemplateSimpleForAll() {
+	registerForAll("EXCEPTIONS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    // xxx in non-package context, all exceptions in root?
 		    return new FilterList<ClassDoc,TemplateContext>
@@ -681,7 +693,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included errors of the package.
-	register("FORALL_ERRORS", new TemplateSimpleForAll() {
+	registerForAll("ERRORS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    // xxx in non-package context, all errors in root?
 		    return new FilterList<ClassDoc,TemplateContext>
@@ -695,7 +707,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included fields of the class.
-	register("FORALL_FIELDS", new TemplateSimpleForAll() {
+	registerForAll("FIELDS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    assert c.curClass!=null;
 		    return new FilterList<FieldDoc,TemplateContext>
@@ -709,7 +721,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included constructors of the class.
-	register("FORALL_CONSTRUCTORS", new TemplateSimpleForAll() {
+	registerForAll("CONSTRUCTORS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    assert c.curClass!=null;
 		    return new FilterList<ConstructorDoc,TemplateContext>
@@ -723,7 +735,7 @@ class TemplateWriter extends PrintWriter  {
 		}
 	    });
 	// iterator over included non-constructor methods of the class.
-	register("FORALL_METHODS", new TemplateSimpleForAll() {
+	registerForAll("METHODS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
 		    assert c.curClass!=null;
 		    return new FilterList<MethodDoc,TemplateContext>
