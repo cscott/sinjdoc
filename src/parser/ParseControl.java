@@ -101,6 +101,7 @@ public class ParseControl {
 	// parse every source file in specified packages.
 	for (Iterator<String> it=packages.iterator(); it.hasNext(); ) {
 	    PPackageDoc ppd = rootDoc.findOrCreatePackage(it.next(), true);
+	    assert ppd.isIncluded(); // double-check.
 	    for (Iterator<File> it2=sourcePath.sourceFilesInPackage(ppd.name())
 		     .iterator(); it2.hasNext(); ) {
 		File f = it2.next();
