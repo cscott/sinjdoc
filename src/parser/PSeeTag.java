@@ -4,11 +4,15 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
+import net.cscott.gjdoc.FieldDoc;
 import net.cscott.gjdoc.MemberDoc;
+import net.cscott.gjdoc.MethodDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +30,7 @@ class PSeeTag extends PTag.NonText
     final String classPart;
     final String memberNamePart;
     final String memberArgsPart;
+    final TypeContext tagContext;
     PSeeTag(SourcePosition sp, String name, List<Tag> contents,
 	    TypeContext tagContext) throws TagParseException {
 	super(sp, name, contents);
@@ -42,6 +47,7 @@ class PSeeTag extends PTag.NonText
 					 "end of string");
 	    this.label = pair.right;
 	    this.classPart = this.memberNamePart = this.memberArgsPart = null;
+	    this.tagContext=null;
 	} else if (firstChar=='<') { // href
 	    // strip the <a href="..."> and </a> from start and end of tags
 	    pair = extractRegexpFromHead(contents, HREF_START,
@@ -50,6 +56,7 @@ class PSeeTag extends PTag.NonText
 					 "html end tag");
 	    this.label = pair.right;
 	    this.classPart = this.memberNamePart = this.memberArgsPart = null;
+	    this.tagContext=null;
 	} else { // java member reference.
 	    pair = extractRegexpFromHead
 		(contents, JREF, "java package, class, or member reference");
@@ -57,6 +64,7 @@ class PSeeTag extends PTag.NonText
 	    this.classPart = pair.left.group(1);
 	    this.memberNamePart = pair.left.group(2);
 	    this.memberArgsPart = pair.left.group(3);
+	    this.tagContext=tagContext;
 	}
     }
     private static final Pattern FIRSTCHAR = Pattern.compile("^\\s*(\\S)");
@@ -89,7 +97,55 @@ class PSeeTag extends PTag.NonText
 	if (memberArgsPart!=null) sb.append(memberArgsPart);
 	return sb.toString();
     }
-    public ClassDoc referencedClass() { assert false; return null; }
-    public MemberDoc referencedMember() { assert false; return null; }
-    public PackageDoc referencedPackage() { assert false; return null; }
+    public ClassDoc referencedClass() {
+	if (memberNamePart==null) {
+	    if (classPart==null) return null;
+	    if (referencedPackage()!=null) return null; // package ref, not cls
+	}
+	// use class scope if class if unspecified.
+	if (classPart==null) return tagContext.classScope;
+	// look up class.
+	return tagContext.lookupClassTypeName(classPart).asClassDoc();
+    }
+    public MemberDoc referencedMember() {
+	if (memberNamePart==null) return null;
+	ClassDoc cd = referencedClass();
+	if (cd==null) return null; // can't find.
+	// XXX should really look through outer classes, superclasses,
+	//     interfaces, etc.
+	if (memberArgsPart==null) { // look for fields.
+	    for (Iterator<FieldDoc> it=cd.fields().iterator(); it.hasNext();) {
+		FieldDoc fd = it.next();
+		if (fd.name().equals(memberNamePart)) return fd;
+	    }
+	} else { // look for methods.
+	    for (Iterator<MethodDoc> it=cd.methods().iterator();it.hasNext();){
+		MethodDoc md = it.next();
+		if (md.name().equals(memberNamePart) &&
+		    md.signature().equals(expandSig(memberArgsPart)))
+		    return md;
+	    }
+	}
+	// not found.
+	return null;
+    }
+    // fully-qualify all the type names in the given signature.
+    private String expandSig(String sig) {
+	StringBuffer result = new StringBuffer();
+	Matcher matcher = TYPE.matcher(sig);
+	while (matcher.find()) {
+	    ClassType ty =
+		tagContext.lookupClassTypeName(matcher.group());
+	    matcher.appendReplacement(result, ty.qualifiedTypeName());
+	}
+	matcher.appendTail(result);
+	return result.toString();
+    }
+    private static final Pattern TYPE = Pattern.compile("[^(),]+");
+
+    public PackageDoc referencedPackage() {
+	if (classPart==null) return null;
+	if (memberNamePart!=null) return null; // it's a member, not a package
+	return tagContext.pc.rootDoc.packageNamed(classPart);
+    }
 }
