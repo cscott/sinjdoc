@@ -16,6 +16,7 @@ import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.Parameter;
 import net.cscott.gjdoc.Tag;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVariable;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
 import java.io.*;
@@ -329,21 +330,6 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.options.bottom);
 		}
 	    });
-	register("CLASSPARAMS", new TemplateAction() {
-		void process(TemplateWriter tw, TemplateContext context) {
-		    assert context.curClass!=null;
-		    List<ClassTypeVariable> ctvs =
-			context.curClass.typeParameters();
-		    if (ctvs.size()==0) return;
-		    tw.write("&lt;");
-		    for(Iterator<ClassTypeVariable> it=ctvs.iterator();
-			it.hasNext(); ) {
-			tw.write(it.next().getName());
-			if (it.hasNext()) tw.write(",");
-		    }
-		    tw.write("&gt;");
-		}
-	    });
 	register("CLASSSHORTNAME", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curClass!=null;
@@ -474,6 +460,59 @@ class TemplateWriter extends PrintWriter  {
 		    assert context.curMember!=null;
 		    tw.write(HTMLUtil.toLink(context.curURL,
 					     context.curMember));
+		}
+	    });
+	register("TYPEPARAMS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    List<TypeVariable> ltv=new ArrayList<TypeVariable>();
+		    if (context.curMember!=null) {
+			ExecutableMemberDoc md = (ExecutableMemberDoc)
+			    context.curMember;
+			ltv.addAll(md.typeParameters());
+		    } else {
+			assert context.curClass!=null;
+			ltv.addAll(context.curClass.typeParameters());
+		    }
+		    if (ltv.size()==0) return; // nothing to see/do here.
+		    tw.write("&lt;");
+		    for(Iterator<TypeVariable> it=ltv.iterator();
+			it.hasNext(); ) {
+			tw.write(it.next().getName());
+			if (it.hasNext()) tw.write(",");
+		    }
+		    tw.write("&gt;");
+		}
+	    });
+	register("TYPEPARAMS_DECL", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    List<TypeVariable> ltv=new ArrayList<TypeVariable>();
+		    String prefix;
+		    if (context.curMember!=null) {
+			ExecutableMemberDoc md = (ExecutableMemberDoc)
+			    context.curMember;
+			ltv.addAll(md.typeParameters());
+			prefix=md.name()+md.signature();
+		    } else {
+			assert context.curClass!=null;
+			ltv.addAll(context.curClass.typeParameters());
+			prefix="!tv!";
+		    }
+		    if (ltv.size()==0) return; // nothing to see/do here.
+		    tw.write("&lt;");
+		    for(Iterator<TypeVariable> it=ltv.iterator();
+			it.hasNext(); ) {
+			TypeVariable tv = it.next();
+			String anchor = prefix+tv.getName();
+			tw.write("<a name=\"");
+			tw.write(anchor);
+			tw.write("\" id=\"");
+			tw.write(anchor);
+			tw.write("\">");
+			tw.write(tv.getName());
+			tw.write("</a>");
+			if (it.hasNext()) tw.write(",");
+		    }
+		    tw.write("&gt;");
 		}
 	    });
 	registerConditional("FIRST", new TemplateConditional() {
