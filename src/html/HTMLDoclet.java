@@ -12,6 +12,7 @@ import net.cscott.gjdoc.RootDoc;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 /**
  * The <code>HTMLDoclet</code> is the standard doclet for GJDoc.  It
  * generates HTML-format documentation.
@@ -54,14 +55,16 @@ public class HTMLDoclet extends Doclet {
 	String mainURL;
 
 	if (numPackages==0)
-	    mainURL=toURL((ClassDoc)Collections.min
-			  ((List)root.specifiedClasses()));
+	    mainURL=HTMLUtil.toURL((ClassDoc)Collections.min
+				   ((List)root.specifiedClasses()));
 	else if (numPackages==1 && root.specifiedClasses().size()==0)
-	    mainURL=toURL(root.specifiedPackages().get(0));
+	    mainURL=HTMLUtil.toURL(root.specifiedPackages().get(0));
 	else
 	    mainURL=null;
 
 	if (mainURL==null) {
+	    makeOverviewFrame(root, hu);
+	    makeOverviewSummary(root, hu);
 	    indexWriter=new TemplateWriter("index-packages.html",hu,context);
 	} else {
 	    mainURL = context.curURL.makeRelative(mainURL);
@@ -74,26 +77,32 @@ public class HTMLDoclet extends Doclet {
 	indexWriter.copyRemainder(root);
 	// done!
     }
-    public String toURL(ClassDoc c) {
-	StringBuffer sb = new StringBuffer();
-	for (ClassDoc p=c; p!=null; ) {
-	    sb.insert(0, p.name());
-	    p = p.containingClass();
-	    if (p!=null) sb.insert(0, '.');
+    void makeOverviewFrame(RootDoc root, HTMLUtil hu) {
+	// first collect all referenced packages.
+	Map<String,PackageDoc> pkgMap = new HashMap<String,PackageDoc>();
+	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
+	    PackageDoc pd = it.next().containingPackage();
+	    pkgMap.put(pd.name(), pd);
 	}
-	sb.insert(0, toBaseURL(c.containingPackage()));
-	sb.append(".html");
-	return sb.toString();
+	// now sort them.
+	List<PackageDoc> pkgList = new ArrayList<PackageDoc>(pkgMap.values());
+	Collections.sort((List)pkgList);
+	// okay, emit the overview-frame header:
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("overview-frame.html"), null, null);
+	TemplateWriter tw=new TemplateWriter("overview-frame.html",hu,context);
+	tw.copyToSplit(root);
+	// now emit the sorted package list.
+	for (Iterator<PackageDoc> it=pkgList.iterator(); it.hasNext(); )
+	    tw.println(hu.toLink(it.next(), "package-frame.html"));
+	// emit the footer.
+	tw.copyRemainder(root);
+	// XXX now emit package-frame, package-tree, and package-summary
+	//     for these packages.
     }
-    public String toURL(PackageDoc p) {
-	return toBaseURL(p)+"package-summary.html";
+    void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
+	// XXX do me.
     }
-    public String toBaseURL(PackageDoc p) {
-	String name = p.name();
-	if (name.length()==0) return name;
-	return name.replace('.','/')+"/";
-    }
-	
 
     public boolean start(RootDoc root) {
 	// parse options.
@@ -104,21 +113,6 @@ public class HTMLDoclet extends Doclet {
 	makeStylesheet(root, hu);
 	// top-level index.
 	makeTopIndex(root, hu);
-	// look at overview document.
-	System.out.println("OVERVIEW TAGS: "+root.tags());
-	// look at packages
-	for (Iterator<PackageDoc> it=root.specifiedPackages().iterator();
-	     it.hasNext(); ) {
-	    PackageDoc pd = it.next();
-	    System.out.println("PACKAGE: "+pd.name());
-	    System.out.println("TAGS: "+pd.tags());
-	    System.out.println("FIRST: "+pd.firstSentenceTags());
-	    System.out.println("CLASSES: "+pd.allClasses());
-	}
-	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ){
-	    ClassDoc cd = it.next();
-	    System.out.println("CLASSDOC: "+cd.qualifiedName()+cd.type().typeParameters()+", super="+cd.superclass()+", interfaces="+cd.interfaces()+", comment="+cd.firstSentenceTags());
-	}
 	// create main index page
 	// for each package listed...
 	//   create package page.
