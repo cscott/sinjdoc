@@ -58,13 +58,14 @@ action code {:
       return (a==null)?b:(b==null)?a:(a+"."+b);
   }
   private void startTypeDeclaration(int modifiers, String name,
-				 boolean isInterface) {
+				    boolean isInterface, int pos) {
       // Create classDoc object.
       PClassDoc outer = parser.outerClasses.empty() ?
 	  null : parser.outerClasses.peek();
       PClassDoc cd = new PClassDoc(parser.rootDoc.pc, parser.expectedPackage,
 				   parser.compilationUnit, outer, modifiers,
-				   name, parser.lexer.lastComment(),
+				   name, sp(pos), isInterface,
+				   parser.lexer.lastComment(),
 				   sp(parser.lexer.lastCommentPos()));
       parser.lexer.clearComment();
       // add to enclosing objects (package/class/compilation unit)
@@ -519,7 +520,7 @@ modifier ::=	PUBLIC
 // 19.8.1) Class Declaration:
 class_declaration ::= 
 	modifiers_opt:m CLASS IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, false); :}
+		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
           type_parameters_opt super_opt interfaces_opt class_body
 		{: endTypeDeclaration(); :}
 	;
@@ -556,7 +557,7 @@ class_member_declaration ::=
 	|	method_declaration
 	/* repeat the prod for 'class_declaration' here: */
 	|	modifiers_opt:m CLASS IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, false); :}
+		{: startTypeDeclaration(m.intValue(), id, false, idleft); :}
 		 type_parameters_opt super_opt interfaces_opt class_body
 		{: endTypeDeclaration(); :}
 	|	interface_declaration
@@ -664,7 +665,7 @@ explicit_constructor_invocation ::=
 // 19.9.1) Interface Declarations
 interface_declaration ::=
 		modifiers_opt:m INTERFACE IDENTIFIER:id
-		{: startTypeDeclaration(m.intValue(), id, true); :}
+		{: startTypeDeclaration(m.intValue(), id, true, idleft); :}
 		 type_parameters_opt extends_interfaces_opt interface_body
 		{: endTypeDeclaration(); :}
 	;

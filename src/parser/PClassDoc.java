@@ -37,6 +37,8 @@ class PClassDoc extends PProgramElementDoc
     final List<ClassTypeVariable> typeParameters =
 	new ArrayList<ClassTypeVariable>();
     final String name;
+    final boolean isInterface;
+    final PSourcePosition position;
     final List<ConstructorDoc> constructors = new ArrayList<ConstructorDoc>();
     boolean definesSerializableFields = false;
     final List<FieldDoc> fields = new ArrayList<FieldDoc>();
@@ -50,9 +52,12 @@ class PClassDoc extends PProgramElementDoc
     PClassDoc(ParseControl pc, PPackageDoc containingPackage,
 	      PCompilationUnit compilationUnit,
 	      PClassDoc containingClass, int modifiers, String name,
+	      PSourcePosition position, boolean isInterface,
 	      String commentText, PSourcePosition commentPosition) {
 	super(pc, containingPackage, containingClass, modifiers);
 	this.name = name;
+	this.position = position;
+	this.isInterface = isInterface;
 	this.typeContext =
 	    new TypeContext(pc, containingPackage, compilationUnit,
 			    this, null);
@@ -149,6 +154,22 @@ class PClassDoc extends PProgramElementDoc
     public String getRawCommentText() { return commentText; }
     public PSourcePosition getRawCommentPosition() { return commentPosition; }
     public TypeContext getCommentContext() { return tagContext; }
-    public boolean isIncluded() { return true; }
     public String name() { return name; }
+    // override methods in PDoc
+    public boolean isClass() { return !isInterface; }
+    public boolean isOrdinaryClass() {
+	return !isInterface() && !isError() && !isException();
+    }
+    public boolean isInterface() { return isInterface; }
+    public boolean isError() {
+	return instanceOf(new PEagerClassType
+	    (pc, "java.lang", "Error",
+	     Arrays.asList(new ClassTypeVariable[0])));
+    }
+    public boolean isException() {
+	return instanceOf(new PEagerClassType
+	    (pc, "java.lang", "Exception",
+	     Arrays.asList(new ClassTypeVariable[0])));
+    }
+    public PSourcePosition position() { return position; }
 }
