@@ -28,14 +28,12 @@ public interface ClassType extends Type {
      * type is not included. */
     public ClassDoc asClassDoc();
     /**
-     * Return the qualified name of the type excluding any dimension
-     * information.  For example, a two-dimensional array of
-     * <code>String</code> returns "java.lang.String". */
+     * Return the qualified name of the type.  For example,
+     * "java.lang.String". */
     public String qualifiedTypeName();
     /**
-     * Return the unqualified name of this type excluding any dimension
-     * or package information.  For example, a two-dimensional array of
-     * <code>java.lang.String</code> returns "String".  Note that inner class
+     * Return the unqualified name of this type excluding any
+     * package information.  For example, "String".   Note that inner class
      * specifications <i>are</i> included in this name; i.e. the returned
      * string may contain dots. */
     public String typeName();
