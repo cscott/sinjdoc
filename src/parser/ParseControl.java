@@ -10,6 +10,7 @@ import net.cscott.jutil.UniqueVector;
 
 import java.lang.reflect.Modifier;
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -42,6 +43,8 @@ public class ParseControl {
     File overview=null;
     /** Locale to use. */
     Locale locale = Locale.getDefault();
+    /** Collator for this locale. */
+    Collator collator = Collator.getInstance(locale);
     /** Encapsulation of sourcePath-related file utilities. */
     FileUtil sourcePath;
     /** The root doc of this parser run. */
@@ -64,7 +67,10 @@ public class ParseControl {
 
     public void setOverviewFile(File f) { this.overview=f; }
     
-    public void setLocale(Locale l) { this.locale = l; }
+    public void setLocale(Locale l) {
+	this.locale = l;
+	this.collator = Collator.getInstance(this.locale);
+    }
 
     public void setSourceFiles(List<File> sp) {
 	// eliminate duplicates.

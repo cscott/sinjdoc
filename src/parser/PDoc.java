@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.Doc;
+import net.cscott.gjdoc.ProgramElementDoc;
 import net.cscott.gjdoc.SeeTag;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
@@ -253,9 +254,22 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	}
 	return sb.toString();
     }
-    /** Compare based on name. */
-    public final int compareTo(Object/*Doc*/ d) {
-	return name().compareTo(((Doc)d).name());
+    /**
+     * Compare based first on short name, then on fully-qualified name,
+     * using the <code>java.text.Collator</code> appropriate for the locale.
+     */
+    public final int compareTo(Object/*Doc*/ o) {
+	Doc d = (Doc) o;
+	String q1 = this.name(), q2 = d.name();
+	int c = pc.collator.compare(q1, q2);// primary key.
+	if (c!=0) return c;
+	// try fully-qualified name.  The fully-qualified name for a Doc
+	// which is not a ProgramElementDoc is just the name.
+	if (this instanceof ProgramElementDoc)
+	    q1 = ((ProgramElementDoc)this).qualifiedName();
+	if (d instanceof ProgramElementDoc)
+	    q2 = ((ProgramElementDoc)this).qualifiedName();
+	return pc.collator.compare(q1, q2); // secondary key.
     }
     /** Convenience method: remove leading stars, as from comment text. */
     static String removeLeadingStars(String str) {
