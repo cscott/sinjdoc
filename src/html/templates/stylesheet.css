@@ -44,25 +44,25 @@ body.bigframe table.summary tr { border-bottom: 1px dotted black; }
 body.bigframe dd a { font-weight: bold; }
 
 /* overview page */
-body.overview_page h1 { text-align: center; }
-body.overview_page h2, body.package_page h2 { font-size: 11pt; }
+body.overviewPage h1 { text-align: center; }
+body.overviewPage h2, body.packagePage h2 { font-size: 11pt; }
 
 /* class page */
-body.class_page table td dt { font-weight: normal; }
-body.class_page table td dd a { font-weight: normal; }
-body.class_page h2 { color: black; background-color: #FFC; }
-body.class_page h3 { border-top: 1px solid black; }
-body.class_page h2 + h3 { border-style: none; }
-body.class_page p.packageName { font-weight: bold; font-size: 80%; margin-bottom: 0; }
-body.class_page p.packageName + * { margin-top: 0; }
-body.class_page p.declaration { border-top: 1px dotted black; border-bottom: 1px dotted black; color: black; background-color: #FFC; padding: .2em 0; }
-body.class_page p.declaration *.className { font-weight: bold; }
-body.class_page p.declaration *.extends { display: block; }
-body.class_page p.declaration *.implements { display: block; }
-body.class_page *.memberName { font-family: Andale Mono, monospace; white-space: nowrap; }
-body.class_page div.memberDescription { margin: 1em 0 1em 2em; }
-body.class_page table.summary td:first-child { font-family: Andale Mono, monospace; text-align: right; padding-right: .5em; }
-body.class_page table.summary div.memberDescription { margin-top: 0; margin-bottom: .2em; }
+body.classPage table td dt { font-weight: normal; }
+body.classPage table td dd a { font-weight: normal; }
+body.classPage h2 { color: black; background-color: #FFC; }
+body.classPage h3 { border-top: 1px solid black; }
+body.classPage h2 + h3 { border-style: none; }
+body.classPage p.packageName { font-weight: bold; font-size: 80%; margin-bottom: 0; }
+body.classPage p.packageName + * { margin-top: 0; }
+body.classPage p.declaration { border-top: 1px dotted black; border-bottom: 1px dotted black; color: black; background-color: #FFC; padding: .2em 0; }
+body.classPage p.declaration *.className { font-weight: bold; }
+body.classPage p.declaration *.extends { display: block; }
+body.classPage p.declaration *.implements { display: block; }
+body.classPage *.memberName { font-family: Andale Mono, monospace; white-space: nowrap; }
+body.classPage div.memberDescription { margin: 1em 0 1em 2em; }
+body.classPage table.summary td:first-child { font-family: Andale Mono, monospace; text-align: right; padding-right: .5em; }
+body.classPage table.summary div.memberDescription { margin-top: 0; margin-bottom: .2em; }
 
 /* navbar formatting */
 div.navbar { border-bottom: 1px solid black; border-top: 1px solid black; font-size: 9pt; font-family: Helvetica, Arial, sans-serif; }
