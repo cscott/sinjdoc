@@ -22,7 +22,8 @@ import java.util.List;
 abstract class PSeeTag extends PTag
     implements net.cscott.gjdoc.SeeTag {
     final String name; final List<Tag> contents;
-    PSeeTag(SourcePosition sp, String name, List<Tag> contents) {
+    PSeeTag(SourcePosition sp, String name, List<Tag> contents,
+	    TypeContext tagContext) {
 	super(sp);
 	this.name = name.intern();
 	this.contents = contents;
