@@ -539,6 +539,18 @@ class TemplateWriter extends PrintWriter  {
 					     true, true, true));
 		}
 	    });
+	registerConditional("TRUE", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    return true;
+		}
+	    });
+	registerConditional("FALSE", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    return false;
+		}
+	    });
 	registerConditional("FIRST", new TemplateConditional() {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
