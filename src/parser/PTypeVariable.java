@@ -5,7 +5,6 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ArrayType;
 import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.ParameterizedType;
 import net.cscott.gjdoc.Type;
 import net.cscott.gjdoc.TypeVariable;
 
