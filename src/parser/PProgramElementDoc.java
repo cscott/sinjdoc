@@ -53,4 +53,12 @@ abstract class PProgramElementDoc extends PDoc
     public final String modifiers() {
 	return Modifier.toString(modifierSpecifier());
     }
+    public final boolean isIncluded() {
+	// included only if we match the visibility criteria
+	if (isPublic() && pc.showPublic()) return true;
+	if (isProtected() && pc.showProtected()) return true;
+	if (isPackage() && pc.showPackage()) return true;
+	if (isPrivate() && pc.showPrivate()) return true;
+	return false;
+    }
 }
