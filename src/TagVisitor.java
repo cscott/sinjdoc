@@ -4,7 +4,7 @@
 package net.cscott.gjdoc;
 
 /**
- * <code>TagVisitor<code> implements the visitor pattern for <code>Tag</code>
+ * <code>TagVisitor</code> implements the visitor pattern for <code>Tag</code>
  * objects.  It allows easy encapsulation of <code>Tag</code>-type dependent
  * behavior.
  *
