@@ -22,7 +22,7 @@ import java.util.List;
  */
 abstract class PPackageDoc extends PDoc
     implements net.cscott.gjdoc.PackageDoc {
-    PPackageDoc(ParserControl pc) { super(pc); }
+    PPackageDoc(ParseControl pc) { super(pc); }
     /** @return false */
     public boolean shouldStripStars() { return false; }
     public abstract List<Type> allClasses();

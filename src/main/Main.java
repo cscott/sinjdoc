@@ -4,7 +4,7 @@
 package net.cscott.gjdoc;
 
 import net.cscott.gjdoc.parser.FileUtil;
-import net.cscott.gjdoc.parser.ParserControl;
+import net.cscott.gjdoc.parser.ParseControl;
 import net.cscott.gjdoc.parser.PRootDoc;
 import net.cscott.gjdoc.html.HTMLDoclet;
 
@@ -460,7 +460,7 @@ public class Main {
     private static class RunData {
 	final String programName;
 	final Reporter reporter;
-	final ParserControl parseControl;
+	final ParseControl parseControl;
 	String docletPath=null;
 	String defaultDocletClassName;
 	Doclet doclet=null;
@@ -475,7 +475,7 @@ public class Main {
 		String defaultDocletClassName) {
 	    this.programName = programName;
 	    this.reporter = new Reporter(errWriter, warnWriter, noticeWriter);
-	    this.parseControl = new ParserControl(reporter);
+	    this.parseControl = new ParseControl(reporter);
 	    this.defaultDocletClassName = defaultDocletClassName;
 	}
 	Doclet getDoclet() {

@@ -15,7 +15,7 @@ import net.cscott.gjdoc.Type;
  */
 abstract class PMethodDoc extends PExecutableMemberDoc
     implements net.cscott.gjdoc.MethodDoc {
-    PMethodDoc(ParserControl pc) { super(pc); }
+    PMethodDoc(ParseControl pc) { super(pc); }
     public abstract boolean isAbstract();
     // xxx return null if overridden method is not being documented.
     public abstract MethodDoc overriddenMethod();

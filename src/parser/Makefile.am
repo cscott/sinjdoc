@@ -13,7 +13,7 @@ Java15.java \
 Sym.java \
 Lexer.java \
 FileUtil.java \
-ParserControl.java \
+ParseControl.java \
 PClassDoc.java \
 PClassTypeVariable.java \
 PConstructorDoc.java \

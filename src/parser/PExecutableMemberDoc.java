@@ -19,7 +19,7 @@ import java.util.List;
  */
 abstract class PExecutableMemberDoc extends PMemberDoc 
     implements net.cscott.gjdoc.ExecutableMemberDoc {
-    PExecutableMemberDoc(ParserControl pc) { super(pc); }
+    PExecutableMemberDoc(ParseControl pc) { super(pc); }
     public abstract List<MethodTypeVariable> typeParameters();
     public abstract boolean isNative();
     public abstract boolean isSynchronized();

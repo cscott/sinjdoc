@@ -15,7 +15,7 @@ import java.util.List;
  */
 abstract class PFieldDoc extends PMemberDoc
     implements net.cscott.gjdoc.FieldDoc {
-    PFieldDoc(ParserControl pc) { super(pc); }
+    PFieldDoc(ParseControl pc) { super(pc); }
     public abstract Object constantValue();
     public abstract String constantValueExpression();
     public abstract boolean isTransient();

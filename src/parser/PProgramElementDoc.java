@@ -17,7 +17,7 @@ import java.lang.reflect.Modifier;
  */
 abstract class PProgramElementDoc extends PDoc
     implements net.cscott.gjdoc.ProgramElementDoc {
-    PProgramElementDoc(ParserControl pc) { super(pc); }
+    PProgramElementDoc(ParseControl pc) { super(pc); }
     public abstract ClassDoc containingClass();
     public abstract PackageDoc containingPackage();
     public abstract int modifierSpecifier();

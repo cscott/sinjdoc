@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 abstract class PDoc implements net.cscott.gjdoc.Doc {
-    final ParserControl pc;
-    PDoc(ParserControl pc) { this.pc = pc; }
+    final ParseControl pc;
+    PDoc(ParseControl pc) { this.pc = pc; }
     public abstract String getRawCommentText();
     /** Return a <code>PSourcePosition</code> object corresponding to the
      *  position of the raw comment text. */

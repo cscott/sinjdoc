@@ -27,7 +27,7 @@ import java.util.List;
  */
 abstract class PClassDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.ClassDoc {
-    PClassDoc(ParserControl pc) { super(pc); }
+    PClassDoc(ParseControl pc) { super(pc); }
     public abstract List<ClassTypeVariable> typeParameters();
     public abstract List<ConstructorDoc> constructors();
     public abstract boolean definesSerializableFields();

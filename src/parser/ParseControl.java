@@ -1,4 +1,4 @@
-// ParserControl.java, created Wed Mar 19 17:35:54 2003 by cananian
+// ParseControl.java, created Wed Mar 19 17:35:54 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
@@ -16,13 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 /**
- * <code>ParserControl</code> runs the parser to generate a
+ * <code>ParseControl</code> runs the parser to generate a
  * <code>PRootDoc</code>.
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-public class ParserControl {
+public class ParseControl {
     /** A means to report errors and warnings. */
     final DocErrorReporter reporter;
     /** Determines what classes and members to show. */
@@ -44,7 +44,7 @@ public class ParserControl {
     /** Encapsulation of sourcePath-related file utilities. */
     FileUtil sourcePath;
 
-    public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
+    public ParseControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
     public void setVerbose(boolean verbose) { this.verbose=verbose; }
     public boolean getVerbose() { return verbose; }

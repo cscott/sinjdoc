@@ -21,7 +21,7 @@ public class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
     final String overviewText;
     final PSourcePosition overviewPosition;
-    PRootDoc(ParserControl pc) {
+    PRootDoc(ParseControl pc) {
 	super(pc);
 	Pair<String,PSourcePosition> pair =
 	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
