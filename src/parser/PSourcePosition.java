@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.DocErrorReporter;
 import java.io.File;
 
 /**
@@ -20,8 +21,8 @@ class PSourcePosition
     // calls to the interface accessors lazily convert the index to a
     // line and column number.
     final PFile pfile; final int charIndex;
-    PSourcePosition(File file, int charIndex) {
-	this(PFile.get(file), charIndex);
+    PSourcePosition(File file, String encoding, DocErrorReporter reporter) {
+	this(PFile.get(file, encoding, reporter), 0);
     }
     private PSourcePosition(PFile pfile, int charIndex) {
 	this.pfile = pfile; this.charIndex = charIndex;

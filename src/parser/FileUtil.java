@@ -161,8 +161,8 @@ public class FileUtil {
     /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
      *  in the given file. */
     static Pair<String,PSourcePosition> rawFileText
-	(File f, DocErrorReporter reporter, String encoding) {
-	Pair<String,PSourcePosition> pair = snarf(f, reporter, encoding);
+	(File f, String encoding, DocErrorReporter reporter) {
+	Pair<String,PSourcePosition> pair = snarf(f, encoding, reporter);
 	Matcher matcher = BODY_PATTERN.matcher(pair.left);
 	if (!matcher.find()) return pair; // return unchanged.
 	return new Pair<String,PSourcePosition>
@@ -174,14 +174,14 @@ public class FileUtil {
 
     /** Snarf up the contents of a file as a string. */
     static Pair<String,PSourcePosition> snarf
-	(File f, DocErrorReporter reporter, String encoding) {
+	(File f, String encoding, DocErrorReporter reporter) {
 	if (f==null)
 	    return new Pair<String,PSourcePosition>
 		("", PSourcePosition.NO_INFO);
 	if (!(f.exists() && f.isFile())) {
 	    reporter.printError("Can't open file: "+f);
 	    return new Pair<String,PSourcePosition>
-		("", new PSourcePosition(f,0));
+		("", new PSourcePosition(f, encoding, reporter));
 	}
 	StringBuffer sb=new StringBuffer();
 	try {
@@ -195,7 +195,7 @@ public class FileUtil {
 	    reporter.printError("Trouble reading "+f+": "+e);
 	}
 	return new Pair<String,PSourcePosition>
-	    (sb.toString(), new PSourcePosition(f, 0));
+	    (sb.toString(), new PSourcePosition(f, encoding, reporter));
     }
     static Reader fileReader(File f, String encoding,
 			     DocErrorReporter reporter)

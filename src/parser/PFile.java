@@ -1,9 +1,13 @@
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /**
  * The <code>PFile</code> class wraps a <code>java.io.File</code> object
@@ -15,7 +19,11 @@ import java.util.Map;
  */
 public class PFile {
     public final File file;
-    public PFile (File file) { this.file = file; }
+    public final String encoding;
+    public final DocErrorReporter reporter;
+    public PFile (File file, String encoding, DocErrorReporter reporter) {
+	this.file = file; this.encoding = encoding; this.reporter = reporter;
+    }
 
     SourcePosition convert(int charIndex) {
 	assert false : "not implemented";
@@ -25,7 +33,7 @@ public class PFile {
 		public int column() { return 0; }
 	    };
     }
-    static PFile get(File f) {
+    static PFile get(File f, String encoding, DocErrorReporter reporter) {
 	File canon;
 	try { // canonicalize if possible.
 	    canon = f.getCanonicalFile();
@@ -36,7 +44,8 @@ public class PFile {
 	// between multiple threads running the tool concurrently.
 	synchronized(cache) {
 	    if (!cache.containsKey(canon))
-		cache.put(canon, new PFile(f/* preserve original name */));
+		cache.put(canon, new PFile(f/* preserve original name */,
+					   encoding, reporter));
 	    return cache.get(canon);
 	}
     }

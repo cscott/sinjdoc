@@ -39,7 +39,7 @@ class PPackageDoc extends PDoc
 	File packageTextFile = new File(packageDir, "package.html");
 	Pair<String,PSourcePosition> pair =
 	    FileUtil.rawFileText(packageTextFile.exists()?packageTextFile:null,
-				 pc.reporter, pc.encoding);
+				 pc.encoding, pc.reporter);
 	this.packageText = pair.left;
 	this.packagePosition = pair.right;
 	this.packageContext = new TypeContext(pc, this);

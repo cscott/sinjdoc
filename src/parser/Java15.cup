@@ -30,6 +30,7 @@ parser code  {:
   PPackageDoc expectedPackage;
   Lexer lexer;
   Stack<PClassDoc> outerClasses = new Stack<PClassDoc>();
+  private PSourcePosition startPos;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
       throws java.io.FileNotFoundException {
@@ -40,11 +41,12 @@ parser code  {:
 	  (new BufferedReader(FileUtil.fileReader
                               (file, rootDoc.pc.encoding, rootDoc)),
            rootDoc.pc.sourceVersion);
+      this.startPos = new PSourcePosition(file, rootDoc.pc.encoding, rootDoc);
       this.expectedPackage = expectedPackage;
   }
 
   public PSourcePosition sp(int leftPos) {
-      return new PSourcePosition(compilationUnit.file, leftPos);
+      return startPos.add(leftPos);
   }
   public void syntax_error(java_cup.runtime.Symbol current) {
       rootDoc.printError(sp(current.left), "Syntax error ("+current.sym+")");
