@@ -321,6 +321,23 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.options.bottom);
 		}
 	    });
+	register("CLASSSHORTNAME", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    // should include containing classes.
+		    StringBuffer sb=new StringBuffer(context.curClass.name());
+		    for(ClassDoc p=context.curClass.containingClass();
+			p!=null; p=p.containingClass())
+			sb.insert(0, p.name()+".");
+		    tw.write(sb.toString());
+		}
+	    });
+	register("CLASSNAME", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    tw.write(context.curClass.qualifiedName());
+		}
+	    });
 	register("PKGNAME", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
@@ -339,6 +356,20 @@ class TemplateWriter extends PrintWriter  {
 		    assert context.curPackage!=null;
 		    tw.write(HTMLUtil.toLink(context.curURL,context.curPackage,
 					     "package-summary.html"));
+		}
+	    });
+	register("CLASSTYPE", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    if (context.curClass.isOrdinaryClass())
+			tw.write("class");
+		    else if (context.curClass.isInterface())
+			tw.write("interface");
+		    else if (context.curClass.isException())
+			tw.write("exception");
+		    else if (context.curClass.isError())
+			tw.write("error");
+		    else assert false : "what is it?";
 		}
 	    });
 	register("CLASSLINK_P", new TemplateAction() {
@@ -379,6 +410,13 @@ class TemplateWriter extends PrintWriter  {
 			(lt.size()==1 && 
 			 !(lt.get(0).isText() &&
 			   lt.get(0).text().trim().length()==0));
+		}
+	    });
+	registerConditional("INTERFACE", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    assert c.curClass!=null;
+		    return c.curClass.isInterface();
 		}
 	    });
 	// iterator over all packages with documented classes
