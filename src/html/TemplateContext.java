@@ -5,10 +5,14 @@ package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Doc;
+import net.cscott.gjdoc.ExecutableMemberDoc;
 import net.cscott.gjdoc.MemberDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.RootDoc;
+import net.cscott.gjdoc.TypeVariable;
 
+import java.util.ArrayList;
+import java.util.List;
 /**
  * The <code>TemplateContext</code> class encapsulates all the information
  * required to emit an HTML page using the macro expander.
@@ -77,6 +81,19 @@ class TemplateContext {
 	else if (curClass!=null) return curClass;
 	else if (curPackage!=null) return curPackage;
 	else return root;
+    }
+    /** Return the type variables of the most specific documentation item
+     *  in this context. */
+    List<TypeVariable> specificTypeVariables() {
+	List<TypeVariable> ltv = new ArrayList<TypeVariable>();
+	if (curMember!=null &&
+	    curMember instanceof ExecutableMemberDoc) {
+	    ExecutableMemberDoc md = (ExecutableMemberDoc) curMember;
+	    ltv.addAll(md.typeParameters());
+	} else if (curClass!=null) {
+	    ltv.addAll(curClass.typeParameters());
+	}
+	return ltv;
     }
     // for debugging.
     public String toString() {

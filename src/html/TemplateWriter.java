@@ -515,61 +515,28 @@ class TemplateWriter extends PrintWriter  {
 					     context.curMember));
 		}
 	    });
-	register("TYPEPARAMS", new TemplateAction() {
+	register("TYPEPARAMS_SUMMARY", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
-		    List<TypeVariable> ltv=new ArrayList<TypeVariable>();
-		    if (context.curMember!=null) {
-			ExecutableMemberDoc md = (ExecutableMemberDoc)
-			    context.curMember;
-			ltv.addAll(md.typeParameters());
-		    } else {
-			assert context.curClass!=null;
-			ltv.addAll(context.curClass.typeParameters());
-		    }
-		    if (ltv.size()==0) return; // nothing to see/do here.
-		    tw.write("&lt;");
-		    for(Iterator<TypeVariable> it=ltv.iterator();
-			it.hasNext(); ) {
-			TypeVariable tv = it.next();
-			if (context.curMember==null)
-			    tw.write(tv.getName()); /* used in headings, etc */
-			else /* in method summaries, link the params */
-			    tw.write(HTMLUtil.toLink(context.curURL, tv));
-			if (it.hasNext()) tw.write(",");
-		    }
-		    tw.write("&gt;");
+		    // no link, no bounds, no anchor
+		    tw.write(HTMLUtil.toLink(context.curURL,
+					     context.specificTypeVariables(),
+					     false, false, false));
+		}
+	    });
+	register("TYPEPARAMS_LINK", new TemplateAction() {
+		// link and bounds.
+		void process(TemplateWriter tw, TemplateContext context) {
+		    tw.write(HTMLUtil.toLink(context.curURL,
+					     context.specificTypeVariables(),
+					     true, false, true));
 		}
 	    });
 	register("TYPEPARAMS_DECL", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
-		    List<TypeVariable> ltv=new ArrayList<TypeVariable>();
-		    String prefix;
-		    if (context.curMember!=null) {
-			ExecutableMemberDoc md = (ExecutableMemberDoc)
-			    context.curMember;
-			ltv.addAll(md.typeParameters());
-			prefix=md.name()+md.signature();
-		    } else {
-			assert context.curClass!=null;
-			ltv.addAll(context.curClass.typeParameters());
-			prefix="!tv!";
-		    }
-		    if (ltv.size()==0) return; // nothing to see/do here.
-		    tw.write("&lt;");
-		    for(Iterator<TypeVariable> it=ltv.iterator();
-			it.hasNext(); ) {
-			TypeVariable tv = it.next();
-			String anchor = prefix+tv.getName();
-			tw.write("<a name=\"");
-			tw.write(anchor);
-			tw.write("\" id=\"");
-			tw.write(anchor);
-			tw.write("\">");
-			tw.write(tv.getName());
-			tw.write("</a>");
-			if (it.hasNext()) tw.write(",");
-		    }
-		    tw.write("&gt;");
+		    // anchor and linked bounds.
+		    tw.write(HTMLUtil.toLink(context.curURL,
+					     context.specificTypeVariables(),
+					     true, true, true));
 		}
 	    });
 	registerConditional("FIRST", new TemplateConditional() {

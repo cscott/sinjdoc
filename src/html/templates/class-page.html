@@ -6,7 +6,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>@CLASSSHORTNAME@@TYPEPARAMS@@TITLESUFFIX@</title>
+    <title>@CLASSSHORTNAME@@TYPEPARAMS_SUMMARY@@TITLESUFFIX@</title>
     <meta name="keywords" content="@CLASSNAME@,@CLASSSHORTNAME@ @CLASSTYPE@" />
     <link href="@ROOT@stylesheet.css" rel="stylesheet" type="text/css" />
     <link rel="Index" href="@ROOT@index-all.html" />
@@ -56,7 +56,7 @@
     <p class="clear"><!--empty--></p>
    </div>
    <p class="packageName">@PKGNAME@</p>
-   <h1>@IF_INTERFACE@ Interface @END@ @IFNOT_INTERFACE@ Class @END@ @CLASSSHORTNAME@@TYPEPARAMS@</h1>
+   <h1>@IF_INTERFACE@ Interface @END@ @IFNOT_INTERFACE@ Class @END@ @CLASSSHORTNAME@@TYPEPARAMS_SUMMARY@</h1>
 <!--
    <p class="enclosing">
    Enclosing class/interface: @OUTER@
@@ -134,7 +134,7 @@
    <table class="constructor_summary summary">
      <tr><th colspan="2"><a name="constructor_summary" id="constructor_summary">Constructor Summary</a></th></tr>
 @END@
-     <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
+     <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS_LINK@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
 @IF_LAST@
    </table>
 @END@
@@ -144,7 +144,7 @@
    <table class="constructor_summary summary">
      <tr><th colspan="2"><a name="method_summary" id="method_summary">Method Summary</a></th></tr>
 @END@
-     <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS@ @METHOD_RETURN_TYPE@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
+     <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS_LINK@ @METHOD_RETURN_TYPE@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
 @IF_LAST@
    </table>
 @END@

@@ -130,6 +130,8 @@ class HTMLUtil {
 	sb.append("</a>");
 	return sb.toString();
     }
+    // abbreviates the type parameters, even when withParam is true:
+    // never emits bounds information.
     public static String toLink(URLContext context, ClassDoc c,
 				boolean withParam) {
 	StringBuffer sb = new StringBuffer("<a href=\"");
@@ -216,7 +218,60 @@ class HTMLUtil {
 		return sb.toString();
 	    }
 	});
+    }
+    /** Return an HTML representation of the given list of type parameters.
+     *  If doAnchor is true, then the parameters will become anchors in
+     *  the HTML document with appropriate names according to their type.
+     *  Else if doLink is true, then the parameters will be hyperlinked
+     *  to their declaration point.  If doBounds is true, then the
+     *  bounds declaration of each type variable will be emitted. */
+    static <TV extends TypeVariable> String toLink
+		       (URLContext context, List<TV> ltv,
+			boolean doLink, boolean doAnchor, boolean doBounds) {
+	if (ltv.size()==0) return ""; // nothing to see/do here.
+	StringBuffer sb = new StringBuffer();
+	sb.append("&lt;");
+	for(Iterator<TV> it=ltv.iterator(); it.hasNext(); ) {
+	    TV tv = it.next();
+	    if (doAnchor) {
+		String prefix;
+		if (tv instanceof MethodTypeVariable) {
+		    ExecutableMemberDoc md =
+			((MethodTypeVariable)tv).declaringMethod();
+		    prefix = md.name() + md.signature();
+		} else { // must be a class type variable
+		    prefix = "!tv!";
+		}
+		String anchor = prefix+tv.getName();
+		sb.append("<a name=\"");
+		sb.append(anchor);
+		sb.append("\" id=\"");
+		sb.append(anchor);
+		sb.append("\">");
+		sb.append(tv.getName());
+		sb.append("</a>");
+	    } else if (doLink) {
+		sb.append(HTMLUtil.toLink(context, tv));
+	    } else
+		sb.append(tv.getName());
+	    if (doBounds) {
+		List<Type> bounds = tv.getBounds();
+		if (bounds.size() > 1 ||
+		    !bounds.get(0).signature().equals("java.lang.Object")) {
+		    // "interesting" bounds.  bounds are always linked.
+		    sb.append(" extends ");
+		    for (Iterator<Type> it2=bounds.iterator(); it2.hasNext();){
+			sb.append(HTMLUtil.toLink(context, it2.next()));
+			if (it2.hasNext())
+			    sb.append(" &amp; ");
+		    }
+		}
+	    }
+	    if (it.hasNext()) sb.append(",");
 	}
+	sb.append("&gt;");
+	return sb.toString();
+    }
     /** Copy the contents of a <code>Reader</code> to a <code>Writer</code>.
      */
     void copy(Reader r, Writer w) {
