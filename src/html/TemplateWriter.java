@@ -148,5 +148,18 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.curURL.makeRelative(""));
 		}
 	    });
+	register("@PKGNAME@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curPackage!=null;
+		    tw.write(context.curPackage.name());
+		}
+	    });
+	register("@PKGSUMMARYLINK@", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curPackage!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL,context.curPackage,
+					     "package-summary.html"));
+		}
+	    });
     }
 }
