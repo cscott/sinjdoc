@@ -16,24 +16,37 @@ import java.io.*;
  */
 class TemplateWriter extends PrintWriter  {
     final Reader templateReader;
-    final HTMLOptions options;
-    final URLContext context;
+    final TemplateContext context;
 
-    /** Creates a <code>TemplateWriter</code>. */
-    TemplateWriter(Writer delegate,
-		   Reader templateReader, HTMLOptions options,
-		   URLContext context) {
+    /** Creates a <code>TemplateWriter</code> which uses the specified
+     *  <code>Reader</code> as a template and writes to the provides
+     *  <code>Writer</code>.  Macros are expanded using the specified
+     *  <code>TemplateContext</code>. */
+    TemplateWriter(Writer delegate, Reader templateReader,
+		   TemplateContext context) {
         super(delegate);
 	this.templateReader = templateReader;
-	this.options = options;
 	this.context = context;
+    }
+    /** Creates a <code>TemplateWriter</code> which uses the reader provided
+     *  as a template and writes to the URL specified by the template
+     *  context. */
+    TemplateWriter(Reader templateReader, HTMLUtil hu,TemplateContext context){
+	this(hu.fileWriter(context.curURL, context.options), templateReader,
+	     context);
+    }
+    /** Creates a <code>TemplateWriter</code> which uses the resource with
+     *  the specified name as a template, and writes to the URL specified
+     *  by the template context. */
+    TemplateWriter(String resourceName, HTMLUtil hu, TemplateContext context) {
+	this(hu.resourceReader(resourceName), hu, context);
     }
     /** Copy all remaining text from the template and close the files. */
     public void copyRemainder(DocErrorReporter reporter) {
 	try {
 	    copyRemainder();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context+": "+e);
+	    reporter.printError("Couldn't emit "+context.curURL+": "+e);
 	}
     }
     /** Read from the template, performing macro substition, until the
@@ -44,7 +57,7 @@ class TemplateWriter extends PrintWriter  {
 	try {
 	    return copyToSplit();
 	} catch (IOException e) {
-	    reporter.printError("Couldn't emit "+context+": "+e);
+	    reporter.printError("Couldn't emit "+context.curURL+": "+e);
 	    return false;
 	}
     }
@@ -79,18 +92,18 @@ class TemplateWriter extends PrintWriter  {
 		// saw closing '@'.  is this a valid tag?
 		String tagName = tag.toString();
 		if (tagName.equals("@CHARSET@"))
-		    write(options.charSet.name());
+		    write(context.options.charSet.name());
 		else if (tagName.equals("@WINDOWTITLE@")) {
-		    if (options.windowTitle!=null)
-			write(options.windowTitle);
+		    if (context.options.windowTitle!=null)
+			write(context.options.windowTitle);
 		} else if (tagName.equals("@TITLESUFFIX@")) {
-		    if (options.windowTitle!=null)
-			write(" ("+options.windowTitle+")");
+		    if (context.options.windowTitle!=null)
+			write(" ("+context.options.windowTitle+")");
 		} else if (tagName.equals("@DOCTITLE@")) {
-		    if (options.docTitle!=null)
-			write(options.docTitle);
+		    if (context.options.docTitle!=null)
+			write(context.options.docTitle);
 		} else if (tagName.equals("@ROOT@")) {
-		    write(context.makeRelative(""));
+		    write(context.curURL.makeRelative(""));
 		} else if (tagName.equals("@SPLIT"))
 		    return true; // done.
 		else // invalid tag.

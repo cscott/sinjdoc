@@ -33,18 +33,17 @@ public class HTMLDoclet extends Doclet {
 	}
 	if (styleReader==null) styleReader=hu.resourceReader("stylesheet.css");
 	// get a writer for the emitted style sheet.
-	URLContext context = new URLContext("stylesheet.css");
-	TemplateWriter styleWriter =
-	    new TemplateWriter(hu.fileWriter(context, options),
-			       styleReader, options, context);
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("stylesheet.css"), null, null);
+	TemplateWriter styleWriter=new TemplateWriter(styleReader,hu,context);
 	// copy from template.
 	styleWriter.copyRemainder(root);
     }
     void makeTopIndex(RootDoc root, HTMLUtil hu) {
-	URLContext context = new URLContext("index.html");
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("index.html"), null, null);
 	TemplateWriter indexWriter = new TemplateWriter
-	    (hu.fileWriter(context, options), hu.resourceReader("index.html"),
-	     options, context);
+	    ("index.html"/*template resource name*/, hu, context);
 	indexWriter.copyRemainder(root);
     }
 
