@@ -36,7 +36,7 @@ class PThrowsTag extends PTag.Trailing
 	// okay, assign to the fields of the object.
 	this.exceptionName = pair.left.group();
 	// XXX what if exception type is parameterized?
-	this.exceptionType = tagContext.lookupTypeName(exceptionName);
+	this.exceptionType = tagContext.lookupTypeName(exceptionName,true);
 	this.exceptionComment = pair.right;
     }
     private static final Pattern NAME = Pattern.compile("\\S+");

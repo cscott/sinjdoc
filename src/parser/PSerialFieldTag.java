@@ -41,7 +41,7 @@ class PSerialFieldTag extends PTag.Trailing
 	this.fieldName = pair.left.group(1);
 	this.fieldTypeString = pair.left.group(2);
 	// XXX what if field type is parameterized?
-	this.fieldType = tagContext.lookupTypeName(fieldTypeString);
+	this.fieldType = tagContext.lookupTypeName(fieldTypeString,true);
 	this.fieldDescription = pair.right;
     }
     private static final Pattern NAME_AND_TYPE = Pattern.compile

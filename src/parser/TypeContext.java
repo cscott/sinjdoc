@@ -51,10 +51,11 @@ class TypeContext {
 
     /** Look up the given type name in this type context. The result can
      *  be a type variable in the classScope. */
-    Type lookupTypeName(String typeName) {
-	// from experiments, qualified references to type variables seem to
-	// be disallowed.  So just check type variables in method & class
-	// scopes, and then fall back to lookupClassTypeName()
+    Type lookupTypeName(String typeName, boolean lazy) {
+	// from experiments, qualified or inherited references to type
+	// variables seem to be disallowed.  So just check type
+	// variables in method & class scopes, and then fall back to
+	// lookupClassTypeName(typeName, lazy)
 	if (methodScope!=null)
 	    for (Iterator<MethodTypeVariable> it =
 		     methodScope.typeParameters().iterator(); it.hasNext(); ) {
@@ -74,12 +75,15 @@ class TypeContext {
 	    enclosing = enclosing.containingClass();
 	}
 	// nope, fall back to lookupClassTypeName()
-	return lookupClassTypeName(typeName);
+	return lookupClassTypeName(typeName, lazy);
     }
 
     /** Look up the given type name in this type context.  The result is
      *  guaranteed not to be a type variable. */
-    ClassType lookupClassTypeName(String typeName) {
+    ClassType lookupClassTypeName(String typeName, boolean lazy) {
+	// if we're lazy, defer the real work.
+	if (lazy) return new PLazyClassType(this, typeName);
+	// okay, we're not lazy, let's actually do the work.
 	int idx = typeName.lastIndexOf('.');
 	if (idx<0) return lookupSimpleTypeName(typeName);
 	else return lookupQualifiedTypeName(typeName.substring(0,idx),
@@ -111,7 +115,8 @@ class TypeContext {
 		     .iterator(); it.hasNext(); ) {
 		String qualName = it.next();
 		if (qualName.endsWith(id))
-		    return new TypeContext(pc).lookupClassTypeName(qualName);
+		    return new TypeContext(pc).lookupClassTypeName
+			(qualName, false/* don't be lazy */);
 	    }
 	    for (Iterator<PClassDoc> it = compilationUnit.classes
 		     .iterator(); it.hasNext(); ) {
@@ -156,7 +161,7 @@ class TypeContext {
 		if (id.equals(t.typeName())) return t;
 	    }
 	//   2) try class named Q.
-	ClassDoc cls = lookupClassTypeName(Q).asClassDoc();
+	ClassDoc cls = lookupClassTypeName(Q,false/*not lazy*/).asClassDoc();
 	if (cls!=null)
 	    for (Iterator<ClassDoc> it=cls.innerClasses().iterator();
 		 it.hasNext(); ) {

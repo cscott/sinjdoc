@@ -47,7 +47,7 @@ class PLazyClassType extends PClassType {
     }
     private void lookup() {
 	assert cache==null && isValid();
-	cache = typeContext.lookupClassTypeName(typeName);
+	cache=typeContext.lookupClassTypeName(typeName,false/*lazy no more*/);
 	typeContext=null;
 	typeName=null;
 	assert cache!=null && isValid();

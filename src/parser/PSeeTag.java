@@ -106,7 +106,7 @@ class PSeeTag extends PTag.NonText
 	// use class scope if class if unspecified.
 	if (classPart==null) return tagContext.classScope;
 	// look up class.
-	return tagContext.lookupClassTypeName(classPart).asClassDoc();
+	return tagContext.lookupClassTypeName(classPart,false).asClassDoc();
     }
     public MemberDoc referencedMember() {
 	if (memberNamePart==null) return null;
@@ -136,7 +136,7 @@ class PSeeTag extends PTag.NonText
 	Matcher matcher = TYPE.matcher(sig);
 	while (matcher.find()) {
 	    ClassType ty =
-		tagContext.lookupClassTypeName(matcher.group());
+		tagContext.lookupClassTypeName(matcher.group(),false);
 	    matcher.appendReplacement(result, ty.qualifiedTypeName());
 	}
 	matcher.appendTail(result);

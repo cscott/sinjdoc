@@ -1,6 +1,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.lexer.Lexer;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Parameter;
 import net.cscott.gjdoc.Type;
 import java_cup.runtime.*;
@@ -160,17 +161,13 @@ action code {:
       parser.additionalTypeVariables.clear(); // type vars now in method.
   }
 
-  PClassType lookupClassType(String name) {
-      return new PLazyClassType(parser.typeContexts.peek(), name);
+  ClassType lookupClassType(String name) {
+      return parser.typeContexts.peek().lookupClassTypeName(name,true/*lazy*/);
   }
   Type lookupType(String name) {
       if (parser.additionalTypeVariables.containsKey(name))
 	  return parser.additionalTypeVariables.get(name);
-      // XXX look through this method, this class, and enclosing classes
-      //     for type variables.  ASSUME that type variables can't be
-      //     qualified or inherited (I think this is right).
-      // okay, must be a class type.
-      return lookupClassType(name);
+      return parser.typeContexts.peek().lookupTypeName(name, true/*lazy*/);
   }
   void addTypeVariable(String name, List<Type> bounds) {
       // if bounds list is zero-length, fabricate a one-element list
