@@ -23,6 +23,11 @@ class URLContext {
     public String makeRelative(String url) {
 	StringBuffer result = new StringBuffer();
 	assert url.length()==0 || url.charAt(0)!='/';
+	// special case a link to a different target in the same url.
+	if (url.startsWith(context)) {
+	    String trimmed = url.substring(context.length());
+	    if (trimmed.startsWith("#")) return trimmed;
+	}
 	// strip components off the context URL until it matches the start
 	// of the desired URL.
 	String contextURL = STRIP_FILE.matcher(this.context).replaceFirst("");
