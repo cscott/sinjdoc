@@ -165,14 +165,18 @@ public class HTMLDoclet extends Doclet {
 	makeTopIndex(root, hu);
 	// list all documented classes.
 	makeAllClassesFrame(root, hu);
-	// create main index page
+	// top-level class hierarchy.
+	if (options.emitTreePage) {
+	    // XXX create overview-tree.html
+	}
 	// for each package to be documented...
 	for (Iterator<PackageDoc> it=allDocumentedPackages(root).iterator();
 	     it.hasNext(); ) {
 	    PackageDoc pd = it.next();
 	    // create package pages.
 	    makePackageSummary(root, hu, pd);
-	    makePackageTree(root, hu, pd);
+	    if (options.emitTreePage)
+		makePackageTree(root, hu, pd);
 	    // XXX copy doc-files.
 	}
 	// for each class to be documented...
@@ -181,12 +185,19 @@ public class HTMLDoclet extends Doclet {
 	    // create class page.
 	    makeClassPage(root, hu, cd);
 	}
-	// XXX create overview-tree.html
-	// XXX create class-use
 	// XXX create package-list
-	// XXX create index pages
-	// XXX create help-doc.html
-	// XXX create deprecated-list.html
+	if (options.emitUsePage) {
+	    // XXX create class-use
+	}
+	if (options.emitIndexPage) {
+	    // XXX create index pages
+	}
+	if (options.emitHelpPage) {
+	    // XXX create help-doc.html
+	}
+	if (options.emitDeprecatedPage) {
+	    // XXX create deprecated-list.html
+	}
 	// XXX create constant-values.html
 	// XXX create serialized-form.html
 	// XXX create annotated source code.
