@@ -198,18 +198,16 @@ action code {:
       // set the correct superclass.
       PClassDoc pcd = parser.outerClasses.peek();
       Type thisType = pcd.type();
-      ClassType enumType = new PEagerClassType
-	  (parser.rootDoc.pc, "java.lang", "Enum");
+      ClassType enumType = eagerClassType("java.lang","Enum");
       pcd.superclass = new PParameterizedType
 	  (enumType, null, new TypeArgumentList(new PTypeArgument
 						(thisType, false, false)));
       // add the implicit members of the class.
       int m = Modifier.PUBLIC | Modifier.FINAL;
       Type listType = new PParameterizedType
-	  (new PEagerClassType(parser.rootDoc.pc, "java.util", "List"), null,
+	  (eagerClassType("java.util","List"), null,
 	   new TypeArgumentList(new PTypeArgument(thisType, false, false)));
-      ClassType stringType = new PEagerClassType
-	  (parser.rootDoc.pc, "java.lang", "String");
+      ClassType stringType = eagerClassType("java.lang","String");
       //    public static List<this enum class> VALUES;
       commentOverride="An immutable list containing the values comprising "+
 	  "this enum class in the order they're declared.  This field may "+
@@ -321,6 +319,9 @@ action code {:
       parser.additionalTypeVariables.clear(); // type vars now in method.
   }
 
+  ClassType eagerClassType(String pkgName, String clsName) {
+      return new PEagerClassType(parser.rootDoc.pc, pkgName, clsName);
+  }
   ClassType lookupClassType(String name) {
       return parser.typeContexts.peek().lookupClassTypeName(name,true/*lazy*/);
   }
@@ -348,13 +349,15 @@ action code {:
       ClassType outer=null;
       if (ct instanceof PLazyInnerClassType)
 	  outer = ((PLazyInnerClassType)ct).outerClass;
-      else {
+      else if (ct instanceof PEagerClassType) {
 	  String typeName = ct.typeName();
 	  int idx = typeName.lastIndexOf('.');
 	  if (idx > 0)
-	      outer = lookupClassType(typeName.substring(0, idx));
+	      outer = eagerClassType(((PEagerClassType)ct).packageName,
+				     typeName.substring(0, idx));
+      } else {
+	  // XXX we need a lazy outer class type here.
       }
-      // XXX this algorithm is not perfect, sadly.
       return new PParameterizedType(ct, outer, typeArgs);
   }
   void addTypeVariable(String name) {
@@ -378,7 +381,7 @@ action code {:
       // if bounds list is zero-length, fabricate a one-element list
       // with the type for java.lang.Object.
       if (bounds.size()==0)
-	  bounds = new TypeList(lookupClassType("java.lang.Object"));
+	  bounds = new TypeList(eagerClassType("java.lang","Object"));
       // add bounds to type variable.
       tv.addBounds(bounds);
   }
@@ -760,7 +763,7 @@ type_arguments ::=
 	;
 wildcard ::=	QUESTION
 		{: RESULT=new PTypeArgument
-		          (lookupClassType("java.lang.Object"), true, true); :}
+		          (eagerClassType("java.lang","Object"), true, true); :}
 	|	QUESTION EXTENDS reference_type:ty
 		{: RESULT=new PTypeArgument(ty, true, false); :}
 	|	QUESTION SUPER reference_type:ty
@@ -768,7 +771,7 @@ wildcard ::=	QUESTION
 	;
 wildcard_1 ::=	QUESTION GT
 		{: RESULT=new PTypeArgument
-		          (lookupClassType("java.lang.Object"), true, true); :}
+		          (eagerClassType("java.lang","Object"), true, true); :}
 	|	QUESTION EXTENDS reference_type_1:ty
 		{: RESULT=new PTypeArgument(ty, true, false); :}
 	|	QUESTION SUPER reference_type_1:ty
@@ -776,7 +779,7 @@ wildcard_1 ::=	QUESTION GT
 	;
 wildcard_2 ::=	QUESTION RSHIFT
 		{: RESULT=new PTypeArgument
-		          (lookupClassType("java.lang.Object"), true, true); :}
+		          (eagerClassType("java.lang","Object"), true, true); :}
 	|	QUESTION EXTENDS reference_type_2:ty
 		{: RESULT=new PTypeArgument(ty, true, false); :}
 	|	QUESTION SUPER reference_type_2:ty
@@ -784,7 +787,7 @@ wildcard_2 ::=	QUESTION RSHIFT
 	;
 wildcard_3 ::=	QUESTION URSHIFT
 		{: RESULT=new PTypeArgument
-		          (lookupClassType("java.lang.Object"), true, true); :}
+		          (eagerClassType("java.lang","Object"), true, true); :}
 	|	QUESTION EXTENDS reference_type_3:ty
 		{: RESULT=new PTypeArgument(ty, true, false); :}
 	|	QUESTION SUPER reference_type_3:ty
@@ -996,7 +999,7 @@ super ::=	EXTENDS class_type:ty
 		{: RESULT=ty; :}
 	;
 super_opt ::=	
-		{: parser.outerClasses.peek().superclass=new PEagerClassType(parser.rootDoc.pc, "java.lang", "Object"); :}
+		{: parser.outerClasses.peek().superclass=eagerClassType("java.lang","Object"); :}
 	|	super:ty
 		{: parser.outerClasses.peek().superclass=ty; :}
 	;
