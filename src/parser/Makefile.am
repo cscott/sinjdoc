@@ -13,6 +13,7 @@ Java15.java \
 Sym.java \
 FileUtil.java \
 TypeContext.java \
+TypeUtil.java \
 ParseControl.java \
 PArrayType.java \
 PClassDoc.java \
