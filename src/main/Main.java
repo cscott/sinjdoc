@@ -431,7 +431,7 @@ public class Main {
 	    });
 	addOption(new Option("-quiet", "", 1, "Be quiet (default)") {
 		void process(RunData rd, List<String> args) {
-		    rd.parseControl.setVerbose(false);
+		    rd.reporter.quiet=true;
 		}
 	    });
     }
@@ -495,6 +495,7 @@ public class Main {
 	final PrintWriter errWriter, warnWriter, noticeWriter;
 	String encoding=null;
 	int errNum=0, warnNum=0;
+	boolean quiet=false;
 	public void printError(String msg) { printError(null, msg); }
 	public void printWarning(String msg) { printWarning(null, msg); }
 	public void printNotice(String msg) { printNotice(null, msg); }
@@ -507,7 +508,7 @@ public class Main {
 	    warnNum++;
 	}
 	public void printNotice(SourcePosition pos, String msg) {
-	    print(noticeWriter, pos, msg);
+	    if (!quiet) print(noticeWriter, pos, msg);
 	}
 	private void print(PrintWriter pw, SourcePosition pos, String msg) {
 	    if (pos!=null) {
