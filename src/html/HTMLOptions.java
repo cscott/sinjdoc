@@ -45,7 +45,7 @@ class HTMLOptions {
     public void parseOptions(List<List<String>> options) {
 	for (Iterator<List<String>> it=options.iterator(); it.hasNext(); ) {
 	    List<String> anOption = it.next();
-	    optionMap.get(anOption.get(0)).process(anOption);
+	    optionMap.get(anOption.get(0).toLowerCase()).process(anOption);
 	}
 	// now deal with defaults. !J means that this logic is not implemented
 	// in javadoc; it is specific to GJDoc.
@@ -61,7 +61,8 @@ class HTMLOptions {
     }
     public boolean validOption(List<String> optionWithArgs,
 			       DocErrorReporter reporter) {
-	return optionMap.get(optionWithArgs.get(0)).validate
+	String option = optionWithArgs.get(0).toLowerCase();
+	return optionMap.get(option).validate
 	    (optionWithArgs, reporter);
     }
     public int optionLength(String option) {
@@ -87,7 +88,7 @@ class HTMLOptions {
     }
 
     Map<String,Option> optionMap=new HashMap<String,Option>();
-    void addOption(Option o) { optionMap.put(o.optionName, o); }
+    void addOption(Option o) { optionMap.put(o.optionName.toLowerCase(), o); }
     {
 	// options will be printed for help in the order in which they
 	// are created here.
