@@ -106,4 +106,5 @@ class PPackageDoc extends PDoc
 	}
 	return null; // not found.
     }
+    public String toString() { return name(); }
 }
