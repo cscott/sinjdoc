@@ -73,6 +73,11 @@ action code {:
       // Create classDoc object.
       PClassDoc outer = parser.outerClasses.empty() ?
 	  null : parser.outerClasses.peek();
+      // JLS 9.5: a member type declaration in an interface is implicitly
+      // static and public.
+      if (outer!=null && outer.isInterface())
+	  modifiers |= Modifier.PUBLIC | Modifier.STATIC;
+      
       PClassDoc cd = new PClassDoc(parser.rootDoc.pc, parser.expectedPackage,
 				   parser.compilationUnit, outer, modifiers,
 				   name, sp(pos), isInterface,
@@ -110,6 +115,8 @@ action code {:
       parser.lexer.clearComment();
       // this is the class to which this field belongs.
       PClassDoc parent = parser.outerClasses.peek();
+      // fields in interfaces are implicitly public. (JLS 6.6.1)
+      if (parent.isInterface()) modifiers |= Modifier.PUBLIC;
 
       for (Iterator<VariableDeclarator> it=variables.iterator();it.hasNext();){
 	  VariableDeclarator vd = it.next();
@@ -129,6 +136,8 @@ action code {:
       parser.lexer.clearComment();
       // this is the class to which this method belongs.
       PClassDoc parent = parser.outerClasses.peek();
+      // methods in interfaces are implicitly public. (JLS 6.6.1)
+      if (parent.isInterface()) modifiers |= Modifier.PUBLIC;
       // create the MethodDoc!
       PExecutableMemberDoc emd;
       if (md.name==null) { // constructor.
@@ -939,7 +948,7 @@ interface_member_declaration ::=
 constant_declaration ::=
 		field_declaration
 	// need to semantically check that modifiers of field declaration
-	// include only PUBIC, STATIC, or FINAL.  Other modifiers are
+	// include only PUBLIC, STATIC, or FINAL.  Other modifiers are
 	// disallowed.
 	;
 abstract_method_declaration ::=
