@@ -4,11 +4,24 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
 
-import java.nio.charset.*;
-import java.io.*;
+import java.nio.charset.CharsetEncoder;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 /**
  * The <code>HTMLUtil</code> class encapsulates several generally-used
@@ -60,6 +73,28 @@ class HTMLUtil {
 	    sb.append("&lt;unnamed package&gt;");
 	else
 	    sb.append(p.name());
+	sb.append("</a>");
+	return sb.toString();
+    }
+    public static String toLink(ClassDoc c, boolean withParam) {
+	StringBuffer sb = new StringBuffer("<a href=\"");
+	sb.append(toURL(c));
+	sb.append("\" class=\"");
+	if (c.isInterface()) sb.append("interfaceRef");
+	else if (c.isError()) sb.append("errorRef");
+	else if (c.isException()) sb.append("exceptionRef");
+	else sb.append("classRef");
+	sb.append("\">");
+	sb.append(c.name());
+	if (withParam && c.typeParameters().size()>0) {
+	    sb.append("&lt;");
+	    for (Iterator<ClassTypeVariable> it=c.typeParameters().iterator();
+		 it.hasNext(); ) {
+		sb.append(it.next().getName());
+		if (it.hasNext()) sb.append(",");
+	    }
+	    sb.append("&gt;");
+	}
 	sb.append("</a>");
 	return sb.toString();
     }
