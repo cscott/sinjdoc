@@ -25,11 +25,13 @@ class TypeContext {
     final PPackageDoc packageScope;
     final PCompilationUnit compilationUnit;
     final PClassDoc classScope; // class type variables available here.
-    final PMethodDoc methodScope; // method type variables available here.
+    final PExecutableMemberDoc methodScope;// method type variables avail here.
+    // type variables are useful in the context for after-the-fact resolution
+    // of @throws and @serialField tags, which may mention type variables.
 
     public TypeContext(ParseControl pc, PPackageDoc packageScope,
 		       PCompilationUnit compilationUnit, PClassDoc classScope,
-		       PMethodDoc methodScope) {
+		       PExecutableMemberDoc methodScope) {
 	this.pc = pc;
 	this.packageScope = packageScope;
 	this.compilationUnit = compilationUnit;
@@ -38,7 +40,7 @@ class TypeContext {
     }
     /** A "no context" constructor. Appropriate for fully-qualified names. */
     public TypeContext(ParseControl pc) {
-	this(pc, null, null, null, null);
+	this(pc, null);
     }
     /** A "package context" constructor.  */
     public TypeContext(ParseControl pc, PPackageDoc packageScope) {
@@ -47,41 +49,52 @@ class TypeContext {
 
     // type resolution methods.
 
-    // hack, until we split this properly.
-    ClassType lookupClassTypeName(String typeName) {
-	return (ClassType) lookupTypeName(typeName); // XXX HACK
+    /** Look up the given type name in this type context. The result can
+     *  be a type variable in the classScope. */
+    Type lookupTypeName(String typeName) {
+	// from experiments, qualified references to type variables seem to
+	// be disallowed.  So just check type variables in method & class
+	// scopes, and then fall back to lookupClassTypeName()
+	if (methodScope!=null)
+	    for (Iterator<MethodTypeVariable> it =
+		     methodScope.typeParameters().iterator(); it.hasNext(); ) {
+		MethodTypeVariable mtv = it.next();
+		if (typeName.equals(mtv.getName())) return mtv;
+	    }
+	PClassDoc enclosing = classScope;
+	while (enclosing!=null) {
+	    // class type variables.
+	    for (Iterator<ClassTypeVariable> it =
+		     enclosing.typeParameters().iterator();
+		 it.hasNext(); ) {
+		ClassTypeVariable ctv = it.next();
+		if (typeName.equals(ctv.getName())) return ctv;
+	    }
+	    // now go up to outer class
+	    enclosing = enclosing.containingClass();
+	}
+	// nope, fall back to lookupClassTypeName()
+	return lookupClassTypeName(typeName);
     }
 
-    /** Look up the given type name in this type context. The result can
-     *  be a type variable in the methodScope or classScope. */
-    Type lookupTypeName(String typeName) {
+    /** Look up the given type name in this type context.  The result is
+     *  guaranteed not to be a type variable. */
+    ClassType lookupClassTypeName(String typeName) {
 	int idx = typeName.lastIndexOf('.');
 	if (idx<0) return lookupSimpleTypeName(typeName);
 	else return lookupQualifiedTypeName(typeName.substring(0,idx),
 					    typeName.substring(idx+1));
     }
     // look up a simple type name; that is, one without a '.'
-    private Type lookupSimpleTypeName(String id) {
+    private ClassType lookupSimpleTypeName(String id) {
 	assert id.indexOf('.')<0;
 	// 1. not handling local class declarations.
-	// (1b) check method type variables.
-	if (methodScope!=null)
-	    for (Iterator<MethodTypeVariable> it =
-		     methodScope.typeParameters().iterator(); it.hasNext(); ) {
-		MethodTypeVariable mtv = it.next();
-		if (id.equals(mtv.getName())) return mtv;
-	    }
+	// (1b) not handling method type variables.
 	// 2. if the simple type name occurs within the scope of a visible
 	//    member type, it denotes that type (if more than one, error)
+	//    (not handling class type variables)
 	PClassDoc enclosing = classScope;
 	while (enclosing!=null) {
-	    // class type variables.
-	    for (Iterator<ClassTypeVariable> it =
-		     enclosing.type().typeParameters().iterator();
-		 it.hasNext(); ) {
-		ClassTypeVariable ctv = it.next();
-		if (id.equals(ctv.getName())) return ctv;
-	    }
 	    // class member types
 	    for (Iterator<ClassDoc> it=enclosing.innerClasses().iterator();
 		 it.hasNext(); ) {
@@ -98,7 +111,7 @@ class TypeContext {
 		     .iterator(); it.hasNext(); ) {
 		String qualName = it.next();
 		if (qualName.endsWith(id))
-		    return new TypeContext(pc).lookupTypeName(qualName);
+		    return new TypeContext(pc).lookupClassTypeName(qualName);
 	    }
 	    for (Iterator<PClassDoc> it = compilationUnit.classes
 		     .iterator(); it.hasNext(); ) {
@@ -130,7 +143,7 @@ class TypeContext {
 	//    we'll just make it opaque.
 	return new PEagerClassType(pc, "<unknown>", id);
     }
-    private Type lookupQualifiedTypeName(String Q, String id) {
+    private ClassType lookupQualifiedTypeName(String Q, String id) {
 	// recursively determine whether Q is a package or type name.
 	// then determine if 'id' is a type within Q
 	//   1) try package first.
