@@ -78,14 +78,14 @@ public class PRootDoc extends PDoc
 	assert packageMap.containsKey(name);
 	return packageMap.get(name);
     }
-    List<PClassDoc> findOrCreateClasses(File f, PackageDoc pkg) {
+    List<PClassDoc> findOrCreateClasses(File f, PPackageDoc pkg) {
 	if (!sourceFileMap.containsKey(f)) {
 	    assert f.exists() && f.isFile();
 	    List<PClassDoc> pcds = Arrays.asList(new PClassDoc[0]);
 	    try {
 		printNotice("Parsing "+f);
 		pcds = Arrays.asList
-		    ((PClassDoc[])new Java15(this, f).parse().value);
+		    ((PClassDoc[])new Java15(this, f, pkg).parse().value);
 	    } catch (java.io.FileNotFoundException e) {
 		assert false : "should never happen.";
 		printError("File not found: "+e);

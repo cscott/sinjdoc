@@ -22,21 +22,32 @@ JDK 1.5 Features added:
   an LALR(1) grammar.
 */
 parser code  {: 
+  File file;
   PRootDoc rootDoc;
+  PPackageDoc expectedPackage;
   Lexer lexer;
 
-  public Java15(PRootDoc rootDoc, File f) throws java.io.FileNotFoundException{
+  public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
+      throws java.io.FileNotFoundException {
       this();
+      this.file = file;
       this.rootDoc = rootDoc;
       this.lexer = new Lexer
-	  (new BufferedReader(new FileReader(f)), rootDoc.pc.sourceVersion);
+	  (new BufferedReader(new FileReader(file)), rootDoc.pc.sourceVersion);
+      this.expectedPackage = expectedPackage;
   }
 
-  public void syntax_error(java_cup.runtime.Symbol current) {
-    report_error("Syntax error (" + current.sym + ")", current);
+  public PSourcePosition sp(int leftPos) {
+      return new PSourcePosition(file, leftPos);
   }
-  public void report_error(String message, java_cup.runtime.Symbol info) {
-    lexer.errorMsg(message, info);
+  public void syntax_error(java_cup.runtime.Symbol current) {
+      rootDoc.printError(sp(current.left), "Syntax error ("+current.sym+")");
+  }
+:};
+action code {:
+  public PSourcePosition sp(int leftPos) { return parser.sp(leftPos); }
+  private static String combineWithDot(String a, String b) {
+      return (a==null)?b:(b==null)?a:(a+"."+b);
   }
 :};
 
@@ -46,7 +57,7 @@ terminal BOOLEAN; // primitive_type
 terminal BYTE, SHORT, INT, LONG, CHAR; // integral_type
 terminal FLOAT, DOUBLE; // floating_point_type
 terminal LBRACK, RBRACK; // array_type
-terminal IDENTIFIER; // name
+terminal String IDENTIFIER; // name
 terminal DOT; // qualified_name
 terminal SEMICOLON, MULT, COMMA, LBRACE, RBRACE, EQ, LPAREN, RPAREN, COLON;
 terminal PACKAGE; // package_declaration
@@ -119,10 +130,10 @@ non terminal class_or_interface_type;
 non terminal class_type, interface_type;
 non terminal array_type;
 // 19.5) Names
-non terminal name, simple_name, qualified_name;
+non terminal String name, simple_name, qualified_name;
 // 19.6) Packages
 non terminal compilation_unit;
-non terminal package_declaration_opt, package_declaration;
+non terminal String package_declaration_opt, package_declaration;
 non terminal import_declarations_opt, import_declarations;
 non terminal type_declarations_opt, type_declarations;
 non terminal import_declaration;
@@ -367,22 +378,45 @@ reference_type_3 ::=
 	;
 
 // 19.5) Names
-name	::=	simple_name
-	|	qualified_name
+name	::=	simple_name:n
+		{: RESULT=n; :}
+	|	qualified_name:n
+		{: RESULT=n; :}
 	;
-simple_name ::=	IDENTIFIER
+simple_name ::=	IDENTIFIER:id
+		{: RESULT=id; :}
 	;
 qualified_name ::=
-		name DOT IDENTIFIER
+		name:n DOT IDENTIFIER:id
+		{: RESULT=combineWithDot(n,id); :}
 	;
 
 // 19.6) Packages
 compilation_unit ::=
-		package_declaration_opt 
+		package_declaration_opt:pkgName
+		{:
+		if (parser.expectedPackage!=null &&
+		    !parser.expectedPackage.name().equals(pkgName)) {
+		    parser.rootDoc.printError
+			(sp(pkgNameleft), "Package name does not match "+
+			 "sourcepath location: expected "+
+			 parser.expectedPackage.name());
+		    parser.expectedPackage=null;
+		}
+		if (parser.expectedPackage==null)
+		  parser.expectedPackage=parser.rootDoc.findOrCreatePackage
+			(pkgName, false/* not expected to be included*/);
+		assert parser.expectedPackage!=null;
+		:}
 		import_declarations_opt
 		type_declarations_opt
 		;
-package_declaration_opt ::= package_declaration | ;
+package_declaration_opt ::=
+		package_declaration:pkgName
+		{: RESULT=pkgName; :}
+	| /* unnamed package */
+		{: RESULT=""; :}
+	;
 import_declarations_opt ::= import_declarations | ;
 type_declarations_opt   ::= type_declarations   | ;
 
@@ -395,7 +429,8 @@ type_declarations ::=
 	|	type_declarations type_declaration
 	;
 package_declaration ::= 
-		PACKAGE name SEMICOLON
+		PACKAGE name:n SEMICOLON
+		{: RESULT=n; :}
 	;
 import_declaration ::= 
 		single_type_import_declaration
