@@ -23,6 +23,7 @@ import java.util.Locale;
  * @version $Id$
  */
 public class ParseControl {
+    private static final boolean DEBUG=true;
     /** A means to report errors and warnings. */
     final DocErrorReporter reporter;
     /** Determines what classes and members to show. */
@@ -86,11 +87,42 @@ public class ParseControl {
 
     public PRootDoc parse() {
 	PRootDoc prd = new PRootDoc(this);
-	// now parse every specified source file and every source file
-	// contained in specified packages, adding the resulting
-	// PClassDoc objects to the appropriate PPackageDoc reported
-	// by the PRootDoc.
-	// XXX UNIMPLEMENTED
+	// parse every source file in specified packages.
+	List<PClassDoc> allClasses = new ArrayList<PClassDoc>();
+	for (Iterator<String> it=packages.iterator(); it.hasNext(); ) {
+	    PPackageDoc ppd = prd.findOrCreatePackage(it.next(), true);
+	    for (Iterator<File> it2=sourcePath.sourceFilesInPackage(ppd.name())
+		     .iterator(); it2.hasNext(); ) {
+		File f = it2.next();
+		// note that 'package' is non-null here because package is
+		// always included.
+		List<PClassDoc> pcds = prd.findOrCreateClasses(f, ppd);
+		allClasses.addAll(pcds);
+		// these classes should already have been added to the package
+		if (DEBUG) assert ppd.includedClasses().containsAll(pcds);
+	    }
+	}
+	// now parse the stand-alone source files.
+	List<PClassDoc> specifiedClasses = new ArrayList<PClassDoc>();
+	for (Iterator<File> it=sourceFiles.iterator(); it.hasNext(); ) {
+	    File f = it.next();
+	    // note that 'package' is null here because package may not be
+	    // included.
+	    List<PClassDoc> pcds = prd.findOrCreateClasses(f, null);
+	    // add these classes to 'all classes' and 'specified classes'
+	    allClasses.addAll(pcds);
+	    specifiedClasses.addAll(pcds);
+	    // these classes should have been added to their packages, too.
+	    // (harder to check this)
+	    if (DEBUG)
+		for (Iterator<PClassDoc> it2=pcds.iterator(); it2.hasNext(); ){
+		    PClassDoc cd=it2.next();
+		    assert cd.containingPackage().includedClasses()
+			.contains(cd);
+		}
+	}
+	// XXX we don't do anything with allClasses or specifiedClasses.
+	// i think we're done.
 	return prd;
     }
 }

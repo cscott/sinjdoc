@@ -8,7 +8,9 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.SourcePosition;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,8 @@ public class PRootDoc extends PDoc
     final PSourcePosition overviewPosition;
     private final Map<String,PPackageDoc> packageMap =
 	new HashMap<String,PPackageDoc>();
+    private final Map<File,List<PClassDoc>> sourceFileMap =
+	new HashMap<File,List<PClassDoc>>();
     private final Map<String,PClassDoc> classMap =
 	new HashMap<String,PClassDoc>();
     PRootDoc(ParseControl pc) {
@@ -46,13 +50,17 @@ public class PRootDoc extends PDoc
     private List<List<String>> options=null;
 
     public Collection<ClassDoc> classes() {
-	assert false : "XXX should only include specified classes";
-	// XXX should really build this list by combining specifiedClasses()
-	// and classes contains within specifiedPackages().
-	return Collections.unmodifiableCollection(classMap.values());
+	List<ClassDoc> result = new ArrayList<ClassDoc>
+	    (specifiedClasses());
+	for (Iterator<PackageDoc> it=specifiedPackages().iterator();
+	     it.hasNext(); )
+	    result.addAll(it.next().includedClasses());
+	return Collections.unmodifiableCollection(result);
     }
     public ClassDoc classNamed(String qualifiedName) {
-	throw new RuntimeException("Unimplemented"); // XXX
+	if (classMap.containsKey(qualifiedName))
+	    return classMap.get(qualifiedName);
+	return null; // not found.
     }
     // returns null if the named package is not in the packageMap.
     public PPackageDoc packageNamed(String name) {
@@ -70,8 +78,34 @@ public class PRootDoc extends PDoc
 	assert packageMap.containsKey(name);
 	return packageMap.get(name);
     }
+    List<PClassDoc> findOrCreateClasses(File f, PackageDoc pkg) {
+	if (!sourceFileMap.containsKey(f)) {
+	    assert f.exists() && f.isFile();
+	    List<PClassDoc> pcds = Arrays.asList(new PClassDoc[0]);
+	    try {
+		pcds = (List/*<PClassDoc>*/)
+		    new Java15(this, f).parse().value;
+	    } catch (java.io.FileNotFoundException e) {
+		assert false : "should never happen.";
+		printError("File not found: "+e);
+	    } catch (Exception e) {
+		// syntax error, etc.
+		printError("Syntax error: "+e); // XXX use source pos
+	    }
+	    sourceFileMap.put(f, pcds);
+	    for (Iterator<PClassDoc> it=pcds.iterator(); it.hasNext(); ) {
+		PClassDoc pcd = it.next();
+		classMap.put(pcd.qualifiedName(), pcd);
+	    }
+	}		
+	return sourceFileMap.get(f);
+    }
     public List<ClassDoc> specifiedClasses() {
-	throw new RuntimeException("Unimplemented"); // XXX
+	List<ClassDoc> result = new ArrayList<ClassDoc>
+	    (pc.sourceFiles.size());
+	for (Iterator<File> it=pc.sourceFiles.iterator(); it.hasNext(); )
+	    result.addAll(findOrCreateClasses(it.next(),null/*not included*/));
+	return Collections.unmodifiableList(result);
     }
     public List<PackageDoc> specifiedPackages() {
 	List<PackageDoc> result = new ArrayList<PackageDoc>

@@ -1,6 +1,10 @@
 package net.cscott.gjdoc.parser;
 
 import java_cup.runtime.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.List;
 
 /* Java 1.5 parser for CUP.
  * (actually "Java 1.4 with JSR-14" parser,
@@ -16,11 +20,15 @@ JDK 1.5 Features added:
   an LALR(1) grammar.
 */
 parser code  {: 
+  PRootDoc rootDoc;
   Lexer lexer;
 
-  public Java15(Lexer l) {
-    this();
-    lexer=l;
+  public Java15(PRootDoc rootDoc, File f) throws java.io.FileNotFoundException{
+      this();
+      this.rootDoc = rootDoc;
+      // XXX CIRCULAR DEPENDENCY.
+      this.lexer = new net.cscott.gjdoc.lexer.Lexer
+	  (new BufferedReader(new FileReader(f)), rootDoc.pc.sourceVersion);
   }
 
   public void syntax_error(java_cup.runtime.Symbol current) {
@@ -99,7 +107,7 @@ terminal ASSERT; // assert_statement
 terminal PLT;
 
 // 19.2) The Syntactic Grammar
-non terminal goal;
+non terminal List goal;
 // 19.3) Lexical Structure
 non terminal literal;
 // 19.4) Types, Values, and Variables
