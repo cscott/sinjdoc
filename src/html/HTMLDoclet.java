@@ -40,12 +40,58 @@ public class HTMLDoclet extends Doclet {
 	styleWriter.copyRemainder(root);
     }
     void makeTopIndex(RootDoc root, HTMLUtil hu) {
+	// THREE CASES:
+	//   zero packages specified: use index-nopackages.html with
+	//     first class page in main frame.
+	//   one package specified: use index-nopackages.html with
+	//     package overview in main frame.
+	//   multiple packages specified: use index-packages.html
+	//(remember to use <unnamed package> in package list where appropriate)
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("index.html"), null, null);
+	int numPackages = root.specifiedPackages().size();
 	TemplateWriter indexWriter = new TemplateWriter
-	    ("index.html"/*template resource name*/, hu, context);
+	    (numPackages<2 ? "index-nopackages.html" : "index-packages.html",
+	     hu, context);
+	String mainURL=null;
+	if (numPackages==0) {
+	    mainURL=toURL((ClassDoc)Collections.min((List)root.specifiedClasses()));
+	} else if (numPackages==1) {
+	    if (root.specifiedClasses().size()>0)
+		mainURL="overview-summary.html";
+	    else
+		mainURL=toURL(root.specifiedPackages().get(0));
+	}
+	if (numPackages<2) {
+	    mainURL = context.curURL.makeRelative(mainURL);
+	    indexWriter.copyToSplit(root);
+	    indexWriter.print(mainURL);
+	    indexWriter.copyToSplit(root);
+	    indexWriter.print(mainURL);
+	}
 	indexWriter.copyRemainder(root);
+	// done!
     }
+    public String toURL(ClassDoc c) {
+	StringBuffer sb = new StringBuffer();
+	for (ClassDoc p=c; p!=null; ) {
+	    sb.insert(0, p.name());
+	    p = p.containingClass();
+	    if (p!=null) sb.insert(0, '.');
+	}
+	sb.insert(0, toBaseURL(c.containingPackage()));
+	sb.append(".html");
+	return sb.toString();
+    }
+    public String toURL(PackageDoc p) {
+	return toBaseURL(p)+"package-summary.html";
+    }
+    public String toBaseURL(PackageDoc p) {
+	String name = p.name();
+	if (name.length()==0) return name;
+	return name.replace('.','/')+"/";
+    }
+	
 
     public boolean start(RootDoc root) {
 	// parse options.

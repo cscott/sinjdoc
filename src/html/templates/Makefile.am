@@ -4,8 +4,9 @@ JAVAROOT=$(top_builddir)/classes
 TEMPLATE_ROOT=$(JAVAROOT)/net/cscott/gjdoc/html/templates
 
 TEMPLATE_FILES = \
-stylesheet.css \
-index.html
+index-packages.html \
+index-nopackages.html \
+stylesheet.css
 
 # move templates into place
 all-am:	$(addprefix $(TEMPLATE_ROOT)/,$(TEMPLATE_FILES))
