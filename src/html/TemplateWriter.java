@@ -19,6 +19,7 @@ import net.cscott.gjdoc.Type;
 import net.cscott.gjdoc.TypeVariable;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
+import java.lang.reflect.Modifier;
 import java.io.*;
 import java.util.*;
 /**
@@ -411,6 +412,29 @@ class TemplateWriter extends PrintWriter  {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    TagEmitter.emit(tw, context.specificItem().tags(),
 				    context);
+		}
+	    });
+	register("MODIFIER_SUMMARY", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null || context.curClass!=null;
+		    int m = (context.curMember!=null) ?
+			context.curMember.modifierSpecifier() :
+			context.curClass.modifierSpecifier();
+		    // only include PROTECTED STATIC ABSTRACT in summary?
+		    m &= (Modifier.PROTECTED | Modifier.STATIC |
+			  Modifier.ABSTRACT);
+		    tw.write(Modifier.toString(m));
+		}
+	    });
+	register("MODIFIERS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curMember!=null || context.curClass!=null;
+		    int m = (context.curMember!=null) ?
+			context.curMember.modifierSpecifier() :
+			context.curClass.modifierSpecifier();
+		    // modifiers always hide NATIVE and SYNCHRONIZED
+		    m &= ~(Modifier.NATIVE | Modifier.SYNCHRONIZED);
+		    tw.write(Modifier.toString(m));
 		}
 	    });
 	register("FIELD_TYPE", new TemplateAction() {
