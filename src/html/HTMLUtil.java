@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 /**
@@ -134,18 +135,9 @@ class HTMLUtil {
     // never emits bounds information.
     public static String toLink(URLContext context, ClassDoc c,
 				boolean withParam) {
-	StringBuffer sb = new StringBuffer("<a href=\"");
-	sb.append(context.makeRelative(toURL(c)));
-	sb.append("\" class=\"");
-	if (c.isInterface()) sb.append("interfaceRef");
-	else if (c.isError()) sb.append("errorRef");
-	else if (c.isException()) sb.append("exceptionRef");
-	else sb.append("classRef");
-	sb.append("\">");
-	int idx = sb.length();
-	sb.append(c.name());
+	StringBuffer sb=new StringBuffer(c.name()); 
 	for (ClassDoc p=c.containingClass(); p!=null; p=p.containingClass())
-	    sb.insert(idx, p.name()+"."); // parent class also in link text
+	    sb.insert(0, p.name()+"."); // parent class also in link text
 	if (withParam && c.typeParameters().size()>0) {
 	    sb.append("&lt;");
 	    for (Iterator<ClassTypeVariable> it=c.typeParameters().iterator();
@@ -155,6 +147,20 @@ class HTMLUtil {
 	    }
 	    sb.append("&gt;");
 	}
+	return toLink(context, c, sb.toString()/*link text*/);
+    }
+    // allows caller-specified link text.
+    public static String toLink(URLContext context, ClassDoc c,
+				String linkText) {
+	StringBuffer sb = new StringBuffer("<a href=\"");
+	sb.append(context.makeRelative(toURL(c)));
+	sb.append("\" class=\"");
+	if (c.isInterface()) sb.append("interfaceRef");
+	else if (c.isError()) sb.append("errorRef");
+	else if (c.isException()) sb.append("exceptionRef");
+	else sb.append("classRef");
+	sb.append("\">");
+	sb.append(linkText);
 	sb.append("</a>");
 	return sb.toString();
     }
@@ -181,12 +187,48 @@ class HTMLUtil {
 	    }
 	    public String visit(ClassType t) {
 		ClassDoc cd = t.asClassDoc();
-		if (cd!=null && cd.isIncluded())
-		    return toLink(context, cd, false);
+		if (cd!=null && cd.isIncluded()) {
+		    // individually link inner classes.
+		    StringBuffer sb=new StringBuffer();
+		    for ( ; cd!=null; cd=cd.containingClass()) {
+			if (sb.length()>0) sb.insert(0, ".");
+			sb.insert(0, toLink(context, cd, cd.name()));
+		    }
+		    return sb.toString();
+		}
 		// XXX look up w/ -link options here.
 		return t.typeName();
 	    }
 	    public String visit(ParameterizedType t) {
+		ClassDoc cd = t.getBaseType().asClassDoc();
+		if (cd!=null) {
+		    boolean wasStatic=false;
+		    StringBuffer sb = new StringBuffer();
+		    List<Type> lt = t.getActualTypeArguments();
+		    ListIterator<Type> li=lt.listIterator(lt.size());
+		    do {
+			int numParam = cd.typeParameters().size();
+			if (numParam > 0 && !wasStatic) {
+			    sb.insert(0, "&gt;");
+			    for (int i=0; i<numParam; i++) {
+				sb.insert(0, li.previous().accept(this));
+				if (i+1<numParam)
+				    sb.insert(0, ",");
+			    }
+			    sb.insert(0, "&lt;");
+			}
+			sb.insert(0, cd.isIncluded() ?
+				  toLink(context, cd, cd.name()) : cd.name());
+			wasStatic=cd.isStatic();
+			cd = cd.containingClass();
+			if (cd!=null) sb.insert(0, ".");
+		    } while (cd!=null);
+		    assert !li.hasPrevious();
+		    return sb.toString();
+		}
+		// fall-back when we can't figure out where the parameters go.
+		// XXX wish this weren't needed; investigate alternate
+		//     representation of (nested) ParameterizedType?
 		StringBuffer sb = new StringBuffer
 		    (t.getBaseType().accept(this));
 		sb.append("&lt;");
