@@ -54,9 +54,9 @@ body.class_page h2 + h3 { border-style: none; }
 body.class_page p.packageName { font-weight: bold; font-size: 80%; margin-bottom: 0; }
 body.class_page p.packageName + * { margin-top: 0; }
 
-body.class_page *.memberName { font-family: monospace; white-space: nowrap; }
+body.class_page *.memberName { font-family: Andale Mono, monospace; white-space: nowrap; }
 body.class_page div.memberDescription { margin: 1em 0 1em 2em; }
-body.class_page table.summary td:first-child { font-family: monospace; text-align: right; padding-right: .5em; }
+body.class_page table.summary td:first-child { font-family: Andale Mono, monospace; text-align: right; padding-right: .5em; }
 body.class_page table.summary div.memberDescription { margin-top: 0; margin-bottom: .2em; }
 
 /* navbar formatting */
@@ -80,4 +80,5 @@ div.bottom {  font-size: 8pt; margin-top: 1em; }
 
 /* tag formatting */
 p.tag *.tagName { font-weight: bold; }
-p.tag { margin-top: 0; margin-bottom: 0; } /* compress tags */
+p.tag { margin-top: .5em; margin-bottom: 0; }
+p.tag + p.tag { margin-top: 0; } /* compress tags */
