@@ -134,6 +134,15 @@ public class HTMLDoclet extends Doclet {
 	    ("class-page.html"/*resource*/, hu, context);
 	tw.copyRemainder(root); // done!
     }
+    void makePackageList(RootDoc root, HTMLUtil hu) {
+	URLContext context = new URLContext("package-list");
+	// note that package-list will be in specified output encoding.
+	PrintWriter pw = hu.fileWriter(context, options);
+	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
+	     it.hasNext(); )
+	    pw.println(it.next().name());
+	pw.close(); // done!
+    }
 
     public boolean start(RootDoc root) {
 	// create our HTMLUtil object.
@@ -168,7 +177,7 @@ public class HTMLDoclet extends Doclet {
 	    // create class page.
 	    makeClassPage(root, hu, cd);
 	}
-	// XXX create package-list
+	makePackageList(root, hu);
 	if (options.emitUsePage) {
 	    // XXX create class-use
 	}
