@@ -414,6 +414,13 @@ class TemplateWriter extends PrintWriter  {
 				    context);
 		}
 	    });
+	register("SUPERCLASS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL,
+					     context.curClass.superclass()));
+		}
+	    });
 	register("MODIFIER_SUMMARY", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curMember!=null || context.curClass!=null;
@@ -501,7 +508,11 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write("&lt;");
 		    for(Iterator<TypeVariable> it=ltv.iterator();
 			it.hasNext(); ) {
-			tw.write(it.next().getName());
+			TypeVariable tv = it.next();
+			if (context.curMember==null)
+			    tw.write(tv.getName()); /* used in headings, etc */
+			else /* in method summaries, link the params */
+			    tw.write(HTMLUtil.toLink(context.curURL, tv));
 			if (it.hasNext()) tw.write(",");
 		    }
 		    tw.write("&gt;");
