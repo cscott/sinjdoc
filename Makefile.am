@@ -31,7 +31,7 @@ doc:
 	$(MAKE) doc-link
 	$(RM) -rf doc
 	java -ea -jar @PACKAGE_TARNAME@.jar \
-	   -version -author -breakiterator -source 1.5 \
+	   -version -author -breakiterator -source 1.5 -quiet \
 	   -overview src/overview.html \
 	   -windowtitle "@PACKAGE_STRING@ documentation" \
 	   -doctitle "@PACKAGE_STRING@ documentation" \
