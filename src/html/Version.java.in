@@ -17,7 +17,7 @@ public abstract class Version {
      *  @return "@PACKAGE_STRING@" */
     public static final String PACKAGE_STRING = "@PACKAGE_STRING@";
     /** The address to which bug reports should be sent.
-     *  @return "@PACKAGE_BUGREPORT@" */
+     */ //  @return "@PACKAGE_BUGREPORT@" // keep email address off the 'net.
     public static final String PACKAGE_BUGREPORT = "@PACKAGE_BUGREPORT@";
 
     /** Prints the package version if invoked. */
