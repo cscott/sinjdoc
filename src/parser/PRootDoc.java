@@ -9,6 +9,7 @@ import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.SourcePosition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,10 @@ public class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
     final String overviewText;
     final PSourcePosition overviewPosition;
+    private final Map<String,PPackageDoc> packageMap =
+	new HashMap<String,PPackageDoc>();
+    private final Map<String,PClassDoc> classMap =
+	new HashMap<String,PClassDoc>();
     PRootDoc(ParseControl pc) {
 	super(pc);
 	Pair<String,PSourcePosition> pair =
@@ -40,26 +45,31 @@ public class PRootDoc extends PDoc
     }
     private List<List<String>> options=null;
 
-    public List<ClassDoc> classes() {
-	throw new RuntimeException("Unimplemented"); // XXX
+    public Collection<ClassDoc> classes() {
+	assert false : "XXX should only include specified classes";
+	// XXX should really build this list by combining specifiedClasses()
+	// and classes contains within specifiedPackages().
+	return Collections.unmodifiableCollection(classMap.values());
     }
     public ClassDoc classNamed(String qualifiedName) {
 	throw new RuntimeException("Unimplemented"); // XXX
     }
+    // returns null if the named package is not in the packageMap.
     public PPackageDoc packageNamed(String name) {
 	if (packageMap.containsKey(name)) return packageMap.get(name);
-	return packageNamed(name, pc.packages.contains(name));
+	return null;
     }
-    private PPackageDoc packageNamed(String name, boolean isIncluded) {
+    /** Look for a package of the given name, creating it if it doesn't
+     *  already exist in the packageMap. */
+    PPackageDoc findOrCreatePackage(String name, boolean isIncluded) {
 	if (!packageMap.containsKey(name)) {
+	    assert isIncluded==pc.packages.contains(name);
 	    PPackageDoc ppd = new PPackageDoc(pc, name, isIncluded);
 	    packageMap.put(name, ppd);
 	}
 	assert packageMap.containsKey(name);
 	return packageMap.get(name);
     }
-    private final Map<String,PPackageDoc> packageMap =
-	new HashMap<String,PPackageDoc>();
     public List<ClassDoc> specifiedClasses() {
 	throw new RuntimeException("Unimplemented"); // XXX
     }
@@ -67,7 +77,7 @@ public class PRootDoc extends PDoc
 	List<PackageDoc> result = new ArrayList<PackageDoc>
 	    (pc.packages.size());
 	for (Iterator<String> it=pc.packages.iterator(); it.hasNext(); )
-	    result.add(packageNamed(it.next(), true));
+	    result.add(findOrCreatePackage(it.next(), true));
 	return Collections.unmodifiableList(result);
     }
 

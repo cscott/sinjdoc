@@ -85,6 +85,12 @@ public class ParseControl {
     public FileUtil getSourcePath() { return sourcePath; }
 
     public PRootDoc parse() {
-	return new PRootDoc(this);
+	PRootDoc prd = new PRootDoc(this);
+	// now parse every specified source file and every source file
+	// contained in specified packages, adding the resulting
+	// PClassDoc objects to the appropriate PPackageDoc reported
+	// by the PRootDoc.
+	// XXX UNIMPLEMENTED
+	return prd;
     }
 }

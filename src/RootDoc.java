@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import java.util.Collection;
 import java.util.List;
 /**
  * The <code>RootDoc</code> class holds the information from one run of
@@ -19,7 +20,7 @@ public interface RootDoc extends Doc, DocErrorReporter {
      * both the classes returned by <code>specifiedClasses()</code> as well
      * as classes within the packages returned by
      * <code>specifiedPackages()</code>. */
-    public List<ClassDoc> classes();
+    public Collection<ClassDoc> classes();
     /**
      * Return a <code>ClassDoc</code> for the specified class or interface
      * name.
