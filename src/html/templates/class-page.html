@@ -77,25 +77,39 @@ class="implements">implements <a href="List.html">List</a></span></p>
    @TAGS@
    </div>
 
+@FORALL_FIELDS@
+@IF_FIRST@
    <table>
      <tr><th colspan="2">Field Summary</th></tr>
+@END@
      <tr><td>protected int</td><td><dl><dt><a
-       href="#modCount">modCount</a></dt><dd>The number of times this
-	 list has been <i>structurally modified</i>.</dd></dl></td></tr>
+       href="#modCount">modCount</a></dt><dd>@TAG_SUMMARY@</dd></dl></td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
+@FORALL_CONSTRUCTORS@
+@IF_FIRST@
    <table>
      <tr><th colspan="2">Constructor Summary</th></tr>
+@END@
      <tr><td>protected</td><td><dl><dt><a
-       href="#AbstractList()">AbstractList</a>()</dt><dd>Sole constructor.
-	 </dd></dl></td></tr>
+       href="#AbstractList()">AbstractList</a>()</dt><dd>@TAG_SUMMARY@</dd></dl></td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
+@FORALL_METHODS@
+@IF_FIRST@
    <table>
      <tr><th colspan="2">Method Summary</th></tr>
+@END@
      <tr><td>abstract <a href="Object.html">Object</a></td><td><dl><dt><a
-       href="#get(int)">get</a>(int index)</dt><dd>Returns the element
-	 at the specified position in this list.
-	 </dd></dl></td></tr>
+       href="#get(int)">get</a>(int index)</dt><dd>@TAG_SUMMARY@</dd></dl></td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
 
    <p class="inherited">
     <span class="header">Methods inherited from class java.util.<a
@@ -116,20 +130,32 @@ class="implements">implements <a href="List.html">List</a></span></p>
     <a href="#contains">contains</a>
    </p>
 
+@FORALL_FIELDS@
+@IF_FIRST@
    <h2>Field Detail</h2>
+@END@
    <h3>modCount</h3>
    <dl><dt>protected transient int modCount</dt>
-   <dd><p>blah blah blah</p><p>blah blah</p></dd></dl>
+   <dd>@TAGS@</dd></dl>
+@END@
+
+@FORALL_CONSTRUCTORS@
+@IF_FIRST@
    <h2>Constructor Detail</h2>
+@END@
    <h3>AbstractList</h3>
    <dl><dt>protected AbstractList()</dt>
-   <dd>Sole constructor.</dd></dl>
+   <dd>@TAGS@</dd></dl>
+@END@
+
+@FORALL_METHODS@
+@IF_FIRST@
    <h2>Method Detail</h2>
+@END@
    <h3>add</h3>
    <dl><dt>public boolean add(Object o)</dt>
-   <dd>Appends the specified element.
-      <dl><dt>Returns:</dt><dd>true</dd></dl>
-   </dd></dl>
+   <dd>@TAGS@</dd></dl>
+@END@
    
    <div class="navbar">
     <p class="nav navtop">
