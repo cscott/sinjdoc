@@ -21,13 +21,13 @@ run:
 	$(MAKE)
 	java -ea -jar @PACKAGE_TARNAME@.jar
 
-# doesn't work because javadoc doesn't support GJ yet.
-javadoc:
+doc:
+	$(MAKE)
 	$(RM) -rf doc doc-link
-	mkdir -p doc doc-link/net/cscott/gjdoc
-	cd doc-link/net/cscott/gjdoc ; for f in html parser ; do \
-	  ln -s ../../../../src/$$f . ; done
-	javadoc -version -author -breakiterator -source 1.5 \
+	mkdir -p doc doc-link/net/cscott/
+	cd doc-link/net/cscott/ ; ln -s ../../../src gjdoc
+	java -ea -jar @PACKAGE_TARNAME@.jar \
+	   -version -author -breakiterator -source 1.5 \
 	   -doctitle "GJDoc documentation" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
@@ -60,4 +60,4 @@ needs-cvs:
 	  exit 1; \
 	fi
 
-.PHONY: list update needs-cvs ChangeLog
+.PHONY: list update needs-cvs ChangeLog doc
