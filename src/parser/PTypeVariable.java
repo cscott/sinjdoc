@@ -3,9 +3,11 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.ArrayType;
 import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.ParameterizedType;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,10 +39,8 @@ abstract class PTypeVariable
 	boolean seenClass=false;
 	for (Iterator<Type> it=bounds.iterator(); it.hasNext(); ) {
 	    Type t = it.next();
-	    assert t instanceof ClassType || t instanceof ParameterizedType :
-		"only a ClassOrInterfaceType (including parameterized types) "+
-		"is a valid bound on a type variable.";
-	    if (!TypeUtil.isInterface(t)) {
+	    assert !(t instanceof ArrayType);
+	    if (!(t instanceof TypeVariable || TypeUtil.isInterface(t))) {
 		assert !seenClass : "at most one bound can be non-interface";
 		seenClass=true;
 	    }

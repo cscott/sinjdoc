@@ -273,6 +273,7 @@ abstract class TypeUtil {
 		return subst(t, sc);
 	    }
 	    public Type visit(TypeVariable t) {
+		assert false: "superclass of a type variable!?";
 		// return type of non-interface bound, if there is one.
 		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
 		    Type bound = it.next();
@@ -309,6 +310,7 @@ abstract class TypeUtil {
 		return subst(t, superinterfaces(t.getBaseType()));
 	    }
 	    public List<Type> visit(TypeVariable t) {
+		assert false : "superinterfaces of a type variable?";
 		// kinda bogus; return least interface bound, if there is one.
 		Type least=null;
 		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
@@ -344,15 +346,17 @@ abstract class TypeUtil {
 		Type least=null;
 		// the erasure of a type variable is:
 		//  a) if the variable as a class type among its bounds, the
-		//     erasure of that class type.
+		//     erasure of that class type. (erase type variable
+		//     references to determine whether they are class type)
 		//  b) otherwise, if the bound consists of interface types only
-		//     (type variables and array types are not allowed in
+		//     (erase type variables to tell; array type are illegal in
 		//      bounds) the interface among the erasures of all
 		//      interface types which has the least canonical name
 		//      (JLS 6.7) using lexicographic ordering.
 		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
-		    Type bound = it.next();
-		    if (!isInterface(bound)) return erasedType(bound);
+		    Type bound = erasedType(it.next());
+		    assert !(bound instanceof TypeVariable);
+		    if (!isInterface(bound)) return bound;
 		    if (least==null ||
 			least.signature().compareTo(bound.signature()) > 0)
 			least = bound;
