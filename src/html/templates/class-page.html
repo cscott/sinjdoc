@@ -53,20 +53,34 @@
    </div>
    <p class="packageName">@PKGNAME@</p>
    <h1>@IF_INTERFACE@ Interface @END@ @IFNOT_INTERFACE@ Class @END@ @CLASSSHORTNAME@@TYPEPARAMS@</h1>
+@IF_INTERFACE@
+<!--
+   @IF_SUPERINTERFACES@
+   <p class="superinterfaces">
+   All superinterfaces: @ALL_SUPERINTERFACES@
+   </p>
+   @END@
+   <p class="superinterfaces">
+   All known subinterfaces: @ALL_SUBINTERFACES@
+   </p>
    <p class="implementingClasses">
-   All known implementing classes:
-     <a href="CharBuffer.html">CharBuffer</a>
-     <a href="String.html">String</a>
-     <a href="StringBuffer.html">StringBuffer</a>
+   All known implementing classes: @ALL_IMPLEMENTATIONS@
    </p>
+-->
+@END@
+@IFNOT_INTERFACE@
+   <!-- XXX class hierarchy diagram goes here -->
+<!--
+   @IF_SUPERINTERFACES@
    <p class="implementedInterfaces">
-   All implemented interfaces:
-     <a href="CharBuffer.html">CharBuffer</a>
+   All implemented interfaces: @ALL_SUPERINTERFACES@
    </p>
+   @END@
    <p class="directSubclasses">
-   Direct known subclasses:
-     <a href="CharBuffer.html">CharBuffer</a>
+   Direct known subclasses: @ALL_SUBCLASSES@
    </p>
+-->
+@END@
 
    <p class="declaration">@MODIFIERS@
    @IF_INTERFACE@ interface @END@ @IFNOT_INTERFACE@ class @END@
@@ -117,6 +131,7 @@
 @END@
 @END@
 
+<!--
    <p class="inherited">
     <span class="header">Methods inherited from class java.util.<a
    href="AbstractCollection.html">AbstractCollection</a></span>
@@ -135,6 +150,7 @@
     <a href="#addAll">addAll</a>
     <a href="#contains">contains</a>
    </p>
+-->
 
 @FORALL_FIELDS@
 @IF_FIRST@
