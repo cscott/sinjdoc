@@ -41,6 +41,8 @@ parser code  {:
       new LinkedHashMap<String,PTypeVariable>();
   boolean isClassTypeVariable=false;
   private PSourcePosition startPos;
+  int unnamedContext=0;
+  int anonClassIndex=1;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
       throws java.io.FileNotFoundException {
@@ -67,6 +69,17 @@ action code {:
   private static String combineWithDot(String a, String b) {
       return (a==null)?b:(b==null)?a:(a+"."+b);
   }
+  /** Start an unnamed context: a method-local definition, or an anonymous
+   *  class or interface. */
+  private void startUnnamedContext() { parser.unnamedContext++; }
+  /** End the unnamed context. */
+  private void endUnnamedContext() { parser.unnamedContext--; }
+  /** Determine if we are currently in an unnamed context. */
+  private boolean isUnnamedContext() { return parser.unnamedContext > 0; }
+  /** Return a new name string for an anonymouc class or context. */
+  private String newAnonClassName() {
+	return Integer.toString(parser.anonClassIndex++);
+  }
   // before type parameters and superclass/interfaces declarations
   private void startTypeDeclaration(int modifiers, String name,
 				    boolean isInterface, int pos) {
@@ -85,10 +98,11 @@ action code {:
 				   sp(parser.lexer.lastCommentPos()));
       parser.lexer.clearComment();
       // add to enclosing objects (package/class/compilation unit)
-      if (outer!=null)
-	  outer.innerClasses.add(cd);
-      parser.expectedPackage.classes.add(cd.type());
-      parser.compilationUnit.classes.add(cd);
+      if (!isUnnamedContext()) { // only if a named class.
+	  if (outer!=null) outer.innerClasses.add(cd);
+	  parser.expectedPackage.classes.add(cd.type());
+	  parser.compilationUnit.classes.add(cd);
+      } else newAnonClassName(); // a new anonymous context.
       // this is new outer class.
       parser.outerClasses.push(cd);
       // new environment scope for type variables.
@@ -968,7 +982,7 @@ variable_initializers ::=
 	;
 
 // 19.11) Blocks and Statements
-block ::=	LBRACE block_statements_opt RBRACE
+block ::=	LBRACE {: startUnnamedContext(); :} block_statements_opt {: endUnnamedContext(); :} RBRACE
 	;
 block_statements_opt ::=
 	|	block_statements
@@ -1198,11 +1212,21 @@ class_instance_creation_expression ::=
 	// actually only class_type is valid in the next production, but
 	// that would lead to a grammar conflict.
 		NEW class_or_interface_type LPAREN argument_list_opt RPAREN
-	|	NEW class_or_interface_type LPAREN argument_list_opt RPAREN class_body
+	|	NEW class_or_interface_type:ty LPAREN argument_list_opt RPAREN 
+		{: startUnnamedContext();
+		   startTypeDeclaration(0, newAnonClassName(), false, tyleft);
+		   midTypeDeclaration(); :}
+		class_body
+		{: endTypeDeclaration(); endUnnamedContext(); :}
 	|	primary DOT NEW IDENTIFIER type_arguments_opt
 			LPAREN argument_list_opt RPAREN
-	|	primary DOT NEW IDENTIFIER type_arguments_opt
-			LPAREN argument_list_opt RPAREN class_body
+	|	primary DOT NEW IDENTIFIER:id type_arguments_opt
+			LPAREN argument_list_opt RPAREN
+		{: startUnnamedContext();
+		   startTypeDeclaration(0, newAnonClassName(), false, idleft);
+		   midTypeDeclaration(); :}
+		class_body
+		{: endTypeDeclaration(); endUnnamedContext(); :}
 	;
 argument_list_opt ::=
 	|	argument_list
