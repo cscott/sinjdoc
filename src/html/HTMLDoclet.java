@@ -28,6 +28,7 @@ public class HTMLDoclet extends Doclet {
 	    System.out.println("PACKAGE: "+pd.name());
 	    System.out.println("TAGS: "+pd.tags());
 	    System.out.println("FIRST: "+pd.firstSentenceTags());
+	    System.out.println("CLASSES: "+pd.allClasses());
 	}
 	// create main index page
 	// for each package listed...
