@@ -54,6 +54,8 @@ class PPackageDoc extends PDoc
     /** @return false */
     public final boolean shouldStripStars() { return false; }
     public List<ClassType> allClasses() {
+	// XXX use reflection (via the ParseControl object) to create
+	// EagerClassType objects if !isIncluded.
 	return Collections.unmodifiableList(classes);
     }
     public List<ClassDoc> includedClasses() {
