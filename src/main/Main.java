@@ -320,6 +320,7 @@ public class Main {
 	addOption(new Option("-help", "", 1,
 			     "Display command-line options and exit") {
 		void process(RunData rd, List<String> args) {
+		    rd.reporter.quiet=false;
 		    doHelp(rd.reporter, rd.programName, rd.getDoclet());
 		}
 	    });
