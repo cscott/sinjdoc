@@ -9,6 +9,7 @@ import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.MethodTypeVariable;
 import net.cscott.gjdoc.Type;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 /**
@@ -47,17 +48,14 @@ class TypeContext {
     // type resolution methods.
     /** Look up the given type name in this type context. The result can
      *  be a type variable in the methodScope or classScope. */
-    Type lookupTypeName(String typeName,
-			List<ClassTypeVariable> typeParameters) {
+    Type lookupTypeName(String typeName) {
 	int idx = typeName.lastIndexOf('.');
-	if (idx<0) return lookupSimpleTypeName(typeName, typeParameters);
+	if (idx<0) return lookupSimpleTypeName(typeName);
 	else return lookupQualifiedTypeName(typeName.substring(0,idx),
-					    typeName.substring(idx+1),
-					    typeParameters);
+					    typeName.substring(idx+1));
     }
     // look up a simple type name; that is, one without a '.'
-    private Type lookupSimpleTypeName(String id,
-				      List<ClassTypeVariable> typeParameters) {
+    private Type lookupSimpleTypeName(String id) {
 	assert id.indexOf('.')<0;
 	// 1. not handling local class declarations.
 	// (1b) check method type variables.
@@ -91,8 +89,7 @@ class TypeContext {
 		     .iterator(); it.hasNext(); ) {
 		String qualName = it.next();
 		if (qualName.endsWith(id))
-		    return new TypeContext(pc).lookupTypeName
-			(qualName, typeParameters);
+		    return new TypeContext(pc).lookupTypeName(qualName);
 	    }
 	    for (Iterator<PClassDoc> it = compilationUnit.classes
 		     .iterator(); it.hasNext(); ) {
@@ -121,10 +118,10 @@ class TypeContext {
 	// 6. Otherwise, undefined; if not error then it could be in
 	//    same package or in an opaque type-import-on-demand.
 	//    we'll just make it opaque.
-	return new PEagerClassType(pc, "<unknown>", id, typeParameters);
+	return new PEagerClassType(pc, "<unknown>", id,
+				   Arrays.asList(new ClassTypeVariable[0]));
     }
-    private Type lookupQualifiedTypeName(String Q, String id,
-					 List<ClassTypeVariable> typeParameters){
+    private Type lookupQualifiedTypeName(String Q, String id) {
 	// recursively determine whether Q is a package or type name.
 	// then determine if 'id' is a type within Q
 	//   1) try package first.
@@ -137,7 +134,7 @@ class TypeContext {
 		if (id.equals(t.typeName())) return t;
 	    }
 	//   2) try class named Q.
-	Type t = lookupTypeName(Q, typeParameters);
+	Type t = lookupTypeName(Q);
 	ClassDoc cls = (t instanceof ClassType) ?
 	    ((ClassType)t).asClassDoc() : null;
 	if (cls!=null)
@@ -149,6 +146,7 @@ class TypeContext {
 	//      XXX try this using reflection.
 	// give up; assume is fully qualified.
 	// XXX should add to pkg if pkg!=null?  should create package?
-	return new PEagerClassType(pc, Q, id, typeParameters);
+	return new PEagerClassType(pc, Q, id,
+				   Arrays.asList(new ClassTypeVariable[0]));
     }
 }// TypeContext

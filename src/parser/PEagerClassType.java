@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassTypeVariable;
 
+import java.util.Collections;
 import java.util.List;
 /**
  * The <code>PEagerClassType</code> class represents a fully-resolved
@@ -15,12 +16,17 @@ import java.util.List;
 public class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.
+    final List<ClassTypeVariable> typeParameters;
     PEagerClassType(ParseControl pc,
 		    String packageName, String className,
 		    List<ClassTypeVariable> typeParameters) {
-	super(pc, typeParameters);
+	super(pc);
 	this.packageName = packageName.intern();
 	this.className = className.intern();
+	this.typeParameters = typeParameters;
+    }
+    public List<ClassTypeVariable> typeParameters() {
+	return Collections.unmodifiableList(typeParameters);
     }
     public String typeName() { return className; }
     public String qualifiedTypeName() {

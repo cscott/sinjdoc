@@ -24,13 +24,16 @@ class PLazyClassType extends PClassType {
     ClassType cache;
     TypeContext typeContext;
     String typeName;
-    PLazyClassType(TypeContext typeContext, String typeName,
-		   List<ClassTypeVariable> typeParameters) {
-	super(typeContext.pc, typeParameters);
+    PLazyClassType(TypeContext typeContext, String typeName) {
+	super(typeContext.pc);
 	this.cache = null;
 	this.typeContext = typeContext;
 	this.typeName = typeName;
 	assert isValid();
+    }
+    public List<ClassTypeVariable> typeParameters() {
+	if (cache==null) lookup();
+	return cache.typeParameters();
     }
     public String qualifiedTypeName() {
 	if (cache==null) lookup();
@@ -43,7 +46,7 @@ class PLazyClassType extends PClassType {
     private void lookup() {
 	assert cache==null && isValid();
 	cache = (ClassType) // XXX what if this is a type variable???
-	    typeContext.lookupTypeName(typeName, typeParameters);
+	    typeContext.lookupTypeName(typeName);
 	typeContext=null;
 	typeName=null;
 	assert cache!=null && isValid();
