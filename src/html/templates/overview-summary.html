@@ -6,8 +6,10 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>Overview</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=@CHARSET@" />
+    <title>Overview@TITLESUFFIX@</title>
     <link href="stylesheet.css" rel="stylesheet" type="text/css" />
+    <meta name="keywords" content="Overview" />
   </head>
   <body class="overview_page bigframe">
    <div class="navbar">
@@ -29,13 +31,13 @@
       <span class="allclasses"><a href="allclasses-noframe.html">All Classes</a></span>
    </p>
     <div class="navtitle">
-     blah blah<br /> blah blah
+     @HEADER@
     </div>
     <p class="clear"><!--empty--></p>
    </div>
-   <h1>OVERVIEW TITLES</h1>
+   <h1>@DOCTITLE@</h1>
    <p>
-   First sentence of the description.
+   @SPLIT@
    </p>
    <dl class="seetag"><dt>See:</dt><dd><a href="#overview_description" class="seetag">Description</a></dd></dl>
 
@@ -54,8 +56,7 @@
    <h2><a name="overview_description" id="overview_description">
    Description:
    </a></h2>
-
-   Full description goes here.
+   @SPLIT@
    </div>
    <div class="navbar">
     <p class="nav navtop">
@@ -76,10 +77,10 @@
       <span class="allclasses"><a href="allclasses-noframe.html">All Classes</a></span>
    </p>
     <div class="navtitle">
-     blah blah<br /> blah blah
+     @FOOTER@
     </div>
     <p class="clear"><!--empty--></p>
    </div>
-   <div class="bottom">Bottom text bottom text</div>
+   <div class="bottom">@BOTTOM@</div>
    </body>
 </html>

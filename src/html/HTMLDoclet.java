@@ -8,7 +8,13 @@ import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Doclet;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.ParamTag;
 import net.cscott.gjdoc.RootDoc;
+import net.cscott.gjdoc.SeeTag;
+import net.cscott.gjdoc.SerialFieldTag;
+import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
+import net.cscott.gjdoc.ThrowsTag;
 
 import java.io.*;
 import java.util.*;
@@ -102,7 +108,51 @@ public class HTMLDoclet extends Doclet {
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("overview-summary.html"),null,null);
-	// XXX do me.
+	TemplateWriter tw = new TemplateWriter
+	    ("overview-summary.html"/*resource*/, hu, context);
+	tw.copyToSplit(root);
+	// first split is first sentence of overview tags.
+	tw.print(transTags(root.firstSentenceTags()));
+	tw.copyToSplit(root);
+	// second split is full contents of overview tags.
+	tw.print(transTags(root.tags()));
+	tw.copyRemainder(root); // done!
+    }
+    String transTags(List<Tag> tags) {
+	StringBuffer sb = new StringBuffer();
+	boolean inList=false;
+	for (Iterator<Tag> it=tags.iterator(); it.hasNext(); ) {
+	    Tag t = it.next();
+	    if (t.isTrailing() && !inList) { sb.append("<dl>"); inList=true; }
+	    if (!t.isTrailing() && inList) { sb.append("</dl>"); inList=false;}
+	    sb.append(transTag(t));
+	}
+	if (inList) sb.append("</dl>");
+	return sb.toString();
+    }
+    String transTag(Tag tag) {
+	return tag.accept(new TagVisitor<String>() {
+	    public String visit(Tag t) {
+		if (t.isText()) return t.text();
+		if (t.isInline()) return ""; // XXX HOW TO HANDLE?
+		assert t.isTrailing();
+		return "<dt>"+t.name()+":</dt><dd>"+transTags(t.contents())+
+		    "</dd>";
+	    }
+	    public String visit(ParamTag t) {
+		return "<dt>Parameter:</dt><dd><code>"+t.parameterName()+
+		    "</code> - "+transTags(t.parameterComment())+"</dd>";
+	    }
+	    public String visit(SeeTag t) {
+		return "<dt>See:</dt><dd>UNIMPLEMENTED</dd>";
+	    }
+	    public String visit(SerialFieldTag t) {
+		return "<dt>Serial Field:</dt><dd>UNIMPLEMENTED</dd>";
+	    }
+	    public String visit(ThrowsTag t) {
+		return "<dt>Throws:</dt><dd>UNIMPLEMENTED</dd>";
+	    }
+	});
     }
     void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
 	// create sorted list of all documented classes.
