@@ -128,6 +128,14 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
 	// find a tag start or end point.
 	while (tagMatcher.find()) {
 	    int start = tagMatcher.start();
+	    // quick bypass of mismatched end braces.
+	    if (tagMatcher.group(1)==null && tagStack.size()==1) {
+		// don't allow mismatched ends.
+		if (false) // suppress this warning; it's not useful.
+		    pc.reporter.printWarning(sp.add(start),
+					   "End brace without inline tag.");
+		continue; // keep looking.
+	    }
 	    // add text from last pos to start pos to currently-active tag.
 	    if (pos<start) {
 		String text = rawText.substring(pos, start);
@@ -139,16 +147,11 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
 	    if (tagName!=null) { // start tag.
 		tagStack.push(new TagInfo(tagName, sp.add(start)));
 	    } else { // end tag.
-		if (tagStack.size()==1) { // don't allow mismatched ends.
-		    if (false) // suppress this warning; it's not useful.
-		    pc.reporter.printWarning(sp.add(start),
-					   "End brace without inline tag.");
-		} else {
-		    TagInfo ti = tagStack.pop();
-		    tagStack.peek().tags.add
-			(PTag.newInlineTag
-			 (ti.name, shrinkList(ti.tags), ti.pos, tagContext));
-		}
+		assert tagStack.size() > 1;
+		TagInfo ti = tagStack.pop();
+		tagStack.peek().tags.add
+		    (PTag.newInlineTag
+		     (ti.name, shrinkList(ti.tags), ti.pos, tagContext));
 	    }
 	    pos = tagMatcher.end();
 	}
