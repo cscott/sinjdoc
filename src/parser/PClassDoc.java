@@ -132,7 +132,7 @@ class PClassDoc extends PProgramElementDoc
 	return superclass;
     }
     public boolean instanceOf(Type t) {
-	throw new RuntimeException("unimplemented");
+	return TypeUtil.isInstanceOf(this.type(), t);
     }
     // methods abstract in PProgramElementDoc
     public String canonicalName() {
