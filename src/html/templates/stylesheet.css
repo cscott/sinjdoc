@@ -40,12 +40,6 @@ body.bigframe table.linklist td:first-child a { font-weight: bold; }
 body.bigframe table.summary { border-collapse: collapse; }
 body.bigframe table.summary td { vertical-align: baseline; }
 body.bigframe table.summary tr { border-bottom: 1px dotted black; }
-/*  THESE RULES LET YOU DO THE TABLE HEADER AS A CAPTION ELEMENT,
- *  BUT MOZILLA (at least) DOESN'T LINE UP THE CAPTION WITH THE LEFT EDGE
- *  CORRECTLY.
-body.bigframe table.summary caption { text-align: left; color: black; background-color: #FFC; font-size: 150%; border: 1px solid black; font-weight: bold; margin: 0; }
-body.bigframe table.summary { margin-top: 0; }
-*/
 body.bigframe dd a { font-weight: bold; }
 
 /* overview page */
@@ -57,6 +51,13 @@ body.class_page table td dd a { font-weight: normal; }
 body.class_page h2 { color: black; background-color: #FFC; }
 body.class_page h3 { border-top: 1px solid black; }
 body.class_page h2 + h3 { border-style: none; }
+body.class_page p.packageName { font-weight: bold; font-size: 80%; margin-bottom: 0; }
+body.class_page p.packageName + * { margin-top: 0; }
+
+body.class_page *.memberName { font-family: monospace; white-space: nowrap; }
+body.class_page div.memberDescription { margin: 1em 0 1em 2em; }
+body.class_page table.summary td:first-child { font-family: monospace; text-align: right; padding-right: .5em; }
+body.class_page table.summary div.memberDescription { margin-top: 0; margin-bottom: .2em; }
 
 /* navbar formatting */
 div.navbar { border-bottom: 1px solid black; border-top: 1px solid black; font-size: 9pt; font-family: Helvetica, Arial, sans-serif; }
