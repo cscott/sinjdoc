@@ -69,17 +69,22 @@ class TypeContext {
 		MethodTypeVariable mtv = it.next();
 		if (typeName.equals(mtv.getName())) return mtv;
 	    }
-	PClassDoc enclosing = classScope;
-	while (enclosing!=null) {
-	    // class type variables.
-	    for (Iterator<ClassTypeVariable> it =
-		     enclosing.typeParameters().iterator();
-		 it.hasNext(); ) {
-		ClassTypeVariable ctv = it.next();
-		if (typeName.equals(ctv.getName())) return ctv;
+	if (methodScope==null || !methodScope.isStatic()) {
+	    // non-static methods should look for type variables of
+	    // their enclosing class.
+	    PClassDoc enclosing = classScope;
+	    while (enclosing!=null) {
+		// class type variables.
+		for (Iterator<ClassTypeVariable> it =
+			 enclosing.typeParameters().iterator();
+		     it.hasNext(); ) {
+		    ClassTypeVariable ctv = it.next();
+		    if (typeName.equals(ctv.getName())) return ctv;
+		}
+		// now go up to outer class if non-static.
+		if (enclosing.isStatic()) break;
+		enclosing = enclosing.containingClass();
 	    }
-	    // now go up to outer class
-	    enclosing = enclosing.containingClass();
 	}
 	// nope, fall back to lookupClassTypeName()
 	return lookupClassTypeName(typeName, lazy);
