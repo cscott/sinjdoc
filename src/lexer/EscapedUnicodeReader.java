@@ -4,6 +4,10 @@ import java.io.Reader;
 import java.io.FilterReader;
 import java.io.IOException;
 
+/** <code>EscapedUnicodeReader</code> will do substitution of "backslash-u"
+ *  unicode escape sequences.
+ *  @author C. Scott Ananian (cscott@cscott.net)
+ */
 public class EscapedUnicodeReader extends FilterReader {
 
   int pushback=-1;

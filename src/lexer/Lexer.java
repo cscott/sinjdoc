@@ -1,14 +1,16 @@
-package net.cscott.gjdoc.lexer;
-
-import java.io.Reader;
-import java.io.LineNumberReader;
-
 /* Java lexer.
  * Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */
+package net.cscott.gjdoc.lexer;
 
+import java.io.Reader;
+import java.io.LineNumberReader;
+
+/** Java lexer.
+ *  @author C. Scott Ananian (cscott@cscott.net)
+ */
 public class Lexer {
   LineNumberReader reader;
   boolean isJava12;
