@@ -35,7 +35,7 @@ public class Main {
      * @return the exit code.
      */
     public static int execute(String[] args) {
-	return execute("GJDoc", args);
+	return execute("gjdoc", args);
     }
     /** Programmatic interface.
      * @param programName Name of the program, for error messages.
@@ -195,6 +195,11 @@ public class Main {
 		runData.parseControl.setPackages(packages);
 		PRootDoc rootDoc = runData.parseControl.parse();
 		if (rootDoc!=null) rootDoc.setOptions(docletOptions);
+		// check that we've got *some* packages or source files.
+		if (rootDoc.specifiedClasses().size()==0 &&
+		    rootDoc.specifiedPackages().size()==0)
+		    runData.reporter.printError
+			(programName+": No packages or classes specified.");
 		// start the doclet! (if we haven't seen any errors yet)
 		if (runData.reporter.errNum==0) {
 		    runData.reporter.flush(); // show all pre-doclet messages
