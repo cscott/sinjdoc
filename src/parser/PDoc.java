@@ -104,9 +104,9 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     }
     private transient List<Tag> tagCache;
     private static final Pattern TAGPAT = Pattern.compile
-	("^\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
+	("^\\p{Blank}*@(\\S+)\\p{Blank}*", Pattern.MULTILINE);
     private static final Pattern TAGPATSS = Pattern.compile
-	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
+	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)\\p{Blank}*", Pattern.MULTILINE);
     /** Parse the raw text into a series of 'Text' and 'inline' tags. */
     private List<Tag> parseInline(String rawText, PSourcePosition sp) {
 	boolean stripStars = shouldStripStars();
@@ -169,7 +169,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	return shrinkList(tagStack.pop().tags);
     }
     private static final Pattern INLINE = Pattern.compile
-	("[{]@(\\S+)|[}]");
+	("[{]@([^\\s}]+)\\s*|[}]");
 
     // parse inlineTags() list into first sentence tags using breakiterator.
     // note that we look for the sentence boundary by throwing away all
