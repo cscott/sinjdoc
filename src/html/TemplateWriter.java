@@ -573,6 +573,13 @@ class TemplateWriter extends PrintWriter  {
 			   lt.get(0).text().trim().length()==0));
 		}
 	    });
+	registerConditional("SUPERCLASS", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    assert c.curClass!=null;
+		    return c.curClass.superclass()!=null;
+		}
+	    });
 	registerConditional("INTERFACE", new TemplateConditional() {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {

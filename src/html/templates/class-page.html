@@ -98,7 +98,9 @@
       <span class="extends">extends @SUPERINTERFACES@</span>
    @END@@END@
    @IFNOT_INTERFACE@
+      @IF_SUPERCLASS@
       <span class="extends">extends @SUPERCLASS@</span>
+      @END@
       @IF_SUPERINTERFACES@
         <span class="implements">implements @SUPERINTERFACES@</span>
       @END@
