@@ -30,4 +30,5 @@ abstract class PClassType implements ClassType {
     public final String toString() {
 	return typeName();
     }
+    public String signature() { return qualifiedTypeName(); }
 }// PClassType

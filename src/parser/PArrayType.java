@@ -20,8 +20,10 @@ public class PArrayType implements ArrayType {
     }
     public Type baseType() { return baseType; }
     public int dimension() { return dimension; }
-    public String toString() {
-	StringBuffer sb=new StringBuffer(baseType.toString());
+    public String signature() { return baseType.signature()+dimString(); }
+    public String toString() { return baseType.toString()+dimString(); }
+    private String dimString() {
+	StringBuffer sb=new StringBuffer();
 	for (int i=0; i<dimension; i++)
 	    sb.append("[]");
 	return sb.toString();

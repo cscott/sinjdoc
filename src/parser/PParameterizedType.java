@@ -30,6 +30,10 @@ class PParameterizedType
     public List<Type> getActualTypeArguments() {
 	return Collections.unmodifiableList(actualTypeArguments);
     }
+    // we can't overload based on parameterization due to type erasure, so
+    // I think going with the signature of the base type is the right thing
+    // to do here.
+    public String signature() { return baseType.signature(); }
     public String toString() {
 	StringBuffer sb = new StringBuffer(getBaseType().toString());
 	sb.append('<');

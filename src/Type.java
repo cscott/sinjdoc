@@ -15,4 +15,9 @@ package net.cscott.gjdoc;
  * @see java.lang.reflect.Type
  */
 public interface Type {
+    /** Return a string naming the type that is appropriate in a method
+     *  signature.
+     *  @see ExecutableMemberDoc#signature()
+     */
+    public String signature();
 }

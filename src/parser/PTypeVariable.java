@@ -34,6 +34,7 @@ abstract class PTypeVariable
     public List<Type> getBounds() {
 	return Collections.unmodifiableList(bounds);
     }
+    public String signature() { return name; }
     public String toString() {
 	StringBuffer sb = new StringBuffer(getName());
 	List<Type> shortList = new ArrayList<Type>(getBounds());
