@@ -3,8 +3,11 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.DocErrorReporter;
+
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -154,4 +157,39 @@ public class FileUtil {
 	return null; // couldn't find it.
     }
     private static final Pattern DOT = Pattern.compile("[.]");
+
+    /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
+     *  in the given file. */
+    static String rawFileText(File f, DocErrorReporter reporter) {
+	String contents = snarf(f, reporter);
+	Matcher matcher = BODY_PATTERN.matcher(contents);
+	if (matcher.find())
+	    return matcher.group(1);
+	// okay, just copy it all then.
+	return contents;
+    }
+    private final static Pattern BODY_PATTERN = Pattern.compile
+	("<\\s*body[^>]*>(.*)</\\s*body",
+	 Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
+
+    /** Snarf up the contents of a file as a string. */
+    static String snarf(File f, DocErrorReporter reporter) {
+	if (f==null) return "";
+	if (!(f.exists() && f.isFile())) {
+	    reporter.printError("Can't open file: "+f);
+	    return "";
+	}
+	StringBuffer sb=new StringBuffer();
+	try {
+	    FileReader reader = new FileReader(f);
+	    char[] buf=new char[8192];
+	    int len;
+	    while (-1!=(len=reader.read(buf)))
+		sb.append(buf, 0, len);
+	    reader.close();
+	} catch (IOException e) {
+	    reporter.printError("Trouble reading "+f+": "+e);
+	}
+	return sb.toString();
+    }
 }// FileUtil
