@@ -224,12 +224,14 @@ class HTMLUtil {
 		    sb.append("&lt;");
 		    while (it.hasNext()) {
 			TypeArgument a = it.next();
-			if (a.isCovariant() || a.isContravariant())
-			    sb.append('?');
 			if (a.isCovariant())
-			    sb.append(" extends ");
-			if (a.isContravariant())
-			    sb.append(" super ");
+			    if (a.isContravariant())
+				sb.append('?');
+			    else
+				sb.append("? extends ");
+			else
+			    if (a.isContravariant())
+				sb.append("? super ");
 			if (!(a.isCovariant() && a.isContravariant()))
 			    sb.append(a.getType().accept(this));
 			if (it.hasNext())
