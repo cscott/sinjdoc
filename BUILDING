@@ -1,0 +1,24 @@
+SinjDoc is written in JSR-14 Java and requires a JSR-14 compiler to build.
+Download one from
+ http://developer.java.sun.com/developer/earlyAccess/adding_generics/index.html
+or see
+ http://cag.lcs.mit.edu/~cananian/Projects/GJ/
+for up-to-date news on JSR-14 java.
+
+The ./configure script will look for a JSR-14 compiler by first trying
+'jikes' and 'javac' in your path and looking at the environment variable
+'JSR14DISTR', which you should have set as part of the installation of
+the Sun prototype compiler.  You can explicitly specify the path to
+a JSR-14 java compiler by setting the environment variable JCC.
+
+When you have installed the JSR-14 compiler, you need only do:
+ ./autogen.sh  # only if you're using CVS; see README for more info
+ ./configure
+ make
+To test:
+ make doc
+
+SinjDoc is invoked using the same command line arguments as javadoc:
+ java -jar sinjdoc.jar <javadoc options>
+Make sure either the SinjDoc build directory or lib/cup.jar:lib/jutil.jar
+is in your classpath.
