@@ -13,7 +13,8 @@ import java.util.List;
  * non-parameterized class type.
  *
  * @author  C. Scott Ananian (cscott@cscott.net)
- * @version $Id: PEagerParameterizedType.java,v 1.3 2003/03/24 20:47:36 cananian */
+ * @version $Id$
+ */
 class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.

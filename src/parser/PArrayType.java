@@ -10,7 +10,8 @@ import net.cscott.gjdoc.TypeVisitor;
  * The <code>PArrayType</code> class represents a java array type.
  *
  * @author  C. Scott Ananian (cscott@cscott.net)
- * @version $Id: PEagerParameterizedType.java,v 1.3 2003/03/24 20:47:36 cananian */
+ * @version $Id$
+ */
 class PArrayType implements ArrayType {
     final Type baseType;
     final int dimension;
