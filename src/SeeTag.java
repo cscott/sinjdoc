@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import java.util.List;
 /**
  * The <code>SeeTag</code> class represents a "see also" documentation
  * tag.  The @see tag can be plain text, or reference a class or
@@ -14,7 +15,7 @@ package net.cscott.gjdoc;
  */
 public interface SeeTag extends Tag {
     /** Return the label of the see tag. */
-    public String label();
+    public List<Tag> label();
     /**
      * Return the class referenced by the class name part of @see,
      * or <code>null</code> if the class is not a class specified on the
