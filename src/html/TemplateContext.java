@@ -19,6 +19,7 @@ import net.cscott.gjdoc.RootDoc;
 class TemplateContext {
     public final RootDoc root;
     public final HTMLOptions options;
+    public final PackageGroup curGroup;
     public final PackageDoc curPackage;
     public final ClassDoc curClass;
     public final MemberDoc curMember;
@@ -28,7 +29,13 @@ class TemplateContext {
      *  overview page (no package- or class-specific information). */
     public TemplateContext(RootDoc root, HTMLOptions options,
 			   URLContext curURL) {
-	this(root,options,curURL,null);
+	this(root,options,curURL,null,null,null,null);
+    }
+    /** Creates a <code>TemplateContext</code> which holds the
+     *  current package group (for overview page). */
+    public TemplateContext(RootDoc root, HTMLOptions options,
+			   URLContext curURL, PackageGroup curGroup) {
+	this(root,options,curURL,curGroup,null,null,null);
     }
     /** Creates a <code>TemplateContext</code> appropriate for a
      *  package information page (no class-specific information). */
@@ -48,8 +55,16 @@ class TemplateContext {
     public TemplateContext(RootDoc root, HTMLOptions options,
 			   URLContext curURL, PackageDoc curPackage,
 			   ClassDoc curClass, MemberDoc curMember) {
+	this(root,options,curURL,null,curPackage,curClass,curMember);
+    }
+    /** Most-general constructor.  Not for external use. */
+    private TemplateContext(RootDoc root, HTMLOptions options,
+			    URLContext curURL, PackageGroup curGroup,
+			    PackageDoc curPackage, ClassDoc curClass,
+			    MemberDoc curMember) {
 	this.root = root;
 	this.options = options;
+	this.curGroup = curGroup;
 	this.curPackage = curPackage;
 	this.curClass = curClass;
 	this.curMember = curMember;

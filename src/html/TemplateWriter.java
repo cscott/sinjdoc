@@ -354,6 +354,12 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.curClass.qualifiedName());
 		}
 	    });
+	register("GROUPNAME", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curGroup!=null;
+		    tw.write(context.curGroup.heading);
+		}
+	    });
 	register("PKGNAME", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
@@ -443,11 +449,26 @@ class TemplateWriter extends PrintWriter  {
 		    return c.curClass.isInterface();
 		}
 	    });
+	// iterator over all package groups
+	register("FORALL_GROUPS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<PackageGroup,TemplateContext>
+			(c.options.groups) {
+			public TemplateContext filter(PackageGroup pg) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, pg);
+			}
+		    };
+		}
+	    });
 	// iterator over all packages with documented classes
 	register("FORALL_PACKAGES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
+		    List<PackageDoc> pkgs =
+			(c.curGroup!=null) ? c.curGroup.packages() :
+			HTMLUtil.allDocumentedPackages(c.root);
 		    return new FilterList<PackageDoc,TemplateContext>
-			(sorted(HTMLUtil.allDocumentedPackages(c.root))) {
+			(sorted(pkgs)) {
 			public TemplateContext filter(PackageDoc pd) {
 			    return new TemplateContext(c.root, c.options,
 						       c.curURL, pd);

@@ -49,20 +49,14 @@
      <span class="tagContents"><a href="#overview_description" class="seetag">Description</a></span>
    </p>
 @END@
+
+@FORALL_GROUPS@
    <table class="package_summary linklist">
-     <tr><th colspan="2">Java 2 Platform Packages</th></tr>
-     <tr><td><a href="java/applet/package-summary.html" class="packageRef">java.applet</a></td><td>Provides the classes...</td></tr>
-     <tr><td><a href="java/lang/package-summary.html" class="packageRef">java.lang</a></td><td>Provides the classes...</td></tr>
-   </table>
+     <tr><th colspan="2">@GROUPNAME@</th></tr>
 @FORALL_PACKAGES@
-@IF_FIRST@
-   <table class="package_summary linklist">
-     <tr><th colspan="2">Other Packages</th></tr>
-@END@
      <tr><td>@PKGSUMMARYLINK@</td><td>@TAG_SUMMARY@</td></tr>
-@IF_LAST@
-   </table>
 @END@
+   </table>
 @END@
 
 @IF_TAGS@
