@@ -22,6 +22,11 @@ public interface ClassDoc extends ProgramElementDoc {
     /** Return the <code>ClassType</code> corresponding to this
      *  <code>ClassDoc</code>. */
     public ClassType type();
+    /** Return the type variables declared by this class, if it is
+     *  generic; otherwise return a zero-length list.
+     *  @see ClassType#typeParameters()
+     */
+    public List<ClassTypeVariable> typeParameters();
     /**
      * Return visible constructors in class.  An array containing the default
      * no-arg constructor is returned if no other constructors exist.

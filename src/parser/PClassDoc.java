@@ -35,7 +35,7 @@ class PClassDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.ClassDoc {
     final TypeContext typeContext, tagContext;
     final List<ClassTypeVariable> typeParameters =
-	new ArrayList<ClassTypeVariable>();
+	new ArrayList<ClassTypeVariable>(2);
     final String name;
     final boolean isInterface;
     final List<ConstructorDoc> constructors = new ArrayList<ConstructorDoc>();
@@ -65,7 +65,7 @@ class PClassDoc extends PProgramElementDoc
 	this.commentText = commentText;
 	this.commentPosition = commentPosition;
     }
-    List<ClassTypeVariable> typeParameters() {
+    public List<ClassTypeVariable> typeParameters() {
 	return Collections.unmodifiableList(typeParameters);
     }
     public ClassType type() {
