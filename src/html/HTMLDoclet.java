@@ -100,6 +100,8 @@ public class HTMLDoclet extends Doclet {
 	    makePackageFrame(root, hu, it.next());
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("overview-summary.html"),null,null);
 	// XXX do me.
     }
     void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
@@ -117,15 +119,27 @@ public class HTMLDoclet extends Doclet {
 	tw.copyRemainder(root);
     }
     void makePackageFrame(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext(hu.toURL(pd, "package-frame.html")),
+	     pd, null);
 	// xxx do me.
     }
     void makePackageSummary(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	TemplateContext context = new TemplateContext
+	    (root,options, new URLContext(hu.toURL(pd,"package-summary.html")),
+	     pd, null);
 	// xxx do me.
     }
     void makePackageTree(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext(hu.toURL(pd, "package-tree.html")),
+	     pd, null);
 	// xxx do me.
     }
     void makeClassPage(RootDoc root, HTMLUtil hu, ClassDoc cd) {
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext(hu.toURL(cd)),
+	     cd.containingPackage(), cd);
 	// xxx do me.
     }
 
