@@ -51,7 +51,7 @@ public interface ProgramElementDoc extends Doc {
     /** Return true if this program element is static. */
     public boolean isStatic();
     /** Get the modifiers string.  For example, for
-     *  <code>public abstract int foo() { ... }</code>
+     *  <code>public abstract int foo()</code>
      *  return "public abstract". */
     // XXX do we spell out synchronized and native?
     public String modifiers();
