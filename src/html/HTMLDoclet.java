@@ -146,17 +146,10 @@ public class HTMLDoclet extends Doclet {
 	});
     }
     void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
-	// create sorted list of all documented classes.
-	List<ClassDoc> clsList = new ArrayList<ClassDoc>(root.classes());
-	Collections.sort(clsList, new DocComparator<ClassDoc>());
-	// now emit!
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext("allclasses-frame.html"));
 	TemplateWriter tw = new TemplateWriter
 	    ("allclasses-frame.html", hu, context);
-	tw.copyToSplit(root);
-	for (Iterator<ClassDoc> it=clsList.iterator(); it.hasNext(); )
-	    tw.println(hu.toLink(context.curURL, it.next(), true));
 	tw.copyRemainder(root);
     }
     void makePackageFrame(RootDoc root, HTMLUtil hu, PackageDoc pd) {

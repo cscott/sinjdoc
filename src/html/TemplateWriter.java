@@ -378,9 +378,25 @@ class TemplateWriter extends PrintWriter  {
 		    };
 		}
 	    });
+	// iterator over included classes (of the package).
+	register("FORALL_CLASSES", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    // if no package, then all in root. else all in pkg.
+		    Collection<ClassDoc> l = (c.curPackage==null) ?
+			c.root.classes() : c.curPackage.includedClasses();
+		    return new FilterList<ClassDoc,TemplateContext>(sorted(l)){
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
 	// iterator over included interfaces of the package.
 	register("FORALL_INTERFACES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
+		    // xxx in non-package context, all interfaces in root?
 		    return new FilterList<ClassDoc,TemplateContext>
 			(sorted(c.curPackage.includedInterfaces())) {
 			public TemplateContext filter(ClassDoc cd) {
@@ -394,6 +410,7 @@ class TemplateWriter extends PrintWriter  {
 	// iterator over included ordinary classes of the package.
 	register("FORALL_ORDINARYCLASSES", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
+		    // xxx in non-package context, all o-classes in root?
 		    return new FilterList<ClassDoc,TemplateContext>
 			(sorted(c.curPackage.includedOrdinaryClasses())) {
 			public TemplateContext filter(ClassDoc cd) {
@@ -407,6 +424,7 @@ class TemplateWriter extends PrintWriter  {
 	// iterator over included exceptions of the package.
 	register("FORALL_EXCEPTIONS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
+		    // xxx in non-package context, all exceptions in root?
 		    return new FilterList<ClassDoc,TemplateContext>
 			(sorted(c.curPackage.includedExceptions())) {
 			public TemplateContext filter(ClassDoc cd) {
@@ -420,6 +438,7 @@ class TemplateWriter extends PrintWriter  {
 	// iterator over included errors of the package.
 	register("FORALL_ERRORS", new TemplateSimpleForAll() {
 		List<TemplateContext> process(final TemplateContext c) {
+		    // xxx in non-package context, all errors in root?
 		    return new FilterList<ClassDoc,TemplateContext>
 			(sorted(c.curPackage.includedErrors())) {
 			public TemplateContext filter(ClassDoc cd) {
@@ -433,7 +452,7 @@ class TemplateWriter extends PrintWriter  {
     }
 
     /** Helper function. */
-    private static <D extends Doc> List<D> sorted(List<D> l) {
+    private static <D extends Doc> List<D> sorted(Collection<D> l) {
 	List<D> result = new ArrayList<D>(l);
 	Collections.sort(result, new DocComparator<D>());
 	return result;
