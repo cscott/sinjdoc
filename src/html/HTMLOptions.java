@@ -34,6 +34,7 @@ class HTMLOptions {
     boolean emitTreePage=true;
     boolean emitUsePage=false;
     boolean emitVersionTag=false;
+    List<PackageGroup> groups = new ArrayList<PackageGroup>();
     String docTitle=null;
     String windowTitle=null;
     String header;
@@ -53,6 +54,10 @@ class HTMLOptions {
 	if (windowTitle!=null && docTitle==null) docTitle=windowTitle;// !J
 	if (windowTitle!=null && header==null) header=windowTitle;//!J
 	if (header!=null && footer==null) footer=header;
+	
+	// add default/catch-remainder package group.
+	groups.add(new PackageGroup
+		   (groups.size()==0?"Packages":"Other Packages", "*"));
     }
     public boolean validOption(List<String> optionWithArgs,
 			       DocErrorReporter reporter) {
@@ -153,9 +158,14 @@ class HTMLOptions {
 	addOption(new IgnoreOption("-excludedocfilessubdir", "<name1>:..", 2,
 				   "Exclude any doc-files subdirectories "+
 				   "with given name"));
-	addOption(new IgnoreOption("-group", "<name> <p1>:<p2>..", 3,
-				   "Group specified packages together on "+
-				   "overview page"));
+	addOption(new Option("-group", "<name> <p1>:<p2>..", 3,
+			     "Group specified packages together on "+
+			     "overview page") {
+		void process(List<String> optionWithArgs) {
+		    groups.add(new PackageGroup(optionWithArgs.get(1),
+						optionWithArgs.get(2)));
+		}
+	    });
 	addOption(new IgnoreOption("-nocomment", "", 1,
 				   "Suppress description and tags, generate "+
 				   "only declarations"));

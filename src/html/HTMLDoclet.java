@@ -136,10 +136,12 @@ public class HTMLDoclet extends Doclet {
     }
 
     public boolean start(RootDoc root) {
-	// parse options.
-	options.parseOptions(root.options());
 	// create our HTMLUtil object.
 	HTMLUtil hu = new HTMLUtil(root);
+	// parse options.
+	options.parseOptions(root.options());
+	PackageGroup.groupPackages(options.groups,
+				   hu.allDocumentedPackages(root));
 	// put the stylesheet where it belongs.
 	makeStylesheet(root, hu);
 	// top-level index.

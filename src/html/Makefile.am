@@ -13,6 +13,7 @@ DocComparator.java \
 HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \
+PackageGroup.java \
 Pair.java \
 ReplayReader.java \
 SimpleCharSequence.java \
