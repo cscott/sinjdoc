@@ -162,26 +162,26 @@ public class FileUtil {
      *  in the given file. */
     static Pair<String,PSourcePosition> rawFileText
 	(File f, DocErrorReporter reporter, String encoding) {
-	String contents = snarf(f, reporter, encoding);
-	Matcher matcher = BODY_PATTERN.matcher(contents);
-	if (matcher.find())
-	    return new Pair<String,PSourcePosition>
-		(matcher.group(1), new PSourcePosition
-		 (f, matcher.start(1)));
-	// okay, just copy it all then.
+	Pair<String,PSourcePosition> pair = snarf(f, reporter, encoding);
+	Matcher matcher = BODY_PATTERN.matcher(pair.left);
+	if (!matcher.find()) return pair; // return unchanged.
 	return new Pair<String,PSourcePosition>
-	    (contents, new PSourcePosition(f, 0));
+	    (matcher.group(1), pair.right.add(matcher.start(1)));
     }
     private final static Pattern BODY_PATTERN = Pattern.compile
 	("<\\s*body[^>]*>(.*)</\\s*body",
 	 Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
 
     /** Snarf up the contents of a file as a string. */
-    static String snarf(File f, DocErrorReporter reporter, String encoding) {
-	if (f==null) return "";
+    static Pair<String,PSourcePosition> snarf
+	(File f, DocErrorReporter reporter, String encoding) {
+	if (f==null)
+	    return new Pair<String,PSourcePosition>
+		("", PSourcePosition.NO_INFO);
 	if (!(f.exists() && f.isFile())) {
 	    reporter.printError("Can't open file: "+f);
-	    return "";
+	    return new Pair<String,PSourcePosition>
+		("", new PSourcePosition(f,0));
 	}
 	StringBuffer sb=new StringBuffer();
 	try {
@@ -195,6 +195,7 @@ public class FileUtil {
 	} catch (IOException e) {
 	    reporter.printError("Trouble reading "+f+": "+e);
 	}
-	return sb.toString();
+	return new Pair<String,PSourcePosition>
+	    (sb.toString(), new PSourcePosition(f, 0));
     }
 }// FileUtil
