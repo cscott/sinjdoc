@@ -8,7 +8,12 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.SourcePosition;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 /**
  * The <code>PRootDoc</code> class holds the information from one run of
  * GJDoc; in particular the packages, classes, and options specified by
@@ -41,14 +46,29 @@ public class PRootDoc extends PDoc
     public ClassDoc classNamed(String qualifiedName) {
 	throw new RuntimeException("Unimplemented"); // XXX
     }
-    public PackageDoc packageNamed(String name) {
-	throw new RuntimeException("Unimplemented"); // XXX
+    public PPackageDoc packageNamed(String name) {
+	if (packageMap.containsKey(name)) return packageMap.get(name);
+	return packageNamed(name, pc.packages.contains(name));
     }
+    private PPackageDoc packageNamed(String name, boolean isIncluded) {
+	if (!packageMap.containsKey(name)) {
+	    PPackageDoc ppd = new PPackageDoc(pc, name, isIncluded);
+	    packageMap.put(name, ppd);
+	}
+	assert packageMap.containsKey(name);
+	return packageMap.get(name);
+    }
+    private final Map<String,PPackageDoc> packageMap =
+	new HashMap<String,PPackageDoc>();
     public List<ClassDoc> specifiedClasses() {
 	throw new RuntimeException("Unimplemented"); // XXX
     }
     public List<PackageDoc> specifiedPackages() {
-	throw new RuntimeException("Unimplemented"); // XXX
+	List<PackageDoc> result = new ArrayList<PackageDoc>
+	    (pc.packages.size());
+	for (Iterator<String> it=pc.packages.iterator(); it.hasNext(); )
+	    result.add(packageNamed(it.next(), true));
+	return Collections.unmodifiableList(result);
     }
 
     // inherited from PDoc

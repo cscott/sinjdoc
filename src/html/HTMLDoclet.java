@@ -5,6 +5,7 @@ package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.Doclet;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.RootDoc;
 
 import java.util.*;
@@ -19,12 +20,15 @@ public class HTMLDoclet extends Doclet {
 
     public boolean start(RootDoc root) {
 	// look at overview document.
-	System.out.println("RAW COMMENT TEXT: "+root.getRawCommentText());
-	System.out.println("COMMENT TEXT: "+root.commentText());
-	System.out.println("TAGS: "+root.tags());
-	System.out.println("INLINE TAGS: "+root.inlineTags());
-	System.out.println("FIRST SENTENCE TAGS: "+root.firstSentenceTags());
-
+	System.out.println("OVERVIEW TAGS: "+root.tags());
+	// look at packages
+	for (Iterator<PackageDoc> it=root.specifiedPackages().iterator();
+	     it.hasNext(); ) {
+	    PackageDoc pd = it.next();
+	    System.out.println("PACKAGE: "+pd.name());
+	    System.out.println("TAGS: "+pd.tags());
+	    System.out.println("FIRST: "+pd.firstSentenceTags());
+	}
 	// create main index page
 	// for each package listed...
 	//   create package page.
