@@ -21,11 +21,14 @@ run:
 	$(MAKE)
 	java -ea -jar @PACKAGE_TARNAME@.jar
 
-doc:
-	$(MAKE)
-	$(RM) -rf doc doc-link
+doc-link:
+	$(RM) -rf doc-link
 	mkdir -p doc doc-link/net/cscott/
 	cd doc-link/net/cscott/ ; ln -s ../../../src gjdoc
+doc:
+	$(MAKE)
+	$(MAKE) doc-link
+	$(RM) -rf doc
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
 	   -overview src/overview.html \
