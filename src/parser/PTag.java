@@ -87,7 +87,7 @@ abstract class PTag
 	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
 	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
-	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents);
+	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents, tagContext);
 	*/
 	return new Trailing(pos, tagname, contents);
     }

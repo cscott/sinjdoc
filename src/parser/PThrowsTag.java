@@ -18,7 +18,8 @@ import java.util.List;
  */
 abstract class PThrowsTag extends PTag.Trailing
     implements net.cscott.gjdoc.ThrowsTag {
-    PThrowsTag(SourcePosition sp, String name, List<Tag> contents) {
+    PThrowsTag(SourcePosition sp, String name, List<Tag> contents,
+	       TypeContext tagContext) {
 	super(sp, name, contents);
 	assert name()=="throws" || name()=="exception";
     }
