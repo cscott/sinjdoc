@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVisitor;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -45,4 +46,5 @@ class PParameterizedType
 	sb.append('>');
 	return sb.toString();
     }
+    public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }

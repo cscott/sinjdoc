@@ -7,6 +7,7 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVisitor;
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,4 +32,5 @@ abstract class PClassType implements ClassType {
 	return typeName();
     }
     public String signature() { return qualifiedTypeName(); }
+    public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }// PClassType

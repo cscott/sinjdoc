@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVisitor;
 
 import java.util.List;
 /**
@@ -23,4 +24,5 @@ class PClassTypeVariable extends PTypeVariable
 	this.declaringClass = declaringClass;
     }
     public ClassDoc declaringClass() { return declaringClass; }
+    public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }

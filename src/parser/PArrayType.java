@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ArrayType;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVisitor;
 /**
  * The <code>PArrayType</code> class represents a java array type.
  *
@@ -28,4 +29,5 @@ public class PArrayType implements ArrayType {
 	    sb.append("[]");
 	return sb.toString();
     }
+    public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }// PArrayType

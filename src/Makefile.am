@@ -36,7 +36,8 @@ Tag.java \
 TagVisitor.java \
 ThrowsTag.java \
 Type.java \
-TypeVariable.java
+TypeVariable.java \
+TypeVisitor.java
 
 # copy Main.java over here so that javadoc can find it.
 # (we can't build it here because of dependency ordering problems)

@@ -20,4 +20,7 @@ public interface Type {
      *  @see ExecutableMemberDoc#signature()
      */
     public String signature();
+
+    /** Accept a visitor. */
+    public <T> T accept(TypeVisitor<T> visitor);
 }

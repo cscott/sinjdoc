@@ -5,6 +5,7 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ExecutableMemberDoc;
 import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVisitor;
 
 import java.util.List;
 /**
@@ -26,4 +27,5 @@ class PMethodTypeVariable extends PTypeVariable
 	assert declaringMethod!=null; // should be set by now.
 	return declaringMethod;
     }
+    public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }
