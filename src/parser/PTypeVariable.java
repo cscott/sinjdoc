@@ -35,6 +35,10 @@ abstract class PTypeVariable
 	assert this.bounds.size()>0;
 	assert boundsValid();
     }
+    <T extends Type> void setBounds(List<T> bounds) {
+	this.bounds.clear();
+	addBounds(bounds);
+    }
     /** Check that the bounds specified for the Type Variable are legit. */
     private boolean boundsValid() {
 	boolean seenClass=false;
