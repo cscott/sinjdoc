@@ -898,11 +898,13 @@ static_initializer ::=
 // 19.8.5) Constructor Declarations
 constructor_declaration ::=
 		modifiers_opt:m constructor_declarator:cd
-			throws_opt:thr constructor_body
+			throws_opt:thr
 		{: doMethodDeclaration(m.intValue(), null, cd, thr); :}
+			constructor_body
 	|	modifiers_opt:m LT type_parameter_list_1
-		    constructor_declarator:cd throws_opt:thr constructor_body
+		    constructor_declarator:cd throws_opt:thr
 		{: doMethodDeclaration(m.intValue(), null, cd, thr); :}
+			constructor_body
 	;
 constructor_declarator ::=
 		simple_name:n LPAREN formal_parameter_list_opt:fpl RPAREN
