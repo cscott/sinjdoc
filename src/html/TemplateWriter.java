@@ -402,6 +402,18 @@ class TemplateWriter extends PrintWriter  {
 					     false/*no params*/));
 		}
 	    });
+	register("TAG_SUMMARY", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    TagEmitter.emit(tw, context.specificItem()
+				    .firstSentenceTags(), context);
+		}
+	    });
+	register("TAGS", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    TagEmitter.emit(tw, context.specificItem().tags(),
+				    context);
+		}
+	    });
 	registerConditional("FIRST", new TemplateConditional() {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
@@ -417,11 +429,7 @@ class TemplateWriter extends PrintWriter  {
 	registerConditional("TAGS", new TemplateConditional() {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
-		    List<Tag> lt;
-		    if (c.curMember!=null) lt=c.curMember.tags();
-		    else if (c.curClass!=null) lt=c.curClass.tags();
-		    else if (c.curPackage!=null) lt=c.curPackage.tags();
-		    else lt = c.root.tags();
+		    List<Tag> lt = c.specificItem().tags();
 		    return lt.size()>1 ||
 			(lt.size()==1 && 
 			 !(lt.get(0).isText() &&

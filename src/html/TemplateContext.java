@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.MemberDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.RootDoc;
@@ -55,15 +56,18 @@ class TemplateContext {
 	this.curURL = curURL;
 	assert root!=null && options!=null && curURL!=null;
     }
-
+    /** Returns the most specific documentation item in this context. */
+    public Doc specificItem() {
+	if (curMember!=null) return curMember;
+	else if (curClass!=null) return curClass;
+	else if (curPackage!=null) return curPackage;
+	else return root;
+    }
     // for debugging.
     public String toString() {
 	StringBuffer sb = new StringBuffer("TC[");
 	sb.append(curURL); sb.append(",");
-	if (curMember!=null) sb.append(curMember.toString());
-	else if (curClass!=null) sb.append(curClass.toString());
-	else if (curPackage!=null) sb.append(curPackage.toString());
-	else sb.append("ROOT");
+	sb.append(specificItem().toString());
 	sb.append("]");
 	return sb.toString();
     }
