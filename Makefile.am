@@ -32,7 +32,9 @@ doc:
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
 	   -overview src/overview.html \
+	   -windowtitle "GJDoc documentation" \
 	   -doctitle "GJDoc documentation" \
+	   -header "GJDoc" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
 	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
