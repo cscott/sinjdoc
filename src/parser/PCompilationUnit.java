@@ -22,4 +22,10 @@ class PCompilationUnit {
     final List<PClassDoc> classes = new ArrayList<PClassDoc>();
 
     PCompilationUnit(File file) { this.file = file; }
+    public String toString() {
+	return file+"["+
+	    "singleTypeImport="+singleTypeImport+", "+
+	    "onDemandImport="+onDemandImport+", "+
+	    "classes="+classes+"]";
+    }
 }// PCompilationUnit
