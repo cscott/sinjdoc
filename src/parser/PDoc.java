@@ -129,7 +129,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	return Collections.unmodifiableList(result);
     }
     private static final Pattern INLINE = Pattern.compile
-	("{@(\\S+)(?:\\s+([^}]*))?}");
+	("[{]@(\\S+)(?:\\s+([^}]*))?[}]");
 
     // parse inlineTags() list into first sentence tags using breakiterator.
     // note that we look for the sentence boundary by throwing away all
@@ -168,7 +168,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	// ...now find end position.
 	while (it.hasNext() && pos < end) {
 	    Tag curTag = it.next();
-	    result.add(lastTag);
+	    if (lastTag!=null) result.add(lastTag);
 	    lastTag=curTag;
 	    lastPos=pos;
 	    if (curTag.kind()=="Text")
@@ -179,8 +179,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	    lastTag = PTag.newTextTag(lastTag.text().substring(0, end-lastPos),
 				      lastTag.position()); // xxx position?
 	// add last tag to result.
-	if (lastTag!=null)
-	    result.add(lastTag);
+	if (lastTag!=null) result.add(lastTag);
 	// and we're done!
 	return Collections.unmodifiableList(result);
     }
