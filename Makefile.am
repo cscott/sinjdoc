@@ -28,6 +28,7 @@ doc:
 	cd doc-link/net/cscott/ ; ln -s ../../../src gjdoc
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
+	   -overview overview.html \
 	   -doctitle "GJDoc documentation" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
