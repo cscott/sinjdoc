@@ -54,11 +54,16 @@
      <tr><td><a href="java/applet/package-summary.html" class="packageRef">java.applet</a></td><td>Provides the classes...</td></tr>
      <tr><td><a href="java/lang/package-summary.html" class="packageRef">java.lang</a></td><td>Provides the classes...</td></tr>
    </table>
+@FORALL_PACKAGES@
+@IF_FIRST@
    <table class="package_summary linklist">
      <tr><th colspan="2">Other Packages</th></tr>
-     <tr><td><a href="java/applet/package-summary.html" class="packageRef">java.applet</a></td><td>Provides the classes...</td></tr>
-     <tr><td><a href="java/applet/package-summary.html" class="packageRef">java.applet</a></td><td>Provides the classes...</td></tr>
+@END@
+     <tr><td>@PKGSUMMARYLINK@</td><td>@TAG_SUMMARY@</td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
 
 @IF_TAGS@
    <div class="description">
