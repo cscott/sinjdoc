@@ -410,6 +410,7 @@ public class Main {
 			     "Source file encoding name") {
 		void process(RunData rd, List<String> args) {
 		    rd.parseControl.setEncoding(args.get(1));
+		    rd.reporter.encoding=args.get(1);
 		}
 	    });
 	addOption(new Option
@@ -487,6 +488,7 @@ public class Main {
     }
     private static class Reporter implements DocErrorReporter {
 	final PrintWriter errWriter, warnWriter, noticeWriter;
+	String encoding=null;
 	int errNum=0, warnNum=0;
 	public void printError(String msg) { printError(null, msg); }
 	public void printWarning(String msg) { printWarning(null, msg); }
@@ -503,9 +505,31 @@ public class Main {
 	    print(noticeWriter, pos, msg);
 	}
 	private void print(PrintWriter pw, SourcePosition pos, String msg) {
-	    // XXX do something with line number and column information
-	    if (pos!=null&&pos.file()!=null) msg=pos.file()+": "+msg;
+	    if (pos!=null) {
+		msg=pos.toString()+": "+msg;
+	    }
 	    pw.println(msg);
+	    if (pos!=null && pos.file()!=null && pos.line()>0) {
+		// print the appropriate line of the file.
+		String line=null;
+		try {
+		    BufferedReader reader = new BufferedReader
+			(FileUtil.fileReader(pos.file(), encoding, this));
+		    for (int i=1; i<pos.line(); i++)
+			if (null==reader.readLine()) break;
+		    line = reader.readLine();
+		    reader.close();
+		} catch (java.io.IOException e) { /* ignore */ }
+		if (line!=null) {
+		    pw.println(line);
+		    if (pos.column()>0) {
+			// print a carat at the appropriate position.
+			for (int i=1; i<pos.column(); i++)
+			    pw.print(' ');
+			pw.println('^');
+		    }
+		}
+	    }
 	}
 	void flush() {
 	    noticeWriter.flush();
