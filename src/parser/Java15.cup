@@ -332,6 +332,14 @@ action code {:
       return parser.typeContexts.peek().lookupTypeName(name, true/*lazy*/);
   }
   ParameterizedType joinWithParam(ParameterizedType pt, String inner) {
+      // divide and conquer if inner contains '.'
+      int dot = inner.lastIndexOf('.');
+      if (dot!=-1) {
+	  pt = joinWithParam(pt, inner.substring(0, dot));
+	  inner = inner.substring(dot+1);
+      }
+      // okay, now inner is dot-free
+      assert inner.indexOf('.')==-1;
       return new PParameterizedType(new PLazyInnerClassType
 				    (parser.rootDoc.pc, pt.getBaseType(),
 				     inner), pt, new TypeArgumentList());
