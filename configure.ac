@@ -45,5 +45,5 @@ fi
 AC_CONFIG_FILES([Makefile src/Makefile src/parser/Makefile src/lexer/Makefile
 			  src/html/Makefile src/html/Version.java
 			  src/html/templates/Makefile
-			  src/main/Makefile])
+			  src/main/Makefile src/overview.html])
 AC_OUTPUT

@@ -2,13 +2,17 @@
 <html>
 <!-- $Id$ -->
 <body bgcolor="white">
-This document is the API specification for the GJDoc tool, which
+This document is the API specification for version @PACKAGE_VERSION@
+of the @PACKAGE_NAME@ tool, which
 is a javadoc replacement that handles JSR-14 (generic java)
-source code.  GJDoc defines a 'Doclet' and 'Taglet' interface
+source code.  @PACKAGE_NAME@ defines a 'Doclet' and 'Taglet' interface
 similar to, but not identical with, that defined by Sun's javadoc
 tool.  Some incompatibilities are forced by the addition of
 parameterized types, and others were introduced to clean up
 or restructure the interface in places where I found it lacking.
+<p>
+More information about @PACKAGE_NAME@ can be found at
+<a href="http://cag.lcs.mit.edu/~cananian/Projects/GJ/">http://cag.lcs.mit.edu/~cananian/Projects/GJ/</a>.
 @author C. Scott Ananian (cscott@cscott.net)
 </body>
 </html>
