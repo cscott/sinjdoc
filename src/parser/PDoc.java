@@ -109,6 +109,15 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
 	("^\\p{Blank}*@(\\S+)\\p{Blank}*", Pattern.MULTILINE);
     private static final Pattern TAGPATSS = Pattern.compile
 	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)\\p{Blank}*", Pattern.MULTILINE);
+
+    private String trimTrailingWS(String rawText) {
+	Pattern pat = shouldStripStars() ? TRAILPATSS : TRAILPAT;
+	return pat.matcher(rawText).replaceFirst("");
+    }
+    private static final Pattern TRAILPAT = Pattern.compile("\\p{Space}+\\z");
+    private static final Pattern TRAILPATSS = Pattern.compile
+	("\\p{Space}*(?:^\\p{Blank}*[*]*\\p{Blank}*$)*\\p{Space}*\\z");
+	
     /** Parse the raw text into a series of 'Text' and 'inline' tags. */
     private List<Tag> parseInline(String rawText, PSourcePosition sp) {
 	boolean stripStars = shouldStripStars();
@@ -123,6 +132,7 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
 	}
 	Stack<TagInfo> tagStack = new Stack<TagInfo>();
 	tagStack.push(new TagInfo(null, sp));
+	rawText = trimTrailingWS(rawText);
 	Matcher tagMatcher = INLINE.matcher(rawText);
 	int pos=0;
 	// find a tag start or end point.

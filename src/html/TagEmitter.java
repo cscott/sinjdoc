@@ -120,10 +120,14 @@ abstract class TagEmitter {
 		    first=false;
 		}
 		pw.print("<span class=\"tagContents\">");
-		emitInline(pw, t.contents(), context);
+		emitInner(pw, t, context);
 		pw.print("</span> ");
 	    }
 	    pw.println("</p>");
+	}
+	// subclasses can override:
+	void emitInner(PrintWriter pw, Tag t, TemplateContext context) {
+	    emitInline(pw, t.contents(), context);
 	}
     }
     /** An <code>InlineAction</code> handles text and inline tags by
@@ -204,7 +208,7 @@ abstract class TagEmitter {
 	inlineActions.put(".text", new InlineTagAction() {
 		void emit(PrintWriter pw, Tag t, TemplateContext context) {
 		    assert t.isText();
-		    pw.print(t.text().trim());
+		    pw.print(t.text());
 		}
 	    });
 	inlineActions.put("docRoot", new InlineTagAction() {
