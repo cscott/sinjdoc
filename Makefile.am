@@ -31,7 +31,7 @@ doc:
 	   -doctitle "GJDoc documentation" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
-	   net.cscott.gjdoc{,.parser,.html}
+	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
 	$(RM) -rf doc-link
 
 clean: more-cleaning
