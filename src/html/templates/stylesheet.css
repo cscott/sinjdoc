@@ -6,7 +6,8 @@ body { color: black; background-color: white; }
 /* serif fonts look better on paper. */
 @media print { body { font-family: serif; } }
 dt { font-weight: bold; }
-a:hover { color: black; background-color: #ccc; }
+a:target { color: red; background-color: yellow; font-weight: bold; }
+a[href]:hover { color: black; background-color: #ccc; }
 a:link { color: blue; }
 a:visited { color: purple; }
 a:active { color: red; background-color: yellow; }
@@ -30,12 +31,23 @@ body.smallframe { font-size: 9pt; line-height: 1.1; }
 
 /* for large frame */
 body.bigframe { font-size: 10pt; }
-body.bigframe h1 { text-align: center; }
-body.bigframe h2 { text-align: left; font-size: 11pt; }
+body.bigframe h1 { text-align: left; }
+body.bigframe h2 { text-align: left; }
+body.bigframe h3 { text-align: left; }
 body.bigframe table { width: 100%; border: 1px solid black; margin: 1em 0; }
 body.bigframe th { text-align: left; color: black; background-color: #FFC; font-size: 150%; }
-body.bigframe a.bold { font-weight: bold; }
+body.bigframe table.linklist td:first-child a { font-weight: bold; }
 body.bigframe dd a { font-weight: bold; }
+
+/* overview page */
+body.overview_page h1 { text-align: center; }
+body.overview_page h2, body.package_page h2 { font-size: 11pt; }
+/* class page */
+body.class_page table td dt { font-weight: normal; }
+body.class_page table td dd a { font-weight: normal; }
+body.class_page h2 { color: black; background-color: #FFC; }
+body.class_page h3 { border-top: 1px solid black; }
+body.class_page h2 + h3 { border-style: none; }
 
 /* navbar formatting */
 div.navbar { border-bottom: 1px solid black; border-top: 1px solid black; font-size: 9pt; font-family: Helvetica, Arial, sans-serif; }
@@ -43,9 +55,12 @@ div.navbar *.selected { background-color: blue; color: white; font-weight: bolde
 div.navbar p.nav { float: left; width: auto; clear: both; padding: 0; margin: 0; }
 div.navbar p.navtop { color: black; background-color: #FFC; padding: .5ex 1em .5ex 0; }
 div.navbar p.navtop a { font-weight: bold; }div.navbar p.nav span { padding: 0 .5em 0 0; }
-div.navbar p.navbot { font-size: smaller; }
-div.navbar p.navbot span.frames { margin-left: 5em; }
-div.navbar p.navbot span.allclasses { margin-left: 5em; }
+div.navbar p.navmid, div.navbar p.navbot { font-size: smaller; text-transform: uppercase; }
+div.navbar p.navmid span.framesel { margin-left: 5em; }
+div.navbar p.navmid span.allclasses { margin-left: 5em; }
+div.navbar p.navbot span span { border-left: 1px solid black; margin: 0; padding: 0;  padding-left: .3em; }
+div.navbar p.navbot span span:first-child { border-style: none; }
+div.navbar p.navbot span.detail { margin-left: 4em; }
 div.navbar div.navtitle { text-align: right; font-weight: bold; font-style: italic; padding: 0 0 0 1em; }
 div.navbar p.clear { padding: 0; margin: 0; clear: both; }
 
