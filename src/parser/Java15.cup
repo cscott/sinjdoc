@@ -777,8 +777,9 @@ class_member_declaration ::=
 
 // 19.8.2) Field Declarations
 field_declaration ::= 
-		modifiers_opt:m type:ty variable_declarators:vdl SEMICOLON
+		modifiers_opt:m type:ty variable_declarators:vdl
 		{: doFieldDeclaration(m.intValue(), ty, vdl); :}
+		SEMICOLON
 	;
 variable_declarators ::=
 		variable_declarator:vd
