@@ -148,8 +148,8 @@ public class FileUtil {
      *  package. */
     File findPackage(String packageName) {
 	// convert package name to path.
-	String path = DOT.matcher(packageName).replaceAll
-	    (System.getProperty("file.separator"));
+	String path = replaceAllLiterally
+	    (DOT.matcher(packageName), File.separator);
 	for (File sourcePathPiece : sourcePath ) {
 	    File candidate = new File(sourcePathPiece, path);
 	    if (candidate.isDirectory() && candidate.exists())
@@ -158,6 +158,19 @@ public class FileUtil {
 	return null; // couldn't find it.
     }
     private static final Pattern DOT = Pattern.compile("[.]");
+
+    /** Replacement for Matcher.replaceAll() that doesn't do fancy-pants
+     *  backslash-and-dollar substitution on the replacement string. */
+    private static String replaceAllLiterally
+	(Matcher m, String replacement) {
+	StringBuffer sb = new StringBuffer();
+	while (m.find()) {
+	    m.appendReplacement(sb, "");
+	    sb.append(replacement);
+	}
+	m.appendTail(sb);
+	return sb.toString();
+    }
 
     /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
      *  in the given file. */
