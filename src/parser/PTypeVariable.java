@@ -25,6 +25,7 @@ abstract class PTypeVariable
     PTypeVariable(String name, List<Type> bounds) {
 	this.name = name;
 	this.bounds = bounds;
+	assert bounds.size()>0;
     }
     public String getName() { return name; }
     public List<Type> getBounds() {
