@@ -54,7 +54,7 @@ body.class_page h3 { border-top: 1px solid black; }
 body.class_page h2 + h3 { border-style: none; }
 body.class_page p.packageName { font-weight: bold; font-size: 80%; margin-bottom: 0; }
 body.class_page p.packageName + * { margin-top: 0; }
-body.class_page p.declaration { border-top: 1px solid black; }
+body.class_page p.declaration { border-top: 1px dotted black; border-bottom: 1px dotted black; color: black; background-color: #FFC; padding: .2em 0; }
 body.class_page p.declaration *.className { font-weight: bold; }
 body.class_page p.declaration *.extends { display: block; }
 body.class_page p.declaration *.implements { display: block; }
