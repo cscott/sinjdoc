@@ -294,7 +294,13 @@ class HTMLOptions {
 			 DocErrorReporter reporter) {
 	    try {
 		Charset cs = Charset.forName(optionWithArgs.get(1));
-		if (cs.canEncode()) return true;
+		if (cs.canEncode()) {
+		    if (!cs.isRegistered())
+			reporter.printWarning("Selected charset is not "+
+					      "IANA-registered; may not be "+
+					      "valid for HTML.");
+		    return true;
+		}
 		reporter.printError("Can't encode with charset "+cs);
 	    } catch (IllegalArgumentException e) {
 		reporter.printError("Invalid charset: "+optionWithArgs.get(1));
