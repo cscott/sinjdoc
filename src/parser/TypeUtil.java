@@ -225,8 +225,8 @@ abstract class TypeUtil {
 
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
      *  the <code>typeList</code> according to the given <code>Map</code>. */
-    private static List<Type> subst(final Map<TypeVariable,Type> substMap,
-				    List<Type> typeList) {
+    static List<Type> subst(final Map<TypeVariable,Type> substMap,
+			    List<Type> typeList) {
 	List<Type> result = new ArrayList<Type>(typeList.size());
 	for (Type ty : typeList)
 	    result.add(subst(substMap, ty));
@@ -244,7 +244,7 @@ abstract class TypeUtil {
     }
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
      *  <code>t</code> according to the given <code>Map</code>. */
-    private static Type subst(final Map<TypeVariable,Type> substMap, Type t) {
+    static Type subst(final Map<TypeVariable,Type> substMap, Type t) {
 	return t.accept(new TypeVisitor<Type>() {
 	    public Type visit(ArrayType t) {
 		return new PArrayType(subst(substMap, t.baseType()),
