@@ -37,9 +37,9 @@ class PLazyClassType extends PClassType {
 	if (cache==null) lookup();
 	return cache.typeParameters();
     }
-    public String qualifiedTypeName() {
+    public String canonicalTypeName() {
 	if (cache==null) lookup();
-	return cache.qualifiedTypeName();
+	return cache.canonicalTypeName();
     }
     public String typeName() {
 	if (cache==null) lookup();

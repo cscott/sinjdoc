@@ -42,7 +42,7 @@ abstract class PTypeVariable
 	for (Iterator<Type> it=shortList.iterator(); it.hasNext(); ) {
 	    Type ty = it.next();
 	    if ((ty instanceof ClassType) &&
-		((ClassType)ty).qualifiedTypeName().equals("java.lang.Object"))
+		((ClassType)ty).canonicalTypeName().equals("java.lang.Object"))
 		it.remove();
 	}
 	// now print out remaining part of bounds list.

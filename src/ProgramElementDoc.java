@@ -33,8 +33,11 @@ public interface ProgramElementDoc extends Doc {
      * For example, for the class <code>java.util.Hashtable</code>,
      * return "java.util.Hashtable".  For the method
      * <code>bar(String str, int i)</code> in the class <code>Foo</code>
-     * in the unnamed package, return "Foo.bar(java.lang.String,int)". */
-    public String qualifiedName();
+     * in the unnamed package, return "Foo.bar(java.lang.String,int)"
+     * (where all parameter types are also given their canonical names).
+     * See section 6.7 of the JLS for the difference between canonical
+     * and fully-qualified names. */
+    public String canonicalName();
     /** Return true if this program element is final. */
     public boolean isFinal();
     /** Return true if this program element is package private. */

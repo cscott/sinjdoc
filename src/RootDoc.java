@@ -24,11 +24,11 @@ public interface RootDoc extends Doc, DocErrorReporter {
     /**
      * Return a <code>ClassDoc</code> for the specified class or interface
      * name.
-     * @param qualifiedName fully-qualified class name.
+     * @param canonicalName canonical class name.
      * @return a <code>ClassDoc</code> representing the specified class,
      *  or <code>null</code> if this class is not referenced.
      */
-    public ClassDoc classNamed(String qualifiedName);
+    public ClassDoc classNamed(String canonicalName);
     /** Command-line options.
      *  Each complete option is in its own list.
      */

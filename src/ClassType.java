@@ -28,9 +28,9 @@ public interface ClassType extends Type {
      * type is not included. */
     public ClassDoc asClassDoc();
     /**
-     * Return the qualified name of the type.  For example,
-     * "java.lang.String". */
-    public String qualifiedTypeName();
+     * Return the canonical name of the type.  For example,
+     * "java.lang.String".  See section 6.7 of the JLS. */
+    public String canonicalTypeName();
     /**
      * Return the unqualified name of this type excluding any
      * package information.  For example, "String".   Note that inner class

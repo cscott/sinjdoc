@@ -26,11 +26,11 @@ abstract class PClassType implements ClassType {
 	this.pc = pc;
     }
     public final ClassDoc asClassDoc() {
-	return pc.rootDoc.classNamed(qualifiedTypeName());
+	return pc.rootDoc.classNamed(canonicalTypeName());
     }
     public final String toString() {
 	return typeName();
     }
-    public String signature() { return qualifiedTypeName(); }
+    public String signature() { return canonicalTypeName(); }
     public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }// PClassType

@@ -33,7 +33,7 @@ abstract class PProgramElementDoc extends PDoc
     public PPackageDoc containingPackage() { return containingPackage; }
     public PClassDoc containingClass() { return containingClass; }
     public int modifierSpecifier() { return modifiers; }
-    public abstract String qualifiedName();
+    public abstract String canonicalName();
     public final boolean isFinal() {
 	return Modifier.isFinal(modifierSpecifier());
     }

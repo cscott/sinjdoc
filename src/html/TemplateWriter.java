@@ -355,7 +355,7 @@ class TemplateWriter extends PrintWriter  {
 	register("CLASSNAME", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curClass!=null;
-		    tw.write(context.curClass.qualifiedName());
+		    tw.write(context.curClass.canonicalName());
 		}
 	    });
 	register("GROUPNAME", new TemplateAction() {

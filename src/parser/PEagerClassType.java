@@ -37,7 +37,7 @@ class PEagerClassType extends PClassType {
 	return Collections.unmodifiableList(typeParameters);
     }
     public String typeName() { return className; }
-    public String qualifiedTypeName() {
+    public String canonicalTypeName() {
 	if (packageName.length()==0) return className;
 	return packageName+"."+className;
     }

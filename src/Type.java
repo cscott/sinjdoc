@@ -15,8 +15,12 @@ package net.cscott.gjdoc;
  * @see java.lang.reflect.Type
  */
 public interface Type {
-    /** Return a string naming the type that is appropriate in a method
-     *  signature.
+    /** Return the canonical name of the <em>erasure</em> of this type.
+     *  (Anonymous types and types contained within anonymous types do not
+     *  have canonical names, but are unrepresented here in any case).
+     *  See section 6.7 of the JLS for the definition of canonical names;
+     *  using the erasure of the type allows this definition to extend to
+     *  parameterized types and type variables.
      *  @see ExecutableMemberDoc#signature()
      */
     public String signature();

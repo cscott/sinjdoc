@@ -59,9 +59,9 @@ public class PRootDoc extends PDoc
 	    result.addAll(it.next().includedClasses());
 	return Collections.unmodifiableCollection(result);
     }
-    public ClassDoc classNamed(String qualifiedName) {
-	if (classMap.containsKey(qualifiedName))
-	    return classMap.get(qualifiedName);
+    public ClassDoc classNamed(String canonicalName) {
+	if (classMap.containsKey(canonicalName))
+	    return classMap.get(canonicalName);
 	return null; // not found.
     }
     // returns null if the named package is not in the packageMap.
@@ -101,7 +101,7 @@ public class PRootDoc extends PDoc
 	    for (Iterator<PClassDoc> it=pcu.classes.iterator();
 		 it.hasNext(); ) {
 		PClassDoc pcd = it.next();
-		classMap.put(pcd.qualifiedName(), pcd);
+		classMap.put(pcd.canonicalName(), pcd);
 	    }
 	}
 	return sourceFileMap.get(f);

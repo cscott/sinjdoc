@@ -128,17 +128,17 @@ class PClassDoc extends PProgramElementDoc
 	throw new RuntimeException("unimplemented");
     }
     public Type superclass() {
-	if (qualifiedName().equals("java.lang.Object")) return null;
+	if (canonicalName().equals("java.lang.Object")) return null;
 	return superclass;
     }
     public boolean instanceOf(Type t) {
 	throw new RuntimeException("unimplemented");
     }
     // methods abstract in PProgramElementDoc
-    public String qualifiedName() {
+    public String canonicalName() {
 	StringBuffer sb = new StringBuffer();
 	if (containingClass()!=null) {
-	    sb.append(containingClass().qualifiedName());
+	    sb.append(containingClass().canonicalName());
 	    sb.append('.');
 	} else if (containingPackage().name().length()>0) {
 	    sb.append(containingPackage().name());
@@ -147,7 +147,7 @@ class PClassDoc extends PProgramElementDoc
 	sb.append(name());
 	return sb.toString();
     }
-    public String toString() { return qualifiedName(); }
+    public String toString() { return canonicalName(); }
     // methods abstract in PDoc
     public String getRawCommentText() { return commentText; }
     public PSourcePosition getRawCommentPosition() { return commentPosition; }

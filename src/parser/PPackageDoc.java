@@ -95,13 +95,13 @@ class PPackageDoc extends PDoc
 	    if (!it.next().isOrdinaryClass()) it.remove();
 	return Collections.unmodifiableList(list);
     }
-    // xxx fully qualified name, or just partial name?  let's say either.
+    // xxx canonical name, or just partial name?  let's say either.
     public ClassDoc findClass(String className) {
 	for (Iterator<ClassDoc> it=includedClasses().iterator();
 	     it.hasNext(); ) {
 	    ClassDoc cd = it.next();
 	    if (cd.name().equals(className) ||
-		cd.qualifiedName().equals(className))
+		cd.canonicalName().equals(className))
 		return cd;
 	}
 	return null; // not found.

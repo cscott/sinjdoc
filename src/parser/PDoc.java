@@ -256,7 +256,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	return sb.toString();
     }
     /**
-     * Compare based first on short name, then on fully-qualified name,
+     * Compare based first on short name, then on canonical name,
      * using the <code>java.text.Collator</code> appropriate for the locale.
      */
     public final int compareTo(Doc d) {
@@ -273,12 +273,12 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	// okay.  now compare.
 	int c = pc.collator.compare(q1, q2);// primary key.
 	if (c!=0) return c;
-	// try fully-qualified name.  The fully-qualified name for a Doc
+	// try canonical name.  The canonical name for a Doc
 	// which is not a ProgramElementDoc is just the name.
 	if (this instanceof ProgramElementDoc)
-	    q1 = ((ProgramElementDoc)this).qualifiedName();
+	    q1 = ((ProgramElementDoc)this).canonicalName();
 	if (d instanceof ProgramElementDoc)
-	    q2 = ((ProgramElementDoc)this).qualifiedName();
+	    q2 = ((ProgramElementDoc)this).canonicalName();
 	return pc.collator.compare(q1, q2); // secondary key.
     }
     /** Convenience method: remove leading stars, as from comment text. */

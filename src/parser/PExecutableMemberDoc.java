@@ -86,8 +86,8 @@ abstract class PExecutableMemberDoc extends PMemberDoc
 	sb.append(')');
 	return sb.toString();
     }
-    public final String qualifiedName() {
-	return containingClass().qualifiedName()+"."+name()+signature();
+    public final String canonicalName() {
+	return containingClass().canonicalName()+"."+name()+signature();
     }
     // methods abstract in PDoc
     public String name() { return name; }

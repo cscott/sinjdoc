@@ -49,8 +49,8 @@ class PFieldDoc extends PMemberDoc
     }
     public Type type() { return type; }
     // methods abstract in PProgramElementDoc
-    public String qualifiedName() {
-	return containingClass().qualifiedName()+"."+name();
+    public String canonicalName() {
+	return containingClass().canonicalName()+"."+name();
     }
     // methods abstract in PDoc
     public TypeContext getCommentContext() { return commentContext; }

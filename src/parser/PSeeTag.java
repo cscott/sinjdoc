@@ -137,7 +137,7 @@ class PSeeTag extends PTag.NonText
 	while (matcher.find()) {
 	    ClassType ty =
 		tagContext.lookupClassTypeName(matcher.group(),false);
-	    matcher.appendReplacement(result, ty.qualifiedTypeName());
+	    matcher.appendReplacement(result, ty.canonicalTypeName());
 	}
 	matcher.appendTail(result);
 	return result.toString();
