@@ -3,6 +3,8 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
+import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Doclet;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
@@ -29,6 +31,12 @@ public class HTMLDoclet extends Doclet {
 	    System.out.println("TAGS: "+pd.tags());
 	    System.out.println("FIRST: "+pd.firstSentenceTags());
 	    System.out.println("CLASSES: "+pd.allClasses());
+	    for (Iterator<ClassType> it2=pd.allClasses().iterator();
+		 it2.hasNext(); ) {
+		ClassDoc cd = it2.next().asClassDoc();
+		if (cd==null) continue;
+		System.out.println("CLASSDOC: "+cd.qualifiedName()+", super="+cd.superclass()+", interfaces="+cd.interfaces());
+	    }
 	}
 	// create main index page
 	// for each package listed...
