@@ -3,11 +3,22 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
+import net.cscott.gjdoc.ArrayType;
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.ClassTypeVariable;
+import net.cscott.gjdoc.ConstructorDoc;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.ExecutableMemberDoc;
+import net.cscott.gjdoc.FieldDoc;
+import net.cscott.gjdoc.MemberDoc;
+import net.cscott.gjdoc.MethodTypeVariable;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.ParameterizedType;
 import net.cscott.gjdoc.RootDoc;
+import net.cscott.gjdoc.Type;
+import net.cscott.gjdoc.TypeVariable;
+import net.cscott.gjdoc.TypeVisitor;
 
 import java.nio.charset.CharsetEncoder;
 import java.io.BufferedWriter;
@@ -36,7 +47,6 @@ import java.util.regex.Pattern;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-
 class HTMLUtil {
     DocErrorReporter reporter;
     HTMLUtil(DocErrorReporter reporter) { this.reporter = reporter; }
@@ -53,6 +63,31 @@ class HTMLUtil {
 	return Arrays.asList(c.toArray(new PackageDoc[c.size()]));
     }
 
+    /** Construct the URL for a page corresponding to the specified
+     *  class type variable. */
+    public static String toURL(ClassTypeVariable ctv) {
+	StringBuffer sb = new StringBuffer(toURL(ctv.declaringClass()));
+	sb.append("#!tv!");
+	sb.append(ctv.getName());
+	return sb.toString();
+    }
+    /** Construct the URL for a page corresponding to the specified
+     *  method type variable. */
+    public static String toURL(MethodTypeVariable mtv) {
+	StringBuffer sb = new StringBuffer(toURL(mtv.declaringMethod()));
+	sb.append(mtv.getName());
+	return sb.toString();
+    }
+    /** Construct the URL for a page corresponding to the specified
+     *  class member. */
+    public static String toURL(MemberDoc m) {
+	StringBuffer sb = new StringBuffer(toURL(m.containingClass()));
+	sb.append("#");
+	sb.append(m.name());
+	if (m instanceof ExecutableMemberDoc)
+	    sb.append(((ExecutableMemberDoc)m).signature());
+	return sb.toString();
+    }
     /** Construct the URL for a page corresponding to the specified class. */
     public static String toURL(ClassDoc c) {
 	StringBuffer sb = new StringBuffer();
@@ -121,6 +156,67 @@ class HTMLUtil {
 	sb.append("</a>");
 	return sb.toString();
     }
+    public static String toLink(URLContext context, MemberDoc md) {
+	StringBuffer sb = new StringBuffer("<a href=\"");
+	sb.append(context.makeRelative(toURL(md)));
+	sb.append("\" class=\"");
+	if (md instanceof FieldDoc) sb.append("fieldRef");
+	else if (md instanceof ConstructorDoc) sb.append("constructorRef");
+	else sb.append("methodRef");
+	sb.append("\">");
+	sb.append(md.name());
+	sb.append("</a>");
+	return sb.toString();
+    }
+    public static String toLink(final URLContext context, Type t) {
+	return t.accept(new TypeVisitor<String>() {
+	    public String visit(ArrayType t) {
+		StringBuffer sb = new StringBuffer
+		    (t.baseType().accept(this));
+		for (int i=0; i<t.dimension(); i++)
+		    sb.append("[]");
+		return sb.toString();
+	    }
+	    public String visit(ClassType t) {
+		ClassDoc cd = t.asClassDoc();
+		if (cd!=null && cd.isIncluded())
+		    return toLink(context, cd, false);
+		// XXX look up w/ -link options here.
+		return t.typeName();
+	    }
+	    public String visit(ParameterizedType t) {
+		StringBuffer sb = new StringBuffer
+		    (t.getBaseType().accept(this));
+		sb.append("&lt;");
+		for (Iterator<Type> it=t.getActualTypeArguments().iterator();
+		     it.hasNext(); ) {
+		    sb.append(it.next().accept(this));
+		    if (it.hasNext()) sb.append(",");
+		}
+		sb.append("&gt;");
+		return sb.toString();
+	    }
+	    public String visit(TypeVariable t) { assert false; return null; }
+	    public String visit(ClassTypeVariable t) {
+		// the link is to the class var definition
+		StringBuffer sb = new StringBuffer("<a href=\"");
+		sb.append(context.makeRelative(toURL(t)));
+		sb.append("\" class=\"typeVarRef\">");
+		sb.append(t.getName());
+		sb.append("</a>");
+		return sb.toString();
+	    }
+	    public String visit(MethodTypeVariable t) {
+		// the link is to the method var definition
+		StringBuffer sb = new StringBuffer("<a href=\"");
+		sb.append(context.makeRelative(toURL(t)));
+		sb.append("\" class=\"typeVarRef\">");
+		sb.append(t.getName());
+		sb.append("</a>");
+		return sb.toString();
+	    }
+	});
+	}
     /** Copy the contents of a <code>Reader</code> to a <code>Writer</code>.
      */
     void copy(Reader r, Writer w) {
