@@ -1,9 +1,22 @@
 // -*-java-*-
 package net.cscott.gjdoc.html;
 
+/**
+ * The <code>Version</code> object contains fields naming the current version
+ * (@PACKAGE_VERSION@) of the @PACKAGE_NAME@ tool.
+ * @version $Id$
+ */
 public abstract class Version {
+    /** The name of the package.
+     *  @return "@PACKAGE_NAME@" */
     public static final String PACKAGE_NAME = "@PACKAGE_NAME@";
+    /** The version of the package.
+     *  @return "@PACKAGE_VERSION@" */
     public static final String PACKAGE_VERSION = "@PACKAGE_VERSION@";
+    /** The package name and version as one string.
+     *  @return "@PACKAGE_STRING@" */
     public static final String PACKAGE_STRING = "@PACKAGE_STRING@";
+    /** The address to which bug reports should be sent.
+     *  @return "@PACKAGE_BUGREPORT@" */
     public static final String PACKAGE_BUGREPORT = "@PACKAGE_BUGREPORT@";
 }
