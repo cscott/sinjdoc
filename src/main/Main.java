@@ -9,6 +9,7 @@ import net.cscott.gjdoc.html.HTMLDoclet;
 import java.lang.reflect.Modifier;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * <code>Main</code> implements a javadoc-alike that properly handles
@@ -74,34 +75,50 @@ public class Main {
 	    RunData runData = new RunData(programName,
 					  errWriter, warnWriter, noticeWriter,
 					  defaultDocletClassName);
-	    LinkedList<String> argList = new LinkedList<String>
-		(Arrays.asList(args));
-	    
 	    List<String> nonOptionArgs = new ArrayList<String>();
 	    List<List<String>> docletOptions = new ArrayList<List<String>>();
 	    
-	    // parse all the java doc options.
-	    while (!argList.isEmpty()) {
-		String anArg = argList.removeFirst();
+	    // expand all '@' options first.
+	    LinkedList<String> argList = new LinkedList<String>();
+	    for (Iterator<String> it=Arrays.asList(args).iterator();
+		 it.hasNext(); ) {
+		String anArg = it.next();
 		if (anArg.startsWith("@")) {
 		    // process arg file.
 		    try {
-			Reader r =
-			    new BufferedReader(new FileReader(anArg.substring(1)));
+			Reader r = new BufferedReader
+			    (new FileReader(anArg.substring(1)));
 			StreamTokenizer st = new StreamTokenizer(r);
-			while (st.nextToken()!=st.TT_EOF)
-			    argList.addFirst(st.sval);
+			st.resetSyntax(); // set up tokenizer.
+			st.whitespaceChars(0, ' ');
+			st.wordChars('!','!');
+			st.quoteChar('"');
+			st.commentChar('#');
+			st.wordChars('$','&');
+			st.quoteChar('\'');
+			st.wordChars('(','~');
+			st.wordChars(160, 255);// iso 8859-1 / unicode
+			while (st.nextToken()!=st.TT_EOF) {
+			    assert st.sval!=null;
+			    argList.addLast(st.sval);
+			}
 			r.close();
 		    } catch (IOException e) {
-			throw new RuntimeException
+			runData.reporter.printError
 			    ("Error processing "+anArg+": "+e);
-		}
-		} else if (anArg.startsWith("-J")) {
-		    // XXX Java option.
-		    warnWriter.println("Ignoring option: "+anArg);
-		} else if (!anArg.startsWith("-"))
+		    }
+		} else argList.addLast(anArg);
+	    }
+	    // parse all the java doc options.
+	    while (!argList.isEmpty()) {
+		String anArg = argList.removeFirst();
+		assert anArg!=null;
+		if (!anArg.startsWith("-"))
 		    nonOptionArgs.add(anArg);
-		else if (stdOptions.containsKey(anArg.toLowerCase())) {
+		else if (anArg.startsWith("-J")) {
+		    // XXX Java option.
+		    runData.reporter.printWarning("Ignoring option: "+anArg);
+		} else if (stdOptions.containsKey(anArg.toLowerCase())) {
 		    // standard option. (note that it is case-insensitive)
 		    Option opt = stdOptions.get(anArg.toLowerCase());
 		    assert opt.len>0;
@@ -110,7 +127,6 @@ public class Main {
 		    for (int j=1; j<opt.len; j++)
 			// xxx handle array out of bounds here.
 			optionWithArgs.add(argList.removeFirst());
-		    //options.add(optionWithArgs);
 		    // now process the arg.
 		    opt.process(runData, optionWithArgs);
 		    // special case for -help
@@ -132,19 +148,45 @@ public class Main {
 		    }
 		}
 	    }
+	    // finish initializing standard options.
+	    if (runData.sourcePath==null)
+		runData.sourcePath =
+		    (runData.classPath!=null) ? runData.classPath : ".";
+	    if (runData.classPath==null)
+		runData.classPath = System.getProperty("java.class.path");
+	    runData.parseControl.setSourcePath(splitPath(runData.sourcePath));
+
 	    // check doclet options.
 	    boolean success=false;
 	    Doclet doclet = runData.getDoclet();
 	    if (doclet.validOptions(docletOptions, runData.reporter)) {
+		// separate nonOptionArgs into packages and source files.
+		// note that '*' is accepted in the source file spec.
+		List<String> packages = new ArrayList<String>();
+		List<String> sourcefiles = new ArrayList<String>();
+		for (Iterator<String> it=nonOptionArgs.iterator();
+		     it.hasNext(); )
+		    for (Iterator<String> it2=expandStar(it.next()).iterator();
+			 it2.hasNext(); ) {
+			String candidate = it2.next();
+			// if the string is a legal package name and
+			// doesn't end in .java, then it's a package.
+			if (candidate.toLowerCase().endsWith(".java")) {
+			    // check if this is a valid source file.
+			    File f = new File(candidate);
+			    if (isValidClassName(f.getName()) &&
+				f.isFile() && f.exists())
+				sourcefiles.add(candidate);
+			} else if (isValidPackageName(candidate))
+			    // valid package.
+			    packages.add(candidate);
+		    }
 		// okay.  have parsed all options.
-		// xxx separate nonOptionArgs into packages and
-		//     sourcefilles, etc?
-
 		RootDoc rootDoc =
-		    runData.parseControl.parse(nonOptionArgs,
-					       Collections.EMPTY_LIST,
-					       Collections.EMPTY_LIST,
-					       Collections.EMPTY_LIST,
+		    runData.parseControl.parse(packages,
+					       sourcefiles,
+					       splitColon(runData.subpackages),
+					       splitColon(runData.exclude),
 					       docletOptions);
 	    
 		success = doclet.start(rootDoc);
@@ -152,16 +194,18 @@ public class Main {
 	    // okay, report on errors and warnings.
 	    if (runData.reporter.errNum>0)
 		runData.reporter.printNotice
-		    (runData.reporter.errNum+" errors.");
+		    (runData.reporter.errNum+" error"+
+		     (runData.reporter.errNum==1?"":"s")+".");
 	    if (runData.reporter.warnNum>0)
 		runData.reporter.printNotice
-		    (runData.reporter.warnNum+" warnings.");
+		    (runData.reporter.warnNum+" warning"+
+		     (runData.reporter.warnNum==1?"":"s")+".");
 	    
 	    // return an appropriate exit code.
-	    return success?0:1;
+	    return (success&&runData.reporter.errNum==0)?0:1;
 	} catch (Throwable t) {
 	    // if anything escapes, return w/ an error code.
-	    errWriter.println(t);
+	    t.printStackTrace(errWriter);
 	    return 1;
 	} finally {
 	    errWriter.flush();
@@ -169,6 +213,31 @@ public class Main {
 	    noticeWriter.flush();
 	}
     }
+    static boolean isValidPackageName(String str) {
+	Pattern p = Pattern.compile("[.]");
+	for (Iterator<String> it=Arrays.asList(p.split(str,-1)).iterator();
+	     it.hasNext(); )
+	    if (!isValidIdentifier(it.next()))
+		return false;
+	return true;
+    }
+    static boolean isValidClassName(String str) {
+	if (!str.toLowerCase().endsWith(".java")) return false;
+	return isValidIdentifier(str.substring(0,str.length()-5));
+    }
+    static boolean isValidIdentifier(String str) {
+	if (str.length()<1) return false;
+	if (!Character.isJavaIdentifierStart(str.charAt(0))) return false;
+	for(int i=1; i<str.length(); i++)
+	    if (!Character.isJavaIdentifierPart(str.charAt(i)))
+		return false;
+	// check that it is not a reserved word.
+	if (stoplist.matcher(str).matches()) return false;
+	// okay, we've passed.
+	return true;
+    }
+    static Pattern stoplist = Pattern.compile
+	("true|false|null|abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while");
 
     /** Create a doclet instance given its classname.
      *  XXX Note that we don't do anything with the docletPath here.
@@ -277,23 +346,26 @@ public class Main {
 	addOption(new Option("-sourcepath", "<pathlist>", 2,
 			     "Specify where to find source files") {
 		void process(RunData rd, List<String> args) {
-		    // XXX
+		    rd.sourcePath = args.get(1);
 		}
 	    });
-	addOption(new IgnoreOption
+	addOption(new Option
 		  ("-classpath", "<pathlist>", 2, 
 		   "Specify where to find user class files") {
+		void process(RunData rd, List<String> args) {
+		    rd.classPath = args.get(1);
+		}
 	    });
 	addOption(new Option("-exclude", "<pkglist>", 2,
 			     "Specify a list of packages to exclude") {
 		void process(RunData rd, List<String> args) {
-		    // XXX
+		    rd.exclude = args.get(1);
 		}
 	    });
 	addOption(new Option("-subpackages", "<subpkglist>", 2,
 			     "Specify subpackages to recursively load") {
 		void process(RunData rd, List<String> args) {
-		    // XXX
+		    rd.subpackages = args.get(1);
 		}
 	    });
 	addOption(new IgnoreOption
@@ -309,7 +381,13 @@ public class Main {
 			     "Provide source compatibility with the "+
 			     "specified release") {
 		void process(RunData rd, List<String> args) {
-		    // XXX
+		    String release = args.get(1);
+		    if (!release.startsWith("1."))
+			rd.reporter.printError("Bad -source option: "+release);
+		    else {
+			int val = Integer.parseInt(release.substring(2));
+			rd.parseControl.setSourceVersion(val);
+		    }
 		}
 	    });
 	addOption(new IgnoreOption
@@ -385,6 +463,10 @@ public class Main {
 	String docletPath=null;
 	String defaultDocletClassName;
 	Doclet doclet=null;
+
+	String sourcePath=null, classPath=null;
+	String subpackages="", exclude="";
+
 	RunData(String programName,
 		PrintWriter errWriter, PrintWriter warnWriter,
 		PrintWriter noticeWriter,
@@ -427,5 +509,36 @@ public class Main {
 	    this.warnWriter = warnWriter;
 	    this.noticeWriter = noticeWriter;
 	}
+    }
+    private static List<String> splitPath(String str) {
+	String pathSep = System.getProperty("path.separator");
+	if (pathSep==null) pathSep=":"; // safe default.
+	return Arrays.asList(Pattern.compile(pathSep).split(str));
+    }
+    private static List<String> splitColon(String str) {
+	return Arrays.asList(Pattern.compile(":").split(str));
+    }
+    private static List<String> expandStar(String str) {
+	// xxx note this doesn't work for strings like: asd/*/asdas.java
+	int idx = str.indexOf('*');
+	if (idx<0) return Collections.singletonList(str);
+	String lhs = str.substring(0, idx);
+	final String rhs = str.substring(idx+1);
+	File lhsF = new File(lhs);
+	final String namePrefix = lhsF.isDirectory()?"":lhsF.getName();
+	File dir = lhsF.isDirectory()?lhsF:lhsF.getParentFile();
+	if (dir==null) dir=new File(".");
+	File[] matches = dir.listFiles(new FilenameFilter() {
+		public boolean accept(File dir, String name) {
+		    return
+			name.length()>=(namePrefix.length()+rhs.length()) &&
+			name.startsWith(namePrefix) &&
+			name.endsWith(rhs);
+		}
+	    });
+	String[] result = new String[matches.length];
+	for (int i=0; i<matches.length; i++)
+	    result[i] = matches[i].getPath();
+	return Arrays.asList(result);
     }
 }

@@ -8,6 +8,8 @@ import net.cscott.gjdoc.RootDoc;
 
 import java.lang.reflect.Modifier;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 /**
  * <code>ParserControl</code> runs the parser to generate a
@@ -26,7 +28,9 @@ public class ParserControl {
     /** Source file encoding name. */
     String encoding=null;
     /** Sourcepath to use. */
-    List<File> sourcePath;
+    List<File> sourcePath = new ArrayList<File>();
+    /** Source version to use. */
+    int sourceVersion=5;
 
     public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
@@ -37,6 +41,20 @@ public class ParserControl {
     public void setEncoding(String encoding) { this.encoding=encoding; }
 
     public void setAccess(int access) { this.access = access; }
+    public void setSourceVersion(int v) {
+	assert v>=1 && v<=5;
+	this.sourceVersion=v;
+    }
+    public void setSourcePath(List<String> sp) {
+	sourcePath.clear();
+	for (Iterator<String> it=sp.iterator(); it.hasNext(); ) {
+	    File f = new File(it.next());
+	    if (f.isDirectory())
+		sourcePath.add(f);
+	    else
+		reporter.printWarning("Ignoring non-directory source path "+f);
+	}
+    }
 
     public boolean showPublic() { return true; }
     public boolean showProtected() { return access!=Modifier.PUBLIC; }
@@ -50,6 +68,11 @@ public class ParserControl {
 			 List<String> subpackages,
 			 List<String> excludePackages,
 			 List<List<String>> docletOptions) {
+	reporter.printNotice("PACKAGE NAMES: "+packageNames);
+	reporter.printNotice("SOURCE FILE NAMES: "+sourcefileNames);
+	reporter.printNotice("SUBPACKAGES: "+subpackages);
+	reporter.printNotice("EXCLUDE PACKAGES: "+excludePackages);
+	reporter.printNotice("DOCLET OPTIONS: "+docletOptions);
 	return null;
     }
 }
