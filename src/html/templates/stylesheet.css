@@ -1,0 +1,56 @@
+@charset "UTF-8";
+/* Stylesheet for GJ doc HTML output */
+body { color: black; background-color: white; }
+/* sans-serif fonts look better on screen. */
+@media screen { body { font-family: Verdana, Helvetica, Arial, sans-serif; } }
+/* serif fonts look better on paper. */
+@media print { body { font-family: serif; } }
+dt { font-weight: bold; }
+a:hover { color: black; background-color: #ccc; }
+a:link { color: blue; }
+a:visited { color: purple; }
+a:active { color: red; background-color: yellow; }
+
+a.packageRef {  }
+a.classRef {  }
+a.interfaceRef { font-style: italic; }
+a.exceptionRef {  }
+a.errorRef {  }
+
+/* alternate colors: #FFC #FC9 lightblue */
+/* see http://www.w3.org/MarkUp/Guide/Style */
+
+/* for small frame */
+body.smallframe p a { display: block; }
+body.smallframe p { margin: .1ex; padding: .1ex .1em 1ex .5em; border-bottom: 1px solid black; }
+body.smallframe h1 { font-size: 140%; color: black; background-color: #FFC; }
+body.smallframe h1 a:active { color: red; background-color: yellow; }
+body.smallframe h2 { font-size: 120%; padding: 0; margin: .1ex 0 .2ex 0; }
+body.smallframe { font-size: 9pt; line-height: 1.1; }
+
+/* for large frame */
+body.bigframe { font-size: 10pt; }
+body.bigframe h1 { text-align: center; }
+body.bigframe h2 { text-align: left; font-size: 11pt; }
+body.bigframe table { width: 100%; border: 1px solid black; margin: 1em 0; }
+body.bigframe th { text-align: left; color: black; background-color: #FFC; font-size: 150%; }
+body.bigframe a.bold { font-weight: bold; }
+body.bigframe dd a { font-weight: bold; }
+
+/* navbar formatting */
+div.navbar { border-bottom: 1px solid black; border-top: 1px solid black; font-size: 9pt; font-family: Helvetica, Arial, sans-serif; }
+div.navbar *.selected { background-color: blue; color: white; font-weight: bolder; padding-top: .1em; padding-bottom: .1em; }
+div.navbar p.nav { float: left; width: auto; clear: both; padding: 0; margin: 0; }
+div.navbar p.navtop { color: black; background-color: #FFC; padding: .5ex 1em .5ex 0; }
+div.navbar p.navtop a { font-weight: bold; }div.navbar p.nav span { padding: 0 .5em 0 0; }
+div.navbar p.navbot { font-size: smaller; }
+div.navbar p.navbot span.frames { margin-left: 5em; }
+div.navbar p.navbot span.allclasses { margin-left: 5em; }
+div.navbar div.navtitle { text-align: right; font-weight: bold; font-style: italic; padding: 0 0 0 1em; }
+div.navbar p.clear { padding: 0; margin: 0; clear: both; }
+
+div.description { margin-bottom: 1em; }
+
+div.footer {  font-size: 8pt; margin-top: 1em; }
+
+

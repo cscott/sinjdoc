@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 AM_JAVACFLAGS = -g -warnunchecked
+SUBDIRS = templates
 EXTRA_DIST := package.html
 
 JAVAROOT=$(top_builddir)/classes
