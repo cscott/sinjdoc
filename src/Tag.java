@@ -14,11 +14,20 @@ import java.util.List;
  * @see com.sun.javadoc.Tag
  */
 public interface Tag {
-    public List<Tag> firstSentenceTags();
-    public List<Tag> inlineTags();
-    public String kind();
+    /** Returns true if this is an inline tag. */
+    public boolean isInline();
+    /** Return the name of this tag. */
     public String name();
+    /** Return the kind of this tag.  This is 'Text' for plain text, and
+     *  something else (same as <code>name()</code>?) for other tags.
+     *  The string returned should always be intern'ed. */
+    public String kind();
+    /** Return the source position of this tag.
+     *  Will never return <code>null</code>. */
     public SourcePosition position();
+    /** Return the text of this tag; that is, the portion beyond the tag
+     *  name. */
     public String text();
+    /** Return a human-readable representation of this tag object. */
     public String toString();
 }

@@ -17,11 +17,14 @@ import java.util.List;
  */
 abstract class PTag 
     implements net.cscott.gjdoc.Tag {
-    public abstract List<Tag> firstSentenceTags();
-    public abstract List<Tag> inlineTags();
+    public abstract boolean isInline();
     public abstract String kind();
     public abstract String name();
     public abstract SourcePosition position();
     public abstract String text();
-    public abstract String toString();
+    public String toString() {
+	String str = "@"+name()+" "+text();
+	if (isInline()) str = "{"+str+"}";
+	return str;
+    }
 }

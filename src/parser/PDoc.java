@@ -8,6 +8,8 @@ import net.cscott.gjdoc.SeeTag;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,11 +23,8 @@ import java.util.List;
  * @version $Id$
  */
 abstract class PDoc implements net.cscott.gjdoc.Doc {
-    public abstract String commentText();
-    public abstract int compareTo(Object/*Doc*/ d);
     public abstract List<Tag> firstSentenceTags();
     public abstract String getRawCommentText();
-    public abstract List<Tag> inlineTags();
     public boolean isClass() { return false; }
     public boolean isConstructor() { return false; }
     public boolean isError() { return false; }
@@ -36,9 +35,40 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     public boolean isMethod() { return false; }
     public boolean isOrdinaryClass() { return false; }
     public abstract String name();
-    public abstract SourcePosition position();
-    public abstract List<SeeTag> seeTags();
-    public abstract void setRawCommentText(String rawDocumentation);
+    public SourcePosition position() { return PSourcePosition.NO_INFO; }
     public abstract List<Tag> tags();
-    public abstract List<Tag> tags(String tagname);
+
+    public List<Tag> inlineTags() {
+	List<Tag> result = new ArrayList<Tag>();
+	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
+	    Tag tag = it.next();
+	    if (tag.kind()!="Text" && !tag.isInline())
+		return result; // done!
+	    result.add(tag);
+	}
+	return result;
+    }
+    public final List<Tag> tags(String tagname) {
+	List<Tag> result = new ArrayList<Tag>();
+	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
+	    Tag tag = it.next();
+	    if (tag.name().equals(tagname))
+		result.add(tag);
+	}
+	return result;
+    }
+    public final String commentText() {
+	// strip out all tags not of kind 'Text'.  append the rest.
+	StringBuffer sb = new StringBuffer();
+	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
+	    Tag tag = it.next();
+	    if (tag.kind()=="Text")
+		sb.append(tag.text());
+	}
+	return sb.toString();
+    }
+    /** Compare based on name. */
+    public final int compareTo(Object/*Doc*/ d) {
+	return name().compareTo(((Doc)d).name());
+    }
 }
