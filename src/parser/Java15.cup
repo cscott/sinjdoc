@@ -6,6 +6,7 @@ import net.cscott.sinjdoc.Parameter;
 import net.cscott.sinjdoc.ParameterizedType;
 import net.cscott.sinjdoc.Type;
 import net.cscott.sinjdoc.TypeArgument;
+import net.cscott.sinjdoc.TypeVariable;
 import java_cup.runtime.*;
 import java.lang.reflect.Modifier;
 import java.io.BufferedReader;
@@ -335,13 +336,19 @@ action code {:
 				    (parser.rootDoc.pc, pt.getBaseType(),
 				     inner), pt, new TypeArgumentList());
   }
-  ParameterizedType addParams(Type ty, List<TypeArgument> typeArgs) {
+  ParameterizedType addParams(Type ty, List<TypeArgument> typeArgs, int pos) {
       if (ty instanceof ParameterizedType) {
 	  ParameterizedType pt = (ParameterizedType) ty;
 	  assert pt.getActualTypeArguments().size()==0;
 	  return new PParameterizedType(pt.getBaseType(),
 					pt.getDeclaringType(),
 					typeArgs);
+      }
+      if (ty instanceof TypeVariable) {
+	  parser.rootDoc.printError
+	      (sp(pos), "Type variable cannot be parameterized");
+	  // try to use var name as class name to continue.
+	  ty = lookupClassType(((TypeVariable)ty).getName());
       }
       assert ty instanceof ClassType;
       ClassType ct = (ClassType) ty;
@@ -717,16 +724,16 @@ type_variable ::=
 	;
 class_or_interface ::=
 		name:n
-		{: RESULT = lookupClassType(n); :}
-	|	class_or_interface:ty LT type_argument_list_1:args DOT name:n
-		{: ParameterizedType pt = addParams(ty, args);
+		{: RESULT = lookupType(n); /* could be a type variable */ :}
+	|	class_or_interface:ty LT:l type_argument_list_1:args DOT name:n
+		{: ParameterizedType pt = addParams(ty, args, lleft);
 		   RESULT = joinWithParam(pt, n); :}
 	;
 class_or_interface_type ::=
 		class_or_interface:ty
 		{: RESULT = ty; :}
-	|	class_or_interface:ty LT type_argument_list_1:args
-		{: RESULT = addParams(ty, args); :}
+	|	class_or_interface:ty LT:l type_argument_list_1:args
+		{: RESULT = addParams(ty, args, lleft); :}
 	;
 
 class_type ::=	class_or_interface_type:ty
@@ -743,12 +750,12 @@ array_type ::=	primitive_type:ty dims:d
 	// we have to expand this to avoid lookahead problems.
 	|	name:n dims:d
 		{: RESULT=arrayType(lookupType(n), d.intValue()); :}
-	|	class_or_interface:ty LT type_argument_list_1:args DOT name:n
+	|	class_or_interface:ty LT:l type_argument_list_1:args DOT name:n
 			dims:d
-		{: RESULT=arrayType(joinWithParam(addParams(ty, args), n),
-				    d.intValue()); :}
-	|	class_or_interface:ty LT type_argument_list_1:args dims:d
-		{: RESULT=arrayType(addParams(ty, args), d.intValue()); :}
+		{: RESULT=arrayType(joinWithParam(addParams(ty, args, lleft),
+						  n), d.intValue()); :}
+	|	class_or_interface:ty LT:l type_argument_list_1:args dims:d
+		{: RESULT=arrayType(addParams(ty,args,lleft), d.intValue()); :}
 	;
 
 type_arguments_opt ::= type_arguments:tl
@@ -796,14 +803,14 @@ wildcard_3 ::=	QUESTION URSHIFT
 reference_type_1 ::=
 		reference_type:ty GT
 		{: RESULT=ty; :}
-	|	class_or_interface:ty LT type_argument_list_2:args
-		{: RESULT=addParams(ty, args); :}
+	|	class_or_interface:ty LT:l type_argument_list_2:args
+		{: RESULT=addParams(ty, args, lleft); :}
 	;
 reference_type_2 ::=
 		reference_type:ty RSHIFT
 		{: RESULT=ty; :}
-	|	class_or_interface:ty LT type_argument_list_3:args
-		{: RESULT=addParams(ty, args); :}
+	|	class_or_interface:ty LT:l type_argument_list_3:args
+		{: RESULT=addParams(ty, args, lleft); :}
 	;
 reference_type_3 ::=
 		reference_type:ty URSHIFT
