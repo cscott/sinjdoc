@@ -38,7 +38,10 @@ TypeVariable.java
 # (we can't build it here because of dependency ordering problems)
 all-local: Main.java
 Main.java: main/Main.java
-	cp $< $@
+	$(RM) $@
+	ln -s $< $@
+clean-local:
+	$(RM) Main.java
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
