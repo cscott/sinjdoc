@@ -17,16 +17,17 @@ import java.util.List;
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
-public abstract class PRootDoc extends PDoc
+public class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
     final String overviewText;
+    final PSourcePosition overviewPosition;
     PRootDoc(ParserControl pc) {
 	super(pc);
-	this.overviewText =
+	Pair<String,PSourcePosition> pair =
 	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
+	this.overviewText = pair.left;
+	this.overviewPosition = pair.right;
     }
-    /** @return false */
-    public boolean shouldStripStars() { return false; }
 
     public List<List<String>> options() { return options; }
     public void setOptions(List<List<String>> options) {
@@ -34,14 +35,27 @@ public abstract class PRootDoc extends PDoc
     }
     private List<List<String>> options=null;
 
-    public abstract List<ClassDoc> classes();
-    public abstract ClassDoc classNamed(String qualifiedName);
-    public abstract PackageDoc packageNamed(String name);
-    public abstract List<ClassDoc> specifiedClasses();
-    public abstract List<PackageDoc> specifiedPackages();
+    public List<ClassDoc> classes() {
+	throw new RuntimeException("Unimplemented"); // XXX
+    }
+    public ClassDoc classNamed(String qualifiedName) {
+	throw new RuntimeException("Unimplemented"); // XXX
+    }
+    public PackageDoc packageNamed(String name) {
+	throw new RuntimeException("Unimplemented"); // XXX
+    }
+    public List<ClassDoc> specifiedClasses() {
+	throw new RuntimeException("Unimplemented"); // XXX
+    }
+    public List<PackageDoc> specifiedPackages() {
+	throw new RuntimeException("Unimplemented"); // XXX
+    }
 
     // inherited from PDoc
     public String getRawCommentText() { return overviewText; }
+    public PSourcePosition getRawCommentPosition() { return overviewPosition; }
+    /** @return false */
+    public boolean shouldStripStars() { return false; }
     public boolean isIncluded() { return true; }
     public String name() { return "overview"; }
     

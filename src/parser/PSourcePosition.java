@@ -7,7 +7,9 @@ import java.io.File;
 
 /**
  * The <code>PSourcePosition</code> interface describes a source position:
- * filename, line number, and column number.
+ * filename, line number, and column number.  The implementation represents
+ * the position as a zero-based character index which it lazily converts
+ * to line and column number when needed.
  * 
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$

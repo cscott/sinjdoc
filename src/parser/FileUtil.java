@@ -160,14 +160,17 @@ public class FileUtil {
 
     /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
      *  in the given file. */
-    static String rawFileText(File f,
-			      DocErrorReporter reporter, String encoding) {
+    static Pair<String,PSourcePosition> rawFileText
+	(File f, DocErrorReporter reporter, String encoding) {
 	String contents = snarf(f, reporter, encoding);
 	Matcher matcher = BODY_PATTERN.matcher(contents);
 	if (matcher.find())
-	    return matcher.group(1);
+	    return new Pair<String,PSourcePosition>
+		(matcher.group(1), new PSourcePosition
+		 (new PFile(f), matcher.start(1)));
 	// okay, just copy it all then.
-	return contents;
+	return new Pair<String,PSourcePosition>
+	    (contents, new PSourcePosition(new PFile(f), 0));
     }
     private final static Pattern BODY_PATTERN = Pattern.compile
 	("<\\s*body[^>]*>(.*)</\\s*body",

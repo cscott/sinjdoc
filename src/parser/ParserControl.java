@@ -78,8 +78,6 @@ public class ParserControl {
 
 
     public PRootDoc parse(FileUtil fu) {
-	reporter.printNotice("PACKAGE NAMES: "+packages);
-	reporter.printNotice("SOURCE FILE NAMES: "+sourceFiles);
-	return null;
+	return new PRootDoc(this);
     }
 }
