@@ -145,7 +145,7 @@ public class FileUtil {
     }
     // find a directory in the source path corresponding to the given
     // package.
-    private File findPackage(String packageName) {
+    File findPackage(String packageName) {
 	// convert package name to path.
 	String path = DOT.matcher(packageName).replaceAll
 	    (System.getProperty("file.separator"));

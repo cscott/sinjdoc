@@ -7,6 +7,7 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.Type;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,19 +21,47 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PPackageDoc extends PDoc
+class PPackageDoc extends PDoc
     implements net.cscott.gjdoc.PackageDoc {
-    PPackageDoc(ParseControl pc) { super(pc); }
+    // package-local code can add classes to this array.
+    final List<Type> classes = new ArrayList<Type>();
+    final String name;
+    final boolean isIncluded;
+    final String packageText;
+    final PSourcePosition packagePosition;
+    PPackageDoc(ParseControl pc, String packageName, boolean isIncluded) {
+	super(pc);
+	this.name = packageName;
+	this.isIncluded = isIncluded;
+	File packageDir = pc.sourcePath.findPackage(packageName);
+	File packageTextFile = new File(packageDir, "package.html");
+	Pair<String,PSourcePosition> pair =
+	    FileUtil.rawFileText(packageTextFile.exists()?packageTextFile:null,
+				 pc.reporter, pc.encoding);
+	this.packageText = pair.left;
+	this.packagePosition = pair.right;
+    }
+    // methods abstract in PDoc
+    public String getRawCommentText() { return packageText; }
+    public PSourcePosition getRawCommentPosition() { return packagePosition; }
+    public boolean isIncluded() { return isIncluded; }
+    public String name() { return name; }
+    // PackageDoc implementation:
     /** @return false */
-    public boolean shouldStripStars() { return false; }
-    public abstract List<Type> allClasses();
+    public final boolean shouldStripStars() { return false; }
+    public List<Type> allClasses() {
+	return Collections.unmodifiableList(classes);
+    }
     public List<ClassDoc> includedClasses() {
-	List<ClassDoc> list = new ArrayList<ClassDoc>();
-	list.addAll(includedInterfaces());
-	list.addAll(includedOrdinaryClasses());
-	list.addAll(includedErrors());
-	list.addAll(includedExceptions());
-	return Collections.unmodifiableList(list);
+	List<Type> all = allClasses();
+	List<ClassDoc> result = new ArrayList<ClassDoc>(all.size());
+	for (Iterator<Type> it=all.iterator(); it.hasNext(); ) {
+	    Type ty = it.next();
+	    ClassDoc cd = ty.asClassDoc();
+	    if (cd==null || !cd.isIncluded()) continue;
+	    result.add(cd);
+	}
+	return Collections.unmodifiableList(result);
     }
     public List<ClassDoc> includedErrors() {
 	List<ClassDoc> list = new ArrayList<ClassDoc>(includedClasses());
