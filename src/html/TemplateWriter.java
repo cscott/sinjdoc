@@ -302,6 +302,11 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(context.options.charSet.name());
 		}
 	    });
+	register("GENERATOR", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    tw.write(Version.PACKAGE_STRING);
+		}
+	    });
 	register("WINDOWTITLE", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.windowTitle==null) return;

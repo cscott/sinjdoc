@@ -1,5 +1,5 @@
 @charset "@CHARSET@";
-/* Stylesheet for SinjDoc HTML output */
+/* Stylesheet for @GENERATOR@ HTML output */
 /* authored by C. Scott Ananian */
 body { color: black; background-color: white; }
 /* sans-serif fonts look better on screen. */
