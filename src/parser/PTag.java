@@ -39,4 +39,16 @@ abstract class PTag
 		public SourcePosition position() { return pos; }
 	    };
     }
+    /** Select a new non-inline Tag object to create based on the tagname. */
+    static Tag newTag(String tagname, List<Tag> contents, SourcePosition pos) {
+	assert false : "unimplemented";
+	return null;
+    }
+    /** Select a new inline Tag object to create based on the tagname. */
+    // sp is position of first char of 'tagname'
+    // we're not allowing nested inline tags.
+    static Tag newInlineTag(String tagname, String text, SourcePosition pos) {
+	assert false : "unimplemented";
+	return null;
+    }
 }
