@@ -204,7 +204,8 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	}
 	if (lastTag!=null) // shorten front of tag.
 	    lastTag = PTag.newTextTag(lastTag.text().substring(start-lastPos),
-				      lastTag.position()); // xxx position?
+				      ((PSourcePosition)lastTag.position())
+				      .add(start-lastPos));
 	// ...now find end position.
 	while (it.hasNext() && pos < end) {
 	    Tag curTag = it.next();
@@ -217,7 +218,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	// shorten end of tag.
 	if (lastTag!=null)
 	    lastTag = PTag.newTextTag(lastTag.text().substring(0, end-lastPos),
-				      lastTag.position()); // xxx position?
+				      lastTag.position());
 	// add last tag to result.
 	if (lastTag!=null) result.add(lastTag);
 	// and we're done!
