@@ -1,9 +1,13 @@
-SinjDoc is written in JSR-14 Java and requires a JSR-14 compiler to build.
-Download one from
+SinjDoc is written in JSR-14 v2.2 Java and requires the prototype version 2.2
+JSR-14 compiler to build.  Later versions may work, too.  Download it from
  http://developer.java.sun.com/developer/earlyAccess/adding_generics/index.html
 or see
- http://cag.lcs.mit.edu/~cananian/Projects/GJ/
+ http://cscott.net/Projects/GJ/
 for up-to-date news on JSR-14 java.
+
+You will also need the 'gjc-rt.jar' stubs distributed with the JSR-14
+compiler on your bootclasspath.  The best way to do this is to use the
+'java' script distributed with the JSR-14 prototype.
 
 The ./configure script will look for a JSR-14 compiler by first trying
 'jikes' and 'javac' in your path and looking at the environment variable
@@ -19,6 +23,15 @@ To test:
  make doc
 
 SinjDoc is invoked using the same command line arguments as javadoc:
- java -jar sinjdoc.jar <javadoc options>
+ $JSR14DISTR/scripts/java -jar sinjdoc.jar <javadoc options>
 Make sure either the SinjDoc build directory or lib/cup.jar:lib/jutil.jar
 is in your classpath.
+
+You may find something similar to the following shell script useful to place
+in your path:
+---- ~/bin/sinjdoc ---
+#!/bin/sh
+$JSR14DISTR/scripts/java -Xmx200M -ea -cp $HOME/Projects/SinjDoc -jar $HOME/Projects/SinjDoc/sinjdoc.jar "$@"
+----------------------
+
+Share and enjoy!

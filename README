@@ -9,3 +9,11 @@ if you're using a release distributed as a .tar.gz file.
 
 See the INSTALL file for generic build instructions;
 the BUILDING file has more specific information.
+
+The latest information about SinjDoc can be found at:
+  http://cscott.net/Projects/GJ/#sinjdoc
+To be notified of new released of SinjDoc, sign up on the sinjdoc-announce
+mailing list at:
+  http://sinfor.csail.mit.edu/mailman/listinfo/sinjdoc-announce
+
+  --scott
