@@ -261,7 +261,7 @@ action code {:
 	  "    System.out.println(c);</pre>";
       doFieldDeclaration(m | Modifier.STATIC, listType,
 			 new VariableDeclaratorList
-			 (new VariableDeclarator("VALUES", pos)));
+			 (new VariableDeclarator("VALUES", pos, parser)));
       //    public final List<this enum class> family();
       commentOverride="Returns an immutable list containing the values "+
 	  "comprising this enum class in the order they're declared.  This "+
@@ -290,7 +290,7 @@ action code {:
       int m = Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL;
       Type ty = parser.outerClasses.peek().type();
       List<VariableDeclarator> vdl = new VariableDeclaratorList
-	  (new VariableDeclarator(name, pos));
+	  (new VariableDeclarator(name, pos, parser));
       doFieldDeclaration(m, ty, vdl);
   }
   private String commentOverride=null;
@@ -298,8 +298,8 @@ action code {:
   private void doFieldDeclaration(int modifiers, Type ty,
 				  List<VariableDeclarator> variables) {
       // one comment string for all fields declared.
-      String commentText = parser.lexer.lastComment();
-      PSourcePosition commentPos = sp(parser.lexer.lastCommentPos());
+      String commentText = variables.get(0).comment;
+      PSourcePosition commentPos = variables.get(0).commentPos;
       parser.lexer.clearComment();
       if (commentOverride!=null) { // allow "synthetic" comments
 	  commentText=commentOverride; commentOverride=null;
@@ -492,9 +492,14 @@ action code {:
   }
   static class VariableDeclarator {
       final String name; final int pos;
+      // keep track of last comment seen prior to this declarator.
+      final String comment; final PSourcePosition commentPos;
       int dims=0;
-      VariableDeclarator(String name, int pos) {
+      VariableDeclarator(String name, int pos, Java15 parser) {
 	  this.name = name; this.pos = pos;
+	  // keep track of last comment seen prior to this. 
+	  this.comment = parser.lexer.lastComment();
+	  this.commentPos = parser.sp(parser.lexer.lastCommentPos());
       }
   }
   static class VariableDeclaratorList extends ArrayList<VariableDeclarator> {
@@ -1191,7 +1196,7 @@ variable_declarator ::=
 	;
 variable_declarator_id ::=
 		IDENTIFIER:id
-    		{: RESULT=new VariableDeclarator(id, idleft); :}
+    		{: RESULT=new VariableDeclarator(id, idleft, parser); :}
 	|	variable_declarator_id:vd LBRACK RBRACK
 		{: vd.dims++; RESULT=vd; :}
 	;
