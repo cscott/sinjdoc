@@ -3,6 +3,8 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
+import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
@@ -94,12 +96,19 @@ class TemplateWriter extends PrintWriter  {
 	while (!eof) {
 	    r = templateReader.read();
 	    if (r<0) { eof=true; break; /* end of stream */}
-	    if (r!='@') { write(r); continue; }
+	    if (r!='@') {
+		if (isEcho()) write(r);
+		continue;
+	    }
 	    // ooh, ooh, saw a '@'
 	    StringBuffer tag = new StringBuffer("@");
 	    while (!eof) {
 		r = templateReader.read();
-		if (r<0) { eof=true; write(tag.toString()); break; }
+		if (r<0) {
+		    eof=true;
+		    if (isEcho()) write(tag.toString());
+		    break;
+		}
 		tag.append((char)r);
 		if (Character.isJavaIdentifierPart((char)r) && r!='@')
 		    continue; // part of the tag, keep going.
@@ -155,6 +164,9 @@ class TemplateWriter extends PrintWriter  {
 	public TemplateContext curContext() {
 	    return contexts.size()==0 ? null : contexts.get(0);
 	}
+	public String toString() {
+	    return "EC["+isFirst+","+contexts+","+replayMark+"]";
+	}
     }
     /** Encapsulates a macro definition. */
     static abstract class TemplateMacro {
@@ -189,7 +201,7 @@ class TemplateWriter extends PrintWriter  {
 	 *  will only be invoked if output is not currently suppressed. */
 	abstract void process(TemplateWriter tw, TemplateContext context);
     }
-    static abstract class TemplateForEach extends TemplateMacro {
+    static abstract class TemplateForAll extends TemplateMacro {
 	final List<TemplateContext> doMacro
 	    (TemplateWriter tw, TemplateContext context,
 	     boolean isFirst, boolean isLast) {
@@ -210,7 +222,7 @@ class TemplateWriter extends PrintWriter  {
 	static final List<TemplateContext> EMPTY_CONTEXT_LIST =
 	    Arrays.asList(new TemplateContext[0]);
     }
-    static abstract class TemplateConditional extends TemplateForEach {
+    static abstract class TemplateConditional extends TemplateForAll {
 	final List<TemplateContext> process
 	    (TemplateWriter tw, TemplateContext context,
 	     boolean isFirst, boolean isLast) {
@@ -225,19 +237,18 @@ class TemplateWriter extends PrintWriter  {
 	abstract boolean isBlockEmitted(TemplateContext context,
 					boolean isFirst, boolean isLast);
     }
-    static abstract class TemplateSimpleForEach extends TemplateForEach {
+    static abstract class TemplateSimpleForAll extends TemplateForAll {
 	final List<TemplateContext> process
 	    (TemplateWriter tw, TemplateContext context,
 	     boolean isFirst, boolean isLast) {
-	    return process(tw, context);
+	    return process(context);
 	}
 	/** Return a list of <code>TemplateContext</code>s; each one will
 	 *  be used in turn to process this block.  So if you return a
 	 *  list of size two, the block will be repeated twice, etc.  This
 	 *  method will only be invoked if output is not currently
 	 *  suppressed. */
-	abstract List<TemplateContext> process
-	    (TemplateWriter tw, TemplateContext context);
+	abstract List<TemplateContext> process(TemplateContext context);
     }
     /** A map from macro names to definitions. */
     private static final Map<String, TemplateMacro> macroMap =
@@ -321,6 +332,20 @@ class TemplateWriter extends PrintWriter  {
 					     "package-summary.html"));
 		}
 	    });
+	register("CLASSLINK_P", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL, context.curClass,
+					     true/*with params*/));
+		}
+	    });
+	register("CLASSLINK_NP", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    tw.write(HTMLUtil.toLink(context.curURL, context.curClass,
+					     false/*no params*/));
+		}
+	    });
 	registerConditional("FIRST", new TemplateConditional() {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
@@ -333,5 +358,72 @@ class TemplateWriter extends PrintWriter  {
 		    return isLast;
 		}
 	    });
+	// iterator over included interfaces of the package.
+	register("FORALL_INTERFACES", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<ClassDoc,TemplateContext>
+			(sorted(c.curPackage.includedInterfaces())) {
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
+	// iterator over included ordinary classes of the package.
+	register("FORALL_ORDINARYCLASSES", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<ClassDoc,TemplateContext>
+			(sorted(c.curPackage.includedOrdinaryClasses())) {
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
+	// iterator over included exceptions of the package.
+	register("FORALL_EXCEPTIONS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<ClassDoc,TemplateContext>
+			(sorted(c.curPackage.includedExceptions())) {
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
+	// iterator over included errors of the package.
+	register("FORALL_ERRORS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    return new FilterList<ClassDoc,TemplateContext>
+			(sorted(c.curPackage.includedErrors())) {
+			public TemplateContext filter(ClassDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       cd);
+			}
+		    };
+		}
+	    });
+    }
+
+    /** Helper function. */
+    private static <D extends Doc> List<D> sorted(List<D> l) {
+	List<D> result = new ArrayList<D>(l);
+	Collections.sort(result, new DocComparator<D>());
+	return result;
+    }
+    /** Helper class to turn one type of list into another. */
+    private static abstract class FilterList<A,B> extends AbstractList<B> {
+	final List<A> source;
+	FilterList(List<A> source) { this.source = source; }
+	public abstract B filter(A a);
+	public int size() { return source.size(); }
+	public B get(int i) { return filter(source.get(i)); }
     }
 }
