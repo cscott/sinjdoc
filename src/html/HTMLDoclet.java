@@ -10,6 +10,7 @@ import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.RootDoc;
 
+import java.io.*;
 import java.util.*;
 /**
  * The <code>HTMLDoclet</code> is the standard doclet for GJDoc.  It
@@ -22,9 +23,31 @@ public class HTMLDoclet extends Doclet {
     HTMLOptions options = new HTMLOptions();
     public String getName() { return "Standard"; }
 
+    void makeStylesheet(RootDoc root, HTMLUtil hu) {
+	// get a reader for the style sheet.
+	Reader styleReader = null;
+	if (options.stylesheetFile!=null) try {
+	    styleReader = new FileReader(options.stylesheetFile);
+	} catch (FileNotFoundException e) {
+	    root.printError("Couldn't open "+options.stylesheetFile);
+	}
+	if (styleReader==null) styleReader=hu.resourceReader("stylesheet.css");
+	// get a writer for the emitted style sheet.
+	PrintWriter styleWriter = hu.fileWriter("stylesheet.css", options);
+	// emit the charset declaration.
+	styleWriter.println("@charset \""+options.charSet.name()+"\";");
+	// and now copy the rest from the template.
+	hu.copy(styleReader, styleWriter);
+	// done!
+    }
+
     public boolean start(RootDoc root) {
 	// parse options.
 	options.parseOptions(root.options());
+	// create our HTMLUtil object.
+	HTMLUtil hu = new HTMLUtil(root);
+	// put the stylesheet where it belongs.
+	makeStylesheet(root, hu);
 	// look at overview document.
 	System.out.println("OVERVIEW TAGS: "+root.tags());
 	// look at packages

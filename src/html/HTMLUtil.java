@@ -3,6 +3,8 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
+import net.cscott.gjdoc.DocErrorReporter;
+
 import java.nio.charset.*;
 import java.io.*;
 /**
@@ -13,18 +15,25 @@ import java.io.*;
  * @version $Id$
  */
 
-abstract class HTMLUtil {
+class HTMLUtil {
+    DocErrorReporter reporter;
+    HTMLUtil(DocErrorReporter reporter) { this.reporter = reporter; }
+
     /** Copy the contents of a <code>Reader</code> to a <code>Writer</code>.
      */
-    static void copy(Reader r, Writer w) throws IOException {
-	char[] buf = new char[1024];
-	while (true) {
-	    int st = r.read(buf, 0, buf.length);
-	    if (st<0) break; // end of stream.
-	    w.write(buf, 0, st);
+    void copy(Reader r, Writer w) {
+	try {
+	    char[] buf = new char[1024];
+	    while (true) {
+		int st = r.read(buf, 0, buf.length);
+		if (st<0) break; // end of stream.
+		w.write(buf, 0, st);
+	    }
+	    r.close();
+	    w.close();
+	} catch (IOException e) {
+	    reporter.printError(e.toString());
 	}
-	r.close();
-	w.close();
     }
 
     /** Return a <code>Reader</code> for a resource stored at
@@ -42,14 +51,12 @@ abstract class HTMLUtil {
     }
 
     /** Return a <code>Writer</code> for the document at the given URL. */
-    static PrintWriter fileWriter(String url, HTMLOptions options)
-	throws FileNotFoundException {
+    PrintWriter fileWriter(String url, HTMLOptions options) {
 	return fileWriter(new URLContext(url), options);
     }
     /** Return a <code>Writer</code> for the document with the given
      *  <code>URLContext</code>. */
-    static PrintWriter fileWriter(URLContext url, HTMLOptions options)
-	throws FileNotFoundException {
+    PrintWriter fileWriter(URLContext url, HTMLOptions options) {
 	File f = new File(options.docRoot, url.toFile().toString());
 	// make directory for file.
 	if (f.getParentFile()!=null)
@@ -57,11 +64,16 @@ abstract class HTMLUtil {
 	// now make a proper escaping-writer.
 	assert options.charSet!=null;
 	CharsetEncoder encoder = options.charSet.newEncoder();
-	return new PrintWriter
-	    (new HTMLWriter
-	     (new BufferedWriter
-	      (new OutputStreamWriter
-	       (new FileOutputStream(f), encoder)), encoder));
+	try {
+	    return new PrintWriter
+		(new HTMLWriter
+		 (new BufferedWriter
+		  (new OutputStreamWriter
+		   (new FileOutputStream(f), encoder)), encoder));
+	} catch (FileNotFoundException e) {
+	    reporter.printError("Couldn't open file "+f+": "+e.toString());
+	    return new PrintWriter(new NullWriter());
+	}
     }
 
     /** Escapes any un-encodable characters using HTML entity escapes. */
@@ -99,5 +111,12 @@ abstract class HTMLUtil {
 		return new ImmutableCharSequence(buf, off+start, end-start);
 	    }
 	}
+    }
+    /** Throws away all output. */
+    private static class NullWriter extends Writer {
+	NullWriter() { }
+	public void close() { }
+	public void flush() { }
+	public void write(char[] cbuf, int off, int len) { }
     }
 }// HTMLUtil
