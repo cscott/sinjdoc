@@ -41,9 +41,10 @@ doc:
 	   -d doc -sourcepath doc-link \
 	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
 	$(RM) -rf doc-link
+doc-clean:
+	-$(RM) -rf doc doc-link
 
-clean: more-cleaning
-more-cleaning:
+clean-local: doc-clean
 	-$(RM) -rf classes/net
 
 list:
