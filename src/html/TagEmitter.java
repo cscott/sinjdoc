@@ -77,10 +77,10 @@ abstract class TagEmitter {
      *  a list (in order by source position) to the emit method. */
     static abstract class BlockTagAction {
 	/** Emit the specified homogeneous group of tags to the specified
-	 *  <code>PrintWriter</code>.  Errors are directed to the specified
-	 *  <code>DocErrorReporter/code>. */
+	 *  <code>PrintWriter</code>.  Errors are directed to a
+	 *  <code>DocErrorReporter/code> in the specified context. */
 	abstract void emit(PrintWriter pw, String kind, List<Tag> tags,
-			   DocErrorReporter reporter);
+			   TemplateContext context);
     }
     /** A <code>SimpleBlockAction</code> is a common
      *  <code>BlockTagAction</code> for tags with no additional structure
@@ -90,7 +90,7 @@ abstract class TagEmitter {
 	final String tagDescription;
 	SimpleBlockAction(String desc) { this.tagDescription = desc; }
 	void emit(PrintWriter pw, String kind, List<Tag> tags,
-		  DocErrorReporter reporter) {
+		  TemplateContext context) {
 	    pw.print("<p class=\"tag tag_"+kind+"\">");
 	    String desc = tagDescription; boolean first=true;
 	    for (Iterator<Tag> it=tags.iterator(); it.hasNext(); ) {
@@ -100,7 +100,7 @@ abstract class TagEmitter {
 		if (first)
 		    pw.print("<span class=\"tagName\">"+desc+":</span> ");
 		pw.print("<span class=\"tagContents\">");
-		emitInline(pw, t.contents(), reporter);
+		emitInline(pw, t.contents(), context);
 		pw.print("</span> ");
 	    }
 	    pw.println("</p>");
@@ -110,8 +110,8 @@ abstract class TagEmitter {
      *  invoking <code>emitInline()</code>. */
     static class InlineAction extends BlockTagAction {
 	void emit(PrintWriter pw, String kind, List<Tag> tags,
-		  DocErrorReporter reporter) {
-	    emitInline(pw, tags, reporter);
+		  TemplateContext context) {
+	    emitInline(pw, tags, context);
 	}
     }
     /** The <code>SpecifiedTag</code> is a synthetic tag used for
@@ -175,27 +175,34 @@ abstract class TagEmitter {
     
     /** An <code>InlineTagAction</code> processes a text or inline tag. */
     static abstract class InlineTagAction {
-	abstract void emit(PrintWriter pw, Tag t, DocErrorReporter reporter);
+	abstract void emit(PrintWriter pw, Tag t, TemplateContext context);
     }
     /** A map relating inline tag kinds to the proper actions to emit them. */
     static final Map<String,InlineTagAction> inlineActions =
 	new HashMap<String,InlineTagAction>();
     static { // initialize the map.
 	inlineActions.put(".text", new InlineTagAction() {
-		void emit(PrintWriter pw, Tag t, DocErrorReporter reporter) {
+		void emit(PrintWriter pw, Tag t, TemplateContext context) {
 		    assert t.isText();
 		    pw.print(t.text());
 		}
 	    });
+	inlineActions.put("docRoot", new InlineTagAction() {
+		void emit(PrintWriter pw, Tag t, TemplateContext context) {
+		    String docRoot=context.curURL.makeRelative("");
+		    if (docRoot.length()==0) docRoot="./";
+		    pw.print(docRoot);
+		}
+	    });
 	inlineActions.put(".unknown", new InlineTagAction() {
-		void emit(PrintWriter pw, Tag t, DocErrorReporter reporter) {
+		void emit(PrintWriter pw, Tag t, TemplateContext context) {
 		    assert t.isInline();
-		    reporter.printWarning(t.position(),
-					  "Unknown inline tag: "+t.name());
+		    context.root.printWarning(t.position(),
+					      "Unknown inline tag: "+t.name());
 		    // emit as unprocessed.
 		    pw.print("{@"); pw.print(t.name()); pw.print(" ");
 		    // (recurse on contents)
-		    emitInline(pw, t.contents(), reporter);
+		    emitInline(pw, t.contents(), context);
 		    // close tag.
 		    pw.print("}");
 		}
@@ -211,18 +218,17 @@ abstract class TagEmitter {
     /** Emit the given list of inline and text tags to the specified
      *  <code>PrintWriter</code>. */
     private static void emitInline(PrintWriter pw, List<Tag> tags,
-				   DocErrorReporter reporter) {
+				   TemplateContext context) {
 	// no tag in this list should be trailing.
 	for (Iterator<Tag> it=tags.iterator(); it.hasNext(); ) {
 	    Tag t = it.next();
 	    assert !t.isTrailing();
-	    inlineActions.get(inlineTagKind(t)).emit(pw, t, reporter);
+	    inlineActions.get(inlineTagKind(t)).emit(pw, t, context);
 	}
     }
     /** Emit a top-level list of tags. */
     public static void emit(PrintWriter pw, List<Tag> tags,
 			    TemplateContext context) {
-	DocErrorReporter reporter = context.root;
 	// XXX add synthetic 'overrides' tags using the TemplateContext.
 	// sort tags.
 	List<Tag> sorted = new ArrayList<Tag>(tags);
@@ -235,7 +241,7 @@ abstract class TagEmitter {
 	    TagInfo ti = lookup(t);
 	    if (groupType!=ti) { // this is a new group!
 		if (groupType!=null) // emit old group
-		    groupType.action.emit(pw, groupType.kind, group, reporter);
+		    groupType.action.emit(pw, groupType.kind, group, context);
 		group.clear(); // start new group.
 	    }
 	    // add tag to group.
@@ -244,7 +250,7 @@ abstract class TagEmitter {
 	}
 	// emit any unfinished group.
 	if (groupType!=null)
-	    groupType.action.emit(pw, groupType.kind, group, reporter);
+	    groupType.action.emit(pw, groupType.kind, group, context);
 	// done!
     }
 }
