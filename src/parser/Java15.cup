@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /* Java 1.5 parser for CUP.
@@ -32,6 +34,9 @@ parser code  {:
   Lexer lexer;
   Stack<PClassDoc> outerClasses = new Stack<PClassDoc>();
   Stack<TypeContext> typeContexts = new Stack<TypeContext>();
+  Map<String,PTypeVariable> additionalTypeVariables =
+      new HashMap<String,PTypeVariable>();
+  PMethodDoc currentMethod;
   private PSourcePosition startPos;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
@@ -45,6 +50,7 @@ parser code  {:
            rootDoc.pc.sourceVersion);
       this.startPos = new PSourcePosition(file, rootDoc.pc.encoding, rootDoc);
       this.expectedPackage = expectedPackage;
+      this.currentMethod = null;
   }
 
   public PSourcePosition sp(int leftPos) {
@@ -78,23 +84,52 @@ action code {:
       parser.compilationUnit.classes.add(cd);
       // this is new outer class.
       parser.outerClasses.push(cd);
-      // XXX new environment scope for type variables?
+      // new environment scope for type variables.
+      assert parser.additionalTypeVariables.isEmpty();
+      parser.currentMethod=null; // type vars go in class, not method.
   }
   // just before class body
   private void midTypeDeclaration() {
-      // new type context.
       parser.typeContexts.push(parser.outerClasses.peek().typeContext);
+      parser.additionalTypeVariables.clear(); // type vars now in type context
   }
   // after class body
   private void endTypeDeclaration() {
       parser.typeContexts.pop();
       parser.outerClasses.pop();
-      // XXX close type variable environment scope?
   }
 
-  PClassType lookup(String name) {
-      // XXX do something about type variables.
+  PClassType lookupClassType(String name) {
       return new PLazyClassType(parser.typeContexts.peek(), name);
+  }
+  Type lookupType(String name) {
+      if (parser.additionalTypeVariables.containsKey(name))
+	  return parser.additionalTypeVariables.get(name);
+      // XXX look through this method, this class, and enclosing classes
+      //     for type variables.  ASSUME that type variables can't be
+      //     qualified or inherited (I think this is right).
+      // okay, must be a class type.
+      return lookupClassType(name);
+  }
+  void addTypeVariable(String name, List<Type> bounds) {
+      // if bounds list is zero-length, fabricate a one-element list
+      // with the type for java.lang.Object.
+      if (bounds.size()==0)
+	  bounds = new TypeList(lookupClassType("java.lang.Object"));
+      // are we in method or class context?
+      if (parser.currentMethod!=null) {  // method context
+	  PMethodDoc parent = parser.currentMethod;
+	  PMethodTypeVariable mtv = new PMethodTypeVariable
+	      (parent, name, bounds);
+	  assert false : "unimplemented"; // XXX add to method doc.
+	  parser.additionalTypeVariables.put(name, mtv);
+      } else { // class context
+	  PClassDoc parent = parser.outerClasses.peek();
+	  PClassTypeVariable ctv = new PClassTypeVariable
+	      (parent, name, bounds);
+	  parent.typeParameters.add(ctv);
+	  parser.additionalTypeVariables.put(name, ctv);
+      }
   }
   static class TypeList extends ArrayList<Type> {
 	TypeList() { super(1); }
@@ -276,7 +311,7 @@ non terminal assignment;
 non terminal assignment_operator;
 non terminal expression;
 // JSR-14 2.1) Type Syntax 2.3) Handling Consecutive Type Brackets
-non terminal type_variable;
+non terminal String type_variable;
 non terminal TypeList type_arguments, type_arguments_opt;
 non terminal TypeList reference_type_list;
 non terminal Type reference_type_1, reference_type_2, reference_type_3;
@@ -285,12 +320,11 @@ non terminal TypeList reference_type_list_1, reference_type_list_2, reference_ty
 non terminal type_parameters, type_parameters_opt;
 non terminal type_parameter, type_parameter_list;
 non terminal type_parameter_1, type_parameter_list_1;
-non terminal type_bound, type_bound_opt;
-non terminal type_bound_1;
-non terminal additional_bound_list, additional_bound_list_opt;
-non terminal additional_bound_list_1;
-non terminal additional_bound;
-non terminal additional_bound_1;
+non terminal TypeList type_bound, type_bound_opt;
+non terminal TypeList type_bound_1;
+non terminal TypeList additional_bound_list, additional_bound_list_opt;
+non terminal TypeList additional_bound_list_1;
+non terminal Type additional_bound, additional_bound_1;
 // not mentioned in the JSR: need to reduce the precedence of instanceof
 non terminal instanceof_expression;
 //// expressions which are Not a Name
@@ -395,13 +429,16 @@ reference_type ::=
 		{: RESULT=ty; :}
 	;
 type_variable ::=
-		IDENTIFIER
+		IDENTIFIER:id
+		{: RESULT=id; :}
 	;
 class_or_interface_type ::=
 		name:n type_arguments_opt:tl
-		{: tl.trimToSize(); PClassType ty = lookup(n);
-		   if (tl.size()==0) RESULT=ty;
-		   else RESULT=new PParameterizedType(ty, tl);
+		{: if (tl.size()==0) RESULT=lookupType(n);
+		   else {
+		       tl.trimToSize();
+		       RESULT=new PParameterizedType(lookupClassType(n), tl);
+		   }
 		:}
 	;
 
@@ -415,9 +452,9 @@ interface_type ::= class_or_interface_type:ty
 array_type ::=	primitive_type:ty dims:d
 		{: RESULT=new PArrayType(ty, d.intValue()); :}
 	|	name:n dims:d
-		{: RESULT=new PArrayType(lookup(n), d.intValue()); :}
+		{: RESULT=new PArrayType(lookupType(n), d.intValue()); :}
 	|	name:n type_arguments:tl dims:d
-		{: tl.trimToSize(); RESULT=new PArrayType(new PParameterizedType(lookup(n), tl), d.intValue()); :}
+		{: tl.trimToSize(); RESULT=new PArrayType(new PParameterizedType(lookupClassType(n), tl), d.intValue()); :}
 	;
 
 type_arguments_opt ::= type_arguments:tl
@@ -459,17 +496,17 @@ reference_type_1 ::=
 		reference_type:ty GT
 		{: RESULT=ty; :}
 	|	name:n LT reference_type_list_2:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_2:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	;
 reference_type_2 ::=
 		reference_type:ty RSHIFT
 		{: RESULT=ty; :}
 	|	name:n LT reference_type_list_3:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_3:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookup(n), tl); :}
+		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	;
 reference_type_3 ::=
 		reference_type:ty URSHIFT
@@ -1215,36 +1252,56 @@ type_parameter_list_1 ::=
 	|	type_parameter_list COMMA type_parameter_1
 	;
 type_parameter ::=
-		type_variable type_bound_opt
+		type_variable:id type_bound_opt:tl
+		{: addTypeVariable(id, tl); :}
 	;
 type_parameter_1 ::=
-		type_variable GT
-	|	type_variable type_bound_1
+		type_variable:id GT
+		{: addTypeVariable(id, new TypeList()); :}
+	|	type_variable:id type_bound_1:tl
+		{: addTypeVariable(id, tl); :}
 // I don't think this production is really meant to be used.
 //	|	type_variable IMPLEMENTS reference_type_1
 	;
-type_bound_opt ::= type_bound | ;
+type_bound_opt ::= type_bound:tl
+		{: RESULT=tl; :}
+	|
+		{: RESULT=new TypeList(); :}
+	;
 type_bound ::=
-		EXTENDS reference_type additional_bound_list_opt
+		EXTENDS reference_type:ty additional_bound_list_opt:tl
+		{: RESULT=new TypeList(ty); RESULT.addAll(tl); :}
 	;
 type_bound_1 ::=
-		EXTENDS reference_type_1
-	|	EXTENDS reference_type additional_bound_list_1
+		EXTENDS reference_type_1:ty
+		{: RESULT=new TypeList(ty); :}
+	|	EXTENDS reference_type:ty additional_bound_list_1:tl
+		{: RESULT=new TypeList(ty); RESULT.addAll(tl); :}
 	;
-additional_bound_list_opt ::= additional_bound_list | ;
+additional_bound_list_opt ::= additional_bound_list:tl
+		{: RESULT=tl; :}
+	|
+		{: RESULT=new TypeList(); :}
+	;
 additional_bound_list ::=
-		additional_bound additional_bound_list
-	|	additional_bound
+		additional_bound:ty additional_bound_list:tl
+		{: RESULT=new TypeList(ty); RESULT.addAll(tl); :}
+	|	additional_bound:ty
+		{: RESULT=new TypeList(ty); :}
 	;
 additional_bound_list_1 ::=
-		additional_bound additional_bound_list_1
-	|	additional_bound_1
+		additional_bound:ty additional_bound_list_1:tl
+		{: RESULT=new TypeList(ty); RESULT.addAll(tl); :}
+	|	additional_bound_1:ty
+		{: RESULT=new TypeList(ty); :}
 	;
 additional_bound ::=
-		AND interface_type
+		AND interface_type:ty
+		{: RESULT=ty; :}
 	;
 additional_bound_1 ::=
-		AND reference_type_1
+		AND reference_type_1:ty
+		{: RESULT=ty; :}
 	;
 //////////////////////////////////////////////
 // the following productions are copied from the standard ones, but
