@@ -52,4 +52,6 @@ class PFieldDoc extends PMemberDoc
     }
     // override methods from PDoc
     public boolean isField() { return true; }
+    // for debugging
+    public String toString() { return type()+" "+name(); }
 }
