@@ -14,10 +14,40 @@ import java.util.List;
  * @see com.sun.javadoc.RootDoc
  */
 public interface RootDoc extends Doc, DocErrorReporter {
+    /**
+     * Return the classes and interfaces to be documented.  This includes
+     * both the classes returned by <code>specifiedClasses()</code> as well
+     * as classes within the packages returned by
+     * <code>specifiedPackages()</code>. */
     public List<ClassDoc> classes();
+    /**
+     * Return a <code>ClassDoc</code> for the specified class or interface
+     * name.
+     * @param qualifiedName fully-qualified class name.
+     * @return a <code>ClassDoc</code> representing the specified class,
+     *  or <code>null</code> if this class is not referenced.
+     */
     public ClassDoc classNamed(String qualifiedName);
+    /** Command-line options.
+     *  Each complete option is in its own list.
+     */
     public List<List<String>> options();
+    /**
+     * Return a <code>PackageDoc</code> for the specified fully-qualified
+     * package name.
+     * @param name a fully-qualified package name.
+     * @return a <code>PackageDoc</code> holding the specified package,
+     *   or <code>null</code> if this package is not referenced.
+     */
     public PackageDoc packageNamed(String name);
+    /**
+     * Return the classes and interfaces specified on the command line.
+     * These are source files which were mentioned explicitly.
+     */
     public List<ClassDoc> specifiedClasses();
+    /**
+     * Return the packages specified on the command-line, either directly
+     * or via a <code>-subpackages</code> option.
+     */
     public List<PackageDoc> specifiedPackages();
 }
