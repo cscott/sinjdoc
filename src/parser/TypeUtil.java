@@ -237,6 +237,7 @@ abstract class TypeUtil {
 		// and create a new parameterized type from these args.
 		return new PParameterizedType
 		    (t.getBaseType(),
+		     t.getDeclaringType()==null ? null :
 		     subst(substMap, t.getDeclaringType()),
 		     subst(substMap, t.getActualTypeArguments()));
 	    }
