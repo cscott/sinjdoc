@@ -42,6 +42,8 @@ class PLazyClassType extends PClassType {
 	return cache.typeName();
     }
     private void lookup() {
+	assert typeContext.pc.isParsingComplete :
+	    "Premature type resolution: "+typeName;
 	assert cache==null && isValid();
 	cache=typeContext.lookupClassTypeName(typeName,false/*lazy no more*/);
 	typeContext=null;

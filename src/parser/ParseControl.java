@@ -26,6 +26,9 @@ import java.util.Locale;
  */
 public class ParseControl {
     private static final boolean DEBUG=true;
+    /** To debug premature type resolution problems, this variable
+     *  indicates whether parsing is complete. */
+    static boolean isParsingComplete=false;
     /** A means to report errors and warnings. */
     final DocErrorReporter reporter;
     /** Determines what classes and members to show. */
@@ -114,6 +117,7 @@ public class ParseControl {
 	    // included.
 	    rootDoc.findOrCreateClasses(f, null);
 	// we're done!
+	isParsingComplete = true;
 	return rootDoc;
     }
 
