@@ -21,10 +21,10 @@ class PConstructorDoc extends PExecutableMemberDoc
 		    PSourcePosition position,
 		    List<P> parameters, List<T> thrownExceptions,
 		    String commentText, PSourcePosition commentPosition,
-		    TypeContext commentContext) {
+		    TypeContext memberContext) {
 	super(pc, containingClass, modifiers, containingClass.name(), position,
 	      parameters, thrownExceptions,
-	      commentText, commentPosition, commentContext);
+	      commentText, commentPosition, memberContext);
     }
     // only important member is 'qualifiedName', inherited from
     // ProgramElementDoc.

@@ -28,16 +28,20 @@ abstract class PExecutableMemberDoc extends PMemberDoc
 	new ArrayList<MethodTypeVariable>(2);
     final List<Parameter> parameters;
     final List<Type> thrownExceptions;
+    final TypeContext commentContext;
     <P extends Parameter, T extends Type>
     PExecutableMemberDoc(ParseControl pc, PClassDoc containingClass,
 			 int modifiers, String name, PSourcePosition position,
 			 List<P> parameters, List<T> thrownExceptions,
 			 String commentText, PSourcePosition commentPosition,
-			 TypeContext commentContext) {
+			 TypeContext memberContext) {
 	super(pc, containingClass, modifiers, name, position,
-	      commentText, commentPosition, commentContext);
+	      commentText, commentPosition);
 	this.parameters = new ArrayList<Parameter>(parameters);
 	this.thrownExceptions = new ArrayList<Type>(thrownExceptions);
+	this.commentContext = new TypeContext
+	    (pc, memberContext.packageScope, memberContext.compilationUnit,
+	     memberContext.classScope, this);
     }
     public List<MethodTypeVariable> typeParameters() {
 	return Collections.unmodifiableList(typeParameters);
@@ -87,4 +91,5 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     }
     // methods abstract in PDoc
     public String name() { return name; }
+    public TypeContext getCommentContext() { return commentContext; }
 }

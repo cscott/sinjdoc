@@ -19,20 +19,17 @@ abstract class PMemberDoc extends PProgramElementDoc
     final String name;
     final String commentText;
     final PSourcePosition commentPosition;
-    final TypeContext commentContext;
 
     boolean isSynthetic = false;
 
     PMemberDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
 	       String name, PSourcePosition position,
-	       String commentText, PSourcePosition commentPosition,
-	       TypeContext commentContext) {
+	       String commentText, PSourcePosition commentPosition) {
 	super(pc, containingClass.containingPackage(), containingClass,
 	      modifiers, position);
 	this.name = name;
 	this.commentText = commentText;
 	this.commentPosition = commentPosition;
-	this.commentContext = commentContext;
 	assert name!=null;
     }
     public boolean isSynthetic() { return isSynthetic; }
@@ -40,5 +37,4 @@ abstract class PMemberDoc extends PProgramElementDoc
     public String name() { return name; }
     public String getRawCommentText() { return commentText; }
     public PSourcePosition getRawCommentPosition() { return commentPosition; }
-    public TypeContext getCommentContext() { return commentContext; }
 }

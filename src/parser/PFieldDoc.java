@@ -18,14 +18,16 @@ import java.util.List;
 class PFieldDoc extends PMemberDoc
     implements net.cscott.gjdoc.FieldDoc {
     final Type type;
+    final TypeContext commentContext;
 
     PFieldDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
 	      Type type, String name, PSourcePosition position,
 	      String commentText, PSourcePosition commentPosition,
 	      TypeContext commentContext) {
 	super(pc, containingClass, modifiers, name, position,
-	      commentText, commentPosition, commentContext);
+	      commentText, commentPosition);
 	this.type = type;
+	this.commentContext = commentContext;
     }
     public Object constantValue() {
 	// XXX unimplemented.
@@ -50,6 +52,8 @@ class PFieldDoc extends PMemberDoc
     public String qualifiedName() {
 	return containingClass().qualifiedName()+"."+name();
     }
+    // methods abstract in PDoc
+    public TypeContext getCommentContext() { return commentContext; }
     // override methods from PDoc
     public boolean isField() { return true; }
     // for debugging

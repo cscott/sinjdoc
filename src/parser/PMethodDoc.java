@@ -24,10 +24,10 @@ class PMethodDoc extends PExecutableMemberDoc
 	       Type returnType, String name, PSourcePosition position,
 	       List<P> parameters, List<T> thrownExceptions,
 	       String commentText, PSourcePosition commentPosition,
-	       TypeContext commentContext) {
+	       TypeContext memberContext) {
 	super(pc, containingClass, modifiers, name, position,
 	      parameters, thrownExceptions,
-	      commentText, commentPosition, commentContext);
+	      commentText, commentPosition, memberContext);
 	this.returnType = returnType;
     }
     public final boolean isAbstract() {
