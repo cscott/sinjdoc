@@ -33,12 +33,19 @@ public class HTMLDoclet extends Doclet {
 	}
 	if (styleReader==null) styleReader=hu.resourceReader("stylesheet.css");
 	// get a writer for the emitted style sheet.
-	PrintWriter styleWriter = hu.fileWriter("stylesheet.css", options);
-	// emit the charset declaration.
-	styleWriter.println("@charset \""+options.charSet.name()+"\";");
-	// and now copy the rest from the template.
-	hu.copy(styleReader, styleWriter);
-	// done!
+	URLContext context = new URLContext("stylesheet.css");
+	TemplateWriter styleWriter =
+	    new TemplateWriter(hu.fileWriter(context, options),
+			       styleReader, options, context);
+	// copy from template.
+	styleWriter.copyRemainder(root);
+    }
+    void makeTopIndex(RootDoc root, HTMLUtil hu) {
+	URLContext context = new URLContext("index.html");
+	TemplateWriter indexWriter = new TemplateWriter
+	    (hu.fileWriter(context, options), hu.resourceReader("index.html"),
+	     options, context);
+	indexWriter.copyRemainder(root);
     }
 
     public boolean start(RootDoc root) {
@@ -48,6 +55,8 @@ public class HTMLDoclet extends Doclet {
 	HTMLUtil hu = new HTMLUtil(root);
 	// put the stylesheet where it belongs.
 	makeStylesheet(root, hu);
+	// top-level index.
+	makeTopIndex(root, hu);
 	// look at overview document.
 	System.out.println("OVERVIEW TAGS: "+root.tags());
 	// look at packages

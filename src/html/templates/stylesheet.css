@@ -1,3 +1,4 @@
+@charset "@CHARSET@";
 /* Stylesheet for GJ doc HTML output */
 body { color: black; background-color: white; }
 /* sans-serif fonts look better on screen. */
