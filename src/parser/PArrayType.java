@@ -16,6 +16,7 @@ public class PArrayType implements ArrayType {
     PArrayType (Type baseType, int dimension) {
 	this.baseType = baseType;
 	this.dimension = dimension;
+	assert dimension > 0;
     }
     public Type baseType() { return baseType; }
     public int dimension() { return dimension; }
