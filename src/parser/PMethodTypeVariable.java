@@ -16,11 +16,14 @@ import java.util.List;
  */
 class PMethodTypeVariable extends PTypeVariable
     implements net.cscott.gjdoc.MethodTypeVariable {
-    final ExecutableMemberDoc declaringMethod;
-    PMethodTypeVariable(ExecutableMemberDoc declaringMethod,
-			String name, List<Type> bounds) {
+    // allow changes to this field, as method type variables are seen & used
+    // before we know the name of the method they are associated with.
+    ExecutableMemberDoc declaringMethod;
+    PMethodTypeVariable(String name, List<Type> bounds) {
 	super(name, bounds);
-	this.declaringMethod = declaringMethod;
     }
-    public ExecutableMemberDoc declaringMethod() { return declaringMethod; }
+    public ExecutableMemberDoc declaringMethod() {
+	assert declaringMethod!=null; // should be set by now.
+	return declaringMethod;
+    }
 }
