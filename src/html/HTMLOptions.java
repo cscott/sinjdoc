@@ -46,9 +46,13 @@ class HTMLOptions {
 	    List<String> anOption = it.next();
 	    optionMap.get(anOption.get(0)).process(anOption);
 	}
-	// now deal with defaults.
+	// now deal with defaults. !J means that this logic is not implemented
+	// in javadoc; it is specific to GJDoc.
 	if (windowTitle==null) windowTitle=docTitle;
 	if (charSet==null) charSet = Charset.forName("UTF-8");
+	if (windowTitle!=null && docTitle==null) docTitle=windowTitle;// !J
+	if (windowTitle!=null && header==null) header=windowTitle;//!J
+	if (header!=null && footer==null) footer=header;
     }
     public boolean validOption(List<String> optionWithArgs,
 			       DocErrorReporter reporter) {
