@@ -110,7 +110,7 @@ public class Lexer {
     return !(ie instanceof EOF);
   }
 
-  String comment; int comment_start;
+  String comment=""; int comment_start=0;
   public String lastComment() { return comment; }
   public int lastCommentPos() { return comment_start; }
   public void clearComment() { comment=""; }
