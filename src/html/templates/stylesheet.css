@@ -34,9 +34,18 @@ body.bigframe { font-size: 10pt; }
 body.bigframe h1 { text-align: left; }
 body.bigframe h2 { text-align: left; }
 body.bigframe h3 { text-align: left; }
-body.bigframe table { width: 100%; border: 1px solid black; margin: 1em 0; }
-body.bigframe th { text-align: left; color: black; background-color: #FFC; font-size: 150%; }
+body.bigframe table { width: 100%; border: 1px solid black; margin: 1em 0; speak-header: once; }
+body.bigframe th { text-align: left; color: black; background-color: #FFC; font-size: 150%; border: 1px solid black; }
 body.bigframe table.linklist td:first-child a { font-weight: bold; }
+body.bigframe table.summary { border-collapse: collapse; }
+body.bigframe table.summary td { vertical-align: baseline; }
+body.bigframe table.summary tr { border-bottom: 1px dotted black; }
+/*  THESE RULES LET YOU DO THE TABLE HEADER AS A CAPTION ELEMENT,
+ *  BUT MOZILLA (at least) DOESN'T LINE UP THE CAPTION WITH THE LEFT EDGE
+ *  CORRECTLY.
+body.bigframe table.summary caption { text-align: left; color: black; background-color: #FFC; font-size: 150%; border: 1px solid black; font-weight: bold; margin: 0; }
+body.bigframe table.summary { margin-top: 0; }
+*/
 body.bigframe dd a { font-weight: bold; }
 
 /* overview page */
@@ -68,4 +77,6 @@ div.description { margin-bottom: 1em; }
 
 div.bottom {  font-size: 8pt; margin-top: 1em; }
 
-
+/* tag formatting */
+p.tag *.tagName { font-weight: bold; }
+p.tag { margin-top: 0; margin-bottom: 0; } /* compress tags */
