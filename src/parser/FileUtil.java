@@ -143,8 +143,8 @@ public class FileUtil {
 		}
 	    }));
     }
-    // find a directory in the source path corresponding to the given
-    // package.
+    /** Find a directory in the source path corresponding to the given
+     *  package. */
     File findPackage(String packageName) {
 	// convert package name to path.
 	String path = DOT.matcher(packageName).replaceAll
