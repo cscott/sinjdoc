@@ -15,7 +15,7 @@ import java.util.List;
  * @version $Id$
  * @see java.lang.reflect.TypeVariable
  */
-public interface TypeVariable {
+public interface TypeVariable extends Type {
     /**
      * Return the bounds on this type variable.  If there are no bounds
      * specified, returns an array of length one containing the
