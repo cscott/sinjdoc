@@ -3,9 +3,12 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Type;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 /**
  * The <code>PTypeVariable</code> interface represents a type
@@ -30,5 +33,24 @@ abstract class PTypeVariable
     public String getName() { return name; }
     public List<Type> getBounds() {
 	return Collections.unmodifiableList(bounds);
+    }
+    public String toString() {
+	StringBuffer sb = new StringBuffer(getName());
+	List<Type> shortList = new ArrayList<Type>(getBounds());
+	// trim out java.lang.Object from 'extends' list.
+	for (Iterator<Type> it=shortList.iterator(); it.hasNext(); ) {
+	    Type ty = it.next();
+	    if ((ty instanceof ClassType) &&
+		((ClassType)ty).qualifiedTypeName().equals("java.lang.Object"))
+		it.remove();
+	}
+	// now print out remaining part of bounds list.
+	if (shortList.size()>0) sb.append(" extends ");
+	for (Iterator<Type> it=shortList.iterator(); it.hasNext(); ) {
+	    sb.append(it.next().toString());
+	    if (it.hasNext())
+		sb.append(" & ");
+	}
+	return sb.toString();
     }
 }
