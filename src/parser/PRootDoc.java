@@ -19,8 +19,12 @@ import java.util.List;
  */
 public abstract class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
-    PRootDoc(DocErrorReporter reporter) { this.reporter=reporter; }
-    final DocErrorReporter reporter;
+    final ParserControl pc;
+    final String overviewText;
+    PRootDoc(ParserControl pc) {
+	this.pc = pc;
+	this.overviewText = FileUtil.rawFileText(pc.overview, pc.reporter);
+    }
 
     public List<List<String>> options() { return options; }
     public void setOptions(List<List<String>> options) {
@@ -34,16 +38,22 @@ public abstract class PRootDoc extends PDoc
     public abstract List<ClassDoc> specifiedClasses();
     public abstract List<PackageDoc> specifiedPackages();
 
+    // inherited from PDoc
+    public String getRawCommentText() { return overviewText; }
+    public boolean isIncluded() { return true; }
+    public String name() { return "overview"; }
+    
+    // DocErrorReporter interface.
     public void printError(String msg)
-    { reporter.printError(msg); }
+    { pc.reporter.printError(msg); }
     public void printError(SourcePosition pos, String msg)
-    { reporter.printError(pos, msg); }
+    { pc.reporter.printError(pos, msg); }
     public void printWarning(String msg)
-    { reporter.printWarning(msg); }
+    { pc.reporter.printWarning(msg); }
     public void printWarning(SourcePosition pos, String msg)
-    { reporter.printWarning(pos, msg); }
+    { pc.reporter.printWarning(pos, msg); }
     public void printNotice(String msg)
-    { reporter.printNotice(msg); }
+    { pc.reporter.printNotice(msg); }
     public void printNotice(SourcePosition pos, String msg)
-    { reporter.printNotice(pos, msg); }
+    { pc.reporter.printNotice(pos, msg); }
 }
