@@ -47,7 +47,8 @@ class PSourcePosition
      */
     public final String toString() {
 	String filename = file()!=null?file().getPath():"<unknown>";
-	return filename+":"+line();
+	String line = (line()>0) ? Integer.toString(line()) : "<unknown>";
+	return filename+":"+line;
     }
     // lookup line and column and cache.
     private transient net.cscott.gjdoc.SourcePosition sp=null;
