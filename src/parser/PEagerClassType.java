@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id: PEagerParameterizedType.java,v 1.3 2003/03/24 20:47:36 cananian */
-public class PEagerClassType extends PClassType {
+class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.
     final List<ClassTypeVariable> typeParameters;
