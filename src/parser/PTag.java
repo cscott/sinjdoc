@@ -7,6 +7,7 @@ import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 /**
  * The <code>PTag</code> class represents a documentation tag.  The
@@ -29,7 +30,16 @@ abstract class PTag
     public SourcePosition position() { return sp; }
     public List<Tag> contents() { return null; }
 
-    public abstract String toString();
+    public String toString() {
+	if (isText()) return text();
+	StringBuffer sb=new StringBuffer();
+	if (isInline()) sb.append("{");
+	sb.append("@"); sb.append(name()); sb.append(" ");
+	for (Iterator<Tag> it=contents().iterator(); it.hasNext(); )
+	    sb.append(it.next().toString());
+	if (isInline()) sb.append("}");
+	return sb.toString();
+    }
 
     static class Text extends PTag {
 	final String text;
@@ -39,7 +49,6 @@ abstract class PTag
 	    super(sp);
 	    this.text = text;
 	}
-	public String toString() { return text; }
     }
     static class Trailing extends PTag {
 	final String name;
@@ -52,9 +61,6 @@ abstract class PTag
 	    this.name = name.intern();
 	    this.contents = Collections.unmodifiableList(contents);
 	}
-	public String toString() {
-	    return "@"+name()+" "+contents();
-	}
     }
     static class Inline extends PTag {
 	public boolean isInline() { return true; }
@@ -66,9 +72,6 @@ abstract class PTag
 	    super(sp);
 	    this.name = name.intern();
 	    this.contents = Collections.unmodifiableList(contents);
-	}
-	public String toString() {
-	    return "{@"+name()+" "+contents()+"}";
 	}
     }
     /** Convenience method to create a new 'Tag' representing plain-text;
