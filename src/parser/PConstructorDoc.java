@@ -12,7 +12,9 @@ package net.cscott.gjdoc.parser;
  */
 abstract class PConstructorDoc extends PExecutableMemberDoc 
     implements net.cscott.gjdoc.ConstructorDoc {
-    PConstructorDoc(ParseControl pc) { super(pc); }
+    PConstructorDoc(ParseControl pc, PClassDoc containingClass, int modifiers){
+	super(pc, containingClass, modifiers, "<init>");
+    }
     // only important member is 'qualifiedName', inherited from
     // ProgramElementDoc.
 }

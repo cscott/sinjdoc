@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.SerialFieldTag;
 import net.cscott.gjdoc.Type;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 /**
  * The <code>PFieldDoc</code> class represents a field in a java class.
@@ -15,11 +16,25 @@ import java.util.List;
  */
 abstract class PFieldDoc extends PMemberDoc
     implements net.cscott.gjdoc.FieldDoc {
-    PFieldDoc(ParseControl pc) { super(pc); }
+    final Type type;
+    final String name;
+    PFieldDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
+	      Type type, String name) {
+	super(pc, containingClass, modifiers);
+	this.type = type;
+	this.name = name;
+    }
     public abstract Object constantValue();
     public abstract String constantValueExpression();
-    public abstract boolean isTransient();
-    public abstract boolean isVolatiile();
+    public final boolean isTransient() {
+	return Modifier.isTransient(modifierSpecifier());
+    }
+    public final boolean isVolatile() {
+	return Modifier.isVolatile(modifierSpecifier());
+    }
     public abstract List<SerialFieldTag> serialFieldTags();
-    public abstract Type type();
+    public Type type() { return type; }
+    // methods abstract in PDoc
+    public String name() { return name; }
+    
 }

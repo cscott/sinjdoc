@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import java.lang.reflect.Modifier;
 /**
  * The <code>PMemberDoc</code> class represents a member of a java class:
  * field, constructor, or method.  This is an abstract class dealing with
@@ -15,6 +16,10 @@ package net.cscott.gjdoc.parser;
  */
 abstract class PMemberDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.MemberDoc {
-    PMemberDoc(ParseControl pc) { super(pc); }
-    public abstract boolean isSynthetic();
+    boolean isSynthetic = false;
+    PMemberDoc(ParseControl pc, PClassDoc containingClass, int modifiers) {
+	super(pc, containingClass.containingPackage(), containingClass,
+	      modifiers);
+    }
+    public boolean isSynthetic() { return isSynthetic; }
 }

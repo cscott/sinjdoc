@@ -9,6 +9,7 @@ import net.cscott.gjdoc.ParamTag;
 import net.cscott.gjdoc.ThrowsTag;
 import net.cscott.gjdoc.Type;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 /**
  * The <code>PExecutableMemberDoc</code> class represents a method or
@@ -19,13 +20,24 @@ import java.util.List;
  */
 abstract class PExecutableMemberDoc extends PMemberDoc 
     implements net.cscott.gjdoc.ExecutableMemberDoc {
-    PExecutableMemberDoc(ParseControl pc) { super(pc); }
+    final String name;
+    PExecutableMemberDoc(ParseControl pc, PClassDoc containingClass,
+			 int modifiers, String name) {
+	super(pc, containingClass, modifiers);
+	this.name = name;
+    }
     public abstract List<MethodTypeVariable> typeParameters();
-    public abstract boolean isNative();
-    public abstract boolean isSynchronized();
+    public final boolean isNative() {
+	return Modifier.isNative(modifierSpecifier());
+    }
+    public final boolean isSynchronized() {
+	return Modifier.isSynchronized(modifierSpecifier());
+    }
     public abstract List<Parameter> parameters();
     public abstract List<ParamTag> paramTags();
     public abstract String signature();
     public abstract List<Type> thrownExceptions();
     public abstract List<ThrowsTag> throwsTags();
+    // methods abstract in PDoc
+    public String name() { return name; }
 }

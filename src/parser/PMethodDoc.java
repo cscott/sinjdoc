@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.MethodDoc;
 import net.cscott.gjdoc.Type;
 
+import java.lang.reflect.Modifier;
 /**
  * The <code>PMethodDoc</code> class represents a (non-constructor) member of
  * a java class.
@@ -15,8 +16,13 @@ import net.cscott.gjdoc.Type;
  */
 abstract class PMethodDoc extends PExecutableMemberDoc
     implements net.cscott.gjdoc.MethodDoc {
-    PMethodDoc(ParseControl pc) { super(pc); }
-    public abstract boolean isAbstract();
+    PMethodDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
+	       String name) {
+	super(pc, containingClass, modifiers, name);
+    }
+    public final boolean isAbstract() {
+	return Modifier.isAbstract(modifierSpecifier());
+    }
     // xxx return null if overridden method is not being documented.
     public abstract MethodDoc overriddenMethod();
     public abstract Type returnType();
