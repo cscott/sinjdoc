@@ -92,4 +92,7 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     // methods abstract in PDoc
     public String name() { return name; }
     public TypeContext getCommentContext() { return commentContext; }
+
+    // for easier debugging.
+    public String toString() { return canonicalName(); }
 }
