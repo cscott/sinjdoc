@@ -3,8 +3,8 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
-import net.cscott.gjdoc.Parser.ParserControl;
-import net.cscott.gjdoc.HTML.HTMLDoclet;
+import net.cscott.gjdoc.parser.ParserControl;
+import net.cscott.gjdoc.html.HTMLDoclet;
 
 import java.lang.reflect.Modifier;
 import java.io.*;

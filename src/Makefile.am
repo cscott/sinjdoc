@@ -35,6 +35,13 @@ ThrowsTag.java \
 Type.java \
 TypeVariable.java
 
+# make Main.java after everything else, as it uses parser and html packages
+all-am: $(JAVAROOT)/net/cscott/gjdoc/Main.class
+$(JAVAROOT)/net/cscott/gjdoc/Main.class: Main.java
+	$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
+	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?
+
 # automake 1.6.3 is broken: it doesn't actually include java sources
 # in the distribution.  The following line works around this.
 EXTRA_DIST = $(noinst_JAVA)
+EXTRA_DIST+= Main.java
