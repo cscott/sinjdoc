@@ -23,7 +23,8 @@ public abstract class PRootDoc extends PDoc
     final String overviewText;
     PRootDoc(ParserControl pc) {
 	this.pc = pc;
-	this.overviewText = FileUtil.rawFileText(pc.overview, pc.reporter);
+	this.overviewText =
+	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
     }
 
     public List<List<String>> options() { return options; }

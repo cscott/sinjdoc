@@ -160,8 +160,9 @@ public class FileUtil {
 
     /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
      *  in the given file. */
-    static String rawFileText(File f, DocErrorReporter reporter) {
-	String contents = snarf(f, reporter);
+    static String rawFileText(File f,
+			      DocErrorReporter reporter, String encoding) {
+	String contents = snarf(f, reporter, encoding);
 	Matcher matcher = BODY_PATTERN.matcher(contents);
 	if (matcher.find())
 	    return matcher.group(1);
@@ -173,7 +174,7 @@ public class FileUtil {
 	 Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
 
     /** Snarf up the contents of a file as a string. */
-    static String snarf(File f, DocErrorReporter reporter) {
+    static String snarf(File f, DocErrorReporter reporter, String encoding) {
 	if (f==null) return "";
 	if (!(f.exists() && f.isFile())) {
 	    reporter.printError("Can't open file: "+f);
@@ -181,7 +182,8 @@ public class FileUtil {
 	}
 	StringBuffer sb=new StringBuffer();
 	try {
-	    FileReader reader = new FileReader(f);
+	    Reader reader = (encoding==null) ? new FileReader(f) :
+		new InputStreamReader(new FileInputStream(f), encoding);
 	    char[] buf=new char[8192];
 	    int len;
 	    while (-1!=(len=reader.read(buf)))

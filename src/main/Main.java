@@ -391,9 +391,19 @@ public class Main {
 		    rd.parseControl.setVerbose(true);
 		}
 	    });
-	addOption(new IgnoreOption
+	addOption(new Option
 		  ("-locale", "<name>", 2,
 		   "Locale to be used, e.g. en_US or en_US_WIN") {
+		final Pattern UNDERSCORE = Pattern.compile("_");
+		void process(RunData rd, List<String> args) {
+		    // split into three parts separated by underscores.
+		    String[] codes = UNDERSCORE.split(args.get(1), 3);
+		    String language = codes.length>0?codes[0]:"";
+		    String country = codes.length>1?codes[1]:"";
+		    String variant = codes.length>2?codes[2]:"";
+		    rd.parseControl.setLocale
+			(new Locale(language, country, variant));
+		}
 	    });
 	addOption(new Option("-encoding", "<name>", 2, 
 			     "Source file encoding name") {

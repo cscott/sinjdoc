@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 /**
  * <code>ParserControl</code> runs the parser to generate a
  * <code>PRootDoc</code>.
@@ -29,7 +30,7 @@ public class ParserControl {
     /** Determines parse verbosity. */
     boolean verbose=false;
     /** Source file encoding name. */
-    String encoding=null;
+    String encoding=null; // null means the default encoding.
     /** Source version to use. */
     int sourceVersion=5;
     /** Source files to document. */
@@ -38,6 +39,8 @@ public class ParserControl {
     List<String> packages = Arrays.asList(new String[0]);
     /** Overview file. */
     File overview=null;
+    /** Locale to use. */
+    Locale locale = Locale.getDefault();
 
     public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
@@ -55,6 +58,8 @@ public class ParserControl {
     public int getSourceVersion() { return this.sourceVersion; }
 
     public void setOverviewFile(File f) { this.overview=f; }
+    
+    public void setLocale(Locale l) { this.locale = l; }
 
     public void setSourceFiles(List<File> sp) {
 	// eliminate duplicates.
