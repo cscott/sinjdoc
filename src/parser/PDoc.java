@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.ProgramElementDoc;
 import net.cscott.gjdoc.SeeTag;
@@ -260,6 +261,16 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
      */
     public final int compareTo(Doc d) {
 	String q1 = this.name(), q2 = d.name();
+	// name of a ClassDoc object should include its containing class.
+	if (this instanceof ClassDoc)
+	    for (ClassDoc p=((ClassDoc)this).containingClass(); p!=null;
+		 p=p.containingClass())
+		q1 = p.name()+"."+q1;
+	if (d instanceof ClassDoc)
+	    for (ClassDoc p=((ClassDoc)d).containingClass(); p!=null;
+		 p=p.containingClass())
+		q2 = p.name()+"."+q2;
+	// okay.  now compare.
 	int c = pc.collator.compare(q1, q2);// primary key.
 	if (c!=0) return c;
 	// try fully-qualified name.  The fully-qualified name for a Doc

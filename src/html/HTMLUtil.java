@@ -105,7 +105,10 @@ class HTMLUtil {
 	else if (c.isException()) sb.append("exceptionRef");
 	else sb.append("classRef");
 	sb.append("\">");
+	int idx = sb.length();
 	sb.append(c.name());
+	for (ClassDoc p=c.containingClass(); p!=null; p=p.containingClass())
+	    sb.insert(idx, p.name()+"."); // parent class also in link text
 	if (withParam && c.typeParameters().size()>0) {
 	    sb.append("&lt;");
 	    for (Iterator<ClassTypeVariable> it=c.typeParameters().iterator();
