@@ -31,6 +31,12 @@ abstract class PClassType implements ClassType {
     public final String toString() {
 	return typeName();
     }
+    public String name() {
+	String className = typeName();
+	int idx = className.lastIndexOf('.');
+	if (idx < 0) return className;
+	return className.substring(idx+1);
+    }
     public String signature() { return canonicalTypeName(); }
     public <T> T accept(TypeVisitor<T> visitor) { return visitor.visit(this); }
 }// PClassType

@@ -21,14 +21,18 @@ import java.util.List;
 class PParameterizedType
     implements net.cscott.sinjdoc.ParameterizedType {
     final ClassType baseType;
+    final Type declaringType;
     final List<Type> actualTypeArguments;
     /** Create a new parameterized class type. */
-    PParameterizedType(ClassType baseType, List<Type> actualTypeArguments) {
+    PParameterizedType(ClassType baseType, Type declaringType,
+		       List<Type> actualTypeArguments) {
 	this.baseType = baseType;
+	this.declaringType = declaringType;
 	this.actualTypeArguments = actualTypeArguments;
-	assert actualTypeArguments.size()>0;
+	assert actualTypeArguments.size()>=0;
     }
     public ClassType getBaseType() { return baseType; }
+    public Type getDeclaringType() { return declaringType; }
     public List<Type> getActualTypeArguments() {
 	return Collections.unmodifiableList(actualTypeArguments);
     }

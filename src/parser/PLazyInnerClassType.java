@@ -35,4 +35,5 @@ class PLazyInnerClassType extends PClassType {
     public String typeName() {
 	return outerClass.typeName()+"."+innerName;
     }
+    public String name() { return innerName; }
 }// PLazyInnerClassType

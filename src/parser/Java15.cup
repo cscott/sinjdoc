@@ -196,7 +196,21 @@ action code {:
   ParameterizedType joinWithParam(ParameterizedType pt, String inner) {
       return new PParameterizedType(new PLazyInnerClassType
 				    (parser.rootDoc.pc, pt.getBaseType(),
-				     inner), pt.getActualTypeArguments());
+				     inner), pt, new ArrayList<Type>(0));
+  }
+  ParameterizedType addParams(ClassType ct, List<Type> typeArgs) {
+      // synthesize an outer class name.
+      ClassType outer=null;
+      if (ct instanceof PLazyInnerClassType)
+	  outer = ((PLazyInnerClassType)ct).outerClass;
+      else {
+	  String typeName = ct.typeName();
+	  int idx = typeName.lastIndexOf('.');
+	  if (idx > 0)
+	      outer = lookupClassType(typeName.substring(0, idx));
+      }
+      // XXX this algorithm is not perfect, sadly.
+      return new PParameterizedType(ct, outer, typeArgs);
   }
   void addTypeVariable(String name) {
       // are we in method or class context?
@@ -557,13 +571,16 @@ type_variable ::=
 	;
 class_or_interface_nn ::=
 		name:n1 type_arguments:tl DOT name:n2
-		{: RESULT=joinWithParam
-		         (new PParameterizedType(lookupClassType(n1), tl), n2);
+		{: ClassType baseType = lookupClassType(n1);
+		   RESULT=joinWithParam
+		 	 (addParams(lookupClassType(n1), tl), n2);
 		:}
 	|	class_or_interface_nn:ty type_arguments:tl DOT name:n
 		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
 		   RESULT=joinWithParam
-		         (new PParameterizedType(ty.getBaseType(), tl), n);
+		         (new PParameterizedType(ty.getBaseType(),
+						 ty.getDeclaringType(),
+						 tl), n);
 		:}
 	;
 class_or_interface_type ::=
@@ -571,7 +588,7 @@ class_or_interface_type ::=
 		{: if (tl.size()==0) RESULT=lookupType(n);
 		   else {
 		       tl.trimToSize();
-		       RESULT=new PParameterizedType(lookupClassType(n), tl);
+		       RESULT=addParams(lookupClassType(n), tl);
 		   }
 		:}
 	|	class_or_interface_nn:ty type_arguments_opt:tl
@@ -579,7 +596,9 @@ class_or_interface_type ::=
 		   else {
 		       tl.addAll(0, ty.getActualTypeArguments());
 		       tl.trimToSize();
-		       RESULT=new PParameterizedType(ty.getBaseType(), tl);
+		       RESULT=new PParameterizedType(ty.getBaseType(),
+						     ty.getDeclaringType(),
+						     tl);
 		   }
 		:}
 	;
@@ -598,9 +617,9 @@ array_type ::=	primitive_type:ty dims:d
 	|	class_or_interface_nn:ty dims:d
 		{: RESULT=arrayType(ty, d.intValue()); :}
 	|	name:n type_arguments:tl dims:d
-		{: tl.trimToSize(); RESULT=arrayType(new PParameterizedType(lookupClassType(n), tl), d.intValue()); :}
+		{: tl.trimToSize(); RESULT=arrayType(addParams(lookupClassType(n), tl), d.intValue()); :}
 	|	class_or_interface_nn:ty type_arguments:tl dims:d
-		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize(); RESULT=arrayType(new PParameterizedType(ty.getBaseType(), tl), d.intValue()); :}
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize(); RESULT=arrayType(new PParameterizedType(ty.getBaseType(), ty.getDeclaringType(), tl), d.intValue()); :}
 	;
 
 type_arguments_opt ::= type_arguments:tl
@@ -642,29 +661,29 @@ reference_type_1 ::=
 		reference_type:ty GT
 		{: RESULT=ty; :}
 	|	name:n LT reference_type_list_2:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+		{: tl.trimToSize(); RESULT=addParams(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_2:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+		{: tl.trimToSize(); RESULT=addParams(lookupClassType(n), tl); :}
 	|	class_or_interface_nn:ty LT reference_type_list_2:tl
 		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
-		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+		   RESULT=new PParameterizedType(ty.getBaseType(), ty.getDeclaringType(), tl); :}
 	|	class_or_interface_nn:ty PLT reference_type_list_2:tl
 		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
-		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+		   RESULT=new PParameterizedType(ty.getBaseType(), ty.getDeclaringType(), tl); :}
 	;
 reference_type_2 ::=
 		reference_type:ty RSHIFT
 		{: RESULT=ty; :}
 	|	name:n LT reference_type_list_3:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+		{: tl.trimToSize(); RESULT=addParams(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_3:tl
-		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+		{: tl.trimToSize(); RESULT=addParams(lookupClassType(n), tl); :}
 	|	class_or_interface_nn:ty LT reference_type_list_3:tl
 		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
-		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+		   RESULT=new PParameterizedType(ty.getBaseType(), ty.getDeclaringType(), tl); :}
 	|	class_or_interface_nn:ty PLT reference_type_list_3:tl
 		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
-		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+		   RESULT=new PParameterizedType(ty.getBaseType(), ty.getDeclaringType(), tl); :}
 	;
 reference_type_3 ::=
 		reference_type:ty URSHIFT

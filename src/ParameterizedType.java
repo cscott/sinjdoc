@@ -17,14 +17,24 @@ public interface ParameterizedType extends Type {
     /** Return the <code>Type</code> corresponding to the "raw class"
      *  of this parameterized type; that is, the type without parameters. */
     public ClassType getBaseType();
+    /** Return the <code>Type</code> corresponding to the (possibly
+     *  parameterized) declaring class of this parameterized type, or
+     *  <code>null</code> if this type does not represent an inner
+     *  class.  Note that this method will return a <code>ClassType</code>
+     *  if this type represents a static inner class, even if the
+     *  declaring class is parameterized.
+     */
+    public Type getDeclaringType();
     /** Return the type arguments that this parameterized type has been
      *  instantiated with.  Note that for nested parameterized types,
-     *  the size of the returned list may well be larger than the size
-     *  of <code>getBaseType().typeParameters()</code>.  The returned
-     *  actual types are ordered from outermost class to innermost
-     *  class.  For the type <code>A<Integer>.B<String>.C</code>,
-     *  this method will return the list <code>[ Integer, String ]</code>
-     *  even those <code>getBaseType().typeParameters().size()</code> will
-     *  be zero. */
+     *  the size of the returned list will always be equal to the size of
+     *  of <code>getBaseType().typeParameters()</code>; however, the
+     *  <code>getDeclaringType()</code> method may return a
+     *  parameterized type.  For example, for the type:
+     *  <code>A&lt;Integer&gt;.B&lt;String&gt;.C</code>, this method will
+     *  return a zero-length list, and <code>getDeclaringType()</code>
+     *  will return the <code>ParameterizedType</code> for
+     *  <code>A&lt;Integer&gt;.B&lt;String&gt;</code>.
+     */
     public List<Type> getActualTypeArguments();
 }

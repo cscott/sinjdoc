@@ -51,6 +51,7 @@ abstract class PTag
     }
 
     // utility functions.
+    // XXX make handle nested parameterized types
     static Type parseParameterizedType(TypeContext tagContext, String typeName,
 				       PSourcePosition pos)
 	throws TagParseException {
@@ -77,7 +78,8 @@ abstract class PTag
 		int last = typeStack.peek().size()-1;
 		assert last>=0; // regexp doesn't match otherwise
 		ClassType base = (ClassType) typeStack.peek().get(last);
-		Type pt = new PParameterizedType(base,typeArgs);
+		// XXX doesn't handle parameterized inner classes.
+		Type pt = new PParameterizedType(base,null,typeArgs);
 		typeStack.peek().set(last, pt);
 	    }
 	}

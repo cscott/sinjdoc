@@ -29,4 +29,8 @@ public interface ClassType extends Type {
      * specifications <i>are</i> included in this name; i.e. the returned
      * string may contain dots. */
     public String typeName();
+    /**
+     * Return the simple name of this type, not including the names of
+     * any declaring classes. */
+    public String name();
 }

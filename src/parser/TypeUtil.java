@@ -194,29 +194,24 @@ abstract class TypeUtil {
      *  <code>Type</code>s based on the given <code>ParameterizedType</code>.
      */
     private static Map<TypeVariable,Type> makeSubstMap(ParameterizedType pt) {
-	// iterate through all enclosing classes, accumulating type parameters
-	ClassDoc cd = pt.getBaseType().asClassDoc();
-	if (cd==null) return Collections.EMPTY_MAP;
-	List<ClassTypeVariable> l = new LinkedList<ClassTypeVariable>();
-	while (cd!=null) {
-	    l.addAll(0, cd.typeParameters());
-	    cd = cd.containingClass();
-	}
-	return makeSubstMap(l, pt.getActualTypeArguments());
-    }
-    // make generic to work on methodtypevariables, too.
-    private static <TV extends TypeVariable> Map<TypeVariable,Type>
-			       makeSubstMap(List<TV> parameters,
-					    List<Type> args) {
-	assert parameters.size() == args.size();
 	Map<TypeVariable,Type> substMap = new HashMap<TypeVariable,Type>();
-	Iterator<TV> paramI = parameters.iterator();
-	Iterator<Type> argI = args.iterator();
-	while (paramI.hasNext())
-	    substMap.put(paramI.next(), argI.next());
-	assert !argI.hasNext();
+	for (Type t = pt; t instanceof ParameterizedType; ) {
+	    ParameterizedType ptt = (ParameterizedType) t;
+	    ClassDoc cd = ptt.getBaseType().asClassDoc();
+	    if (cd!=null) {
+		Iterator<ClassTypeVariable> it1=cd.typeParameters().iterator();
+		Iterator<Type> it2 = ptt.getActualTypeArguments().iterator();
+		while (it1.hasNext() && it2.hasNext())
+		    substMap.put(it1.next(), it2.next());
+		// lists should be the same size:
+		assert !it1.hasNext();
+		assert !it2.hasNext();
+	    }
+	    t = ptt.getDeclaringType();
+	}
 	return substMap;
     }
+
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
      *  the <code>typeList</code> according to the given <code>Map</code>. */
     private static List<Type> subst(final Map<TypeVariable,Type> substMap,
@@ -242,6 +237,7 @@ abstract class TypeUtil {
 		// and create a new parameterized type from these args.
 		return new PParameterizedType
 		    (t.getBaseType(),
+		     subst(substMap, t.getDeclaringType()),
 		     subst(substMap, t.getActualTypeArguments()));
 	    }
 	    public Type visit(TypeVariable t) {
