@@ -26,14 +26,18 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     implements net.cscott.gjdoc.ExecutableMemberDoc {
     final List<MethodTypeVariable> typeParameters =
 	new ArrayList<MethodTypeVariable>(2);
-    final List<Parameter> parameters = new ArrayList<Parameter>(4);
-    final List<Type> thrownExceptions = new ArrayList<Type>(2);
+    final List<Parameter> parameters;
+    final List<Type> thrownExceptions;
+    <P extends Parameter, T extends Type>
     PExecutableMemberDoc(ParseControl pc, PClassDoc containingClass,
 			 int modifiers, String name, PSourcePosition position,
+			 List<P> parameters, List<T> thrownExceptions,
 			 String commentText, PSourcePosition commentPosition,
 			 TypeContext commentContext) {
 	super(pc, containingClass, modifiers, name, position,
 	      commentText, commentPosition, commentContext);
+	this.parameters = new ArrayList<Parameter>(parameters);
+	this.thrownExceptions = new ArrayList<Type>(thrownExceptions);
     }
     public List<MethodTypeVariable> typeParameters() {
 	return Collections.unmodifiableList(typeParameters);
