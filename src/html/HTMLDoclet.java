@@ -104,6 +104,13 @@ public class HTMLDoclet extends Doclet {
 	    ("allclasses-frame.html", hu, context);
 	tw.copyRemainder(root);
     }
+    void makeAllClassesNoFrame(RootDoc root, HTMLUtil hu) {
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("allclasses-noframe.html"));
+	TemplateWriter tw = new TemplateWriter
+	    ("allclasses-noframe.html", hu, context);
+	tw.copyRemainder(root);
+    }
     void makePackageFrame(RootDoc root, HTMLUtil hu, PackageDoc pd) {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext(hu.toURL(pd, "package-frame.html")),
@@ -157,6 +164,7 @@ public class HTMLDoclet extends Doclet {
 	makeTopIndex(root, hu);
 	// list all documented classes.
 	makeAllClassesFrame(root, hu);
+	makeAllClassesNoFrame(root, hu);
 	// top-level class hierarchy.
 	if (options.emitTreePage) {
 	    // XXX create overview-tree.html

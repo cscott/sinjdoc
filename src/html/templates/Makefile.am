@@ -8,6 +8,7 @@ class-page.html \
 package-frame.html \
 package-summary.html \
 allclasses-frame.html \
+allclasses-noframe.html \
 overview-frame.html \
 overview-summary.html \
 index-packages.html \
