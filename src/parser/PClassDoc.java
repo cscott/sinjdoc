@@ -128,7 +128,10 @@ class PClassDoc extends PProgramElementDoc
     public boolean subclassOf(ClassDoc cd) {
 	throw new RuntimeException("unimplemented");
     }
-    public Type superclass() { return superclass; }
+    public Type superclass() {
+	if (qualifiedName().equals("java.lang.Object")) return null;
+	return superclass;
+    }
     public boolean instanceOf(Type t) {
 	throw new RuntimeException("unimplemented");
     }
