@@ -12,10 +12,14 @@ import net.cscott.gjdoc.Type;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PParameter
-    implements net.cscott.gjdoc.Parameter {
-    public abstract String name();
-    public abstract Type type();
+class PParameter implements net.cscott.gjdoc.Parameter {
+    final Type type;
+    final String name;
+    PParameter(Type type, String name) {
+	this.type = type; this.name = name;
+    }
+    public Type type() { return type; }
+    public String name() { return name; }
 
     public final String toString() {
 	return type().toString()+" "+name();

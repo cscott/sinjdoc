@@ -111,7 +111,7 @@ action code {:
 
       for (Iterator<VariableDeclarator> it=variables.iterator();it.hasNext();){
 	  VariableDeclarator vd = it.next();
-	  Type vty = (vd.dims==0) ? ty : new PArrayType(ty, vd.dims);
+	  Type vty = arrayType(ty, vd.dims);
 	  PFieldDoc fd = new PFieldDoc(parser.rootDoc.pc, parent,
 				       modifiers, vty, vd.name, sp(vd.pos),
 				       commentText, commentPos,
@@ -151,6 +151,14 @@ action code {:
 	  parent.typeParameters.add(ctv);
 	  parser.additionalTypeVariables.put(name, ctv);
       }
+  }
+  Type arrayType(Type ty, int dims) {
+      assert dims>=0;
+      return (dims==0) ? ty : new PArrayType(ty, dims);
+  }
+  static class PParameterList extends ArrayList<PParameter> {
+      PParameterList() { super(1); }
+      PParameterList(PParameter p) { super(2); add(p); }
   }
   static class TypeList extends ArrayList<Type> {
 	TypeList() { super(1); }
@@ -274,8 +282,8 @@ non terminal VariableDeclarator variable_declarator, variable_declarator_id;
 non terminal variable_initializer;
 // 19.8.3) Method Declarations
 non terminal method_declaration, method_header, method_declarator;
-non terminal formal_parameter_list_opt, formal_parameter_list;
-non terminal formal_parameter;
+non terminal PParameterList formal_parameter_list_opt, formal_parameter_list;
+non terminal PParameter formal_parameter;
 non terminal throws_opt, throws;
 non terminal class_type_list, method_body;
 // 19.8.4) Static Initializers
@@ -483,11 +491,11 @@ interface_type ::= class_or_interface_type:ty
 	;
 
 array_type ::=	primitive_type:ty dims:d
-		{: RESULT=new PArrayType(ty, d.intValue()); :}
+		{: RESULT=arrayType(ty, d.intValue()); :}
 	|	name:n dims:d
-		{: RESULT=new PArrayType(lookupType(n), d.intValue()); :}
+		{: RESULT=arrayType(lookupType(n), d.intValue()); :}
 	|	name:n type_arguments:tl dims:d
-		{: tl.trimToSize(); RESULT=new PArrayType(new PParameterizedType(lookupClassType(n), tl), d.intValue()); :}
+		{: tl.trimToSize(); RESULT=arrayType(new PParameterizedType(lookupClassType(n), tl), d.intValue()); :}
 	;
 
 type_arguments_opt ::= type_arguments:tl
@@ -766,15 +774,21 @@ method_declarator ::=
 	// be careful; the above production also allows 'void foo() []'
 	;
 formal_parameter_list_opt ::=
-	|	formal_parameter_list
+		{: RESULT=new PParameterList(); :}
+	|	formal_parameter_list:fpl
+		{: RESULT=fpl; :}
 	;
 formal_parameter_list ::=
-		formal_parameter
-	|	formal_parameter_list COMMA formal_parameter
+		formal_parameter:fp
+		{: RESULT=new PParameterList(fp); :}
+	|	formal_parameter_list:fpl COMMA formal_parameter:fp
+		{: fpl.add(fp); RESULT=fpl; :}
 	;
 formal_parameter ::=
-		type variable_declarator_id
-	|	FINAL type variable_declarator_id
+		type:ty variable_declarator_id:vd
+    		{: RESULT=new PParameter(arrayType(ty, vd.dims), vd.name); :}
+	|	FINAL type:ty variable_declarator_id:vd
+    		{: RESULT=new PParameter(arrayType(ty, vd.dims), vd.name); :}
 	;
 throws_opt ::=	
 	|	throws
