@@ -37,7 +37,9 @@ public interface Type {
     public String toString();
     /**
      * Return the unqualified name of this type excluding any dimension
-     * information.  For example, a two-dimensional array of
-     * <code>String</code> returns "String". */
+     * or package information.  For example, a two-dimensional array of
+     * <code>java.lang.String</code> returns "String".  Note that inner class
+     * specifications <i>are</i> included in this name; i.e. the returned
+     * string may contain dots. */
     public String typeName();
 }
