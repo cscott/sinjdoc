@@ -46,4 +46,6 @@ class URLContext {
 	return f;
     }
     private static final Pattern PATHPART=Pattern.compile("([^/]+)(/+|\\z)");
+
+    public String toString() { return this.context; }
 }
