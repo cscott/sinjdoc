@@ -10,6 +10,7 @@ noinst_JAVA = \
 Java15.java \
 Sym.java \
 Lexer.java \
+FileUtil.java \
 ParserControl.java \
 PClassDoc.java \
 PClassTypeVariable.java \

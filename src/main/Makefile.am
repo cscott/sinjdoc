@@ -5,7 +5,7 @@ AM_JAVACFLAGS = -g -warnunchecked
 # JAVAROOT directory must exist!
 JAVAROOT=$(top_builddir)/classes
 
-#CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 # build Main.java last, because it has dependencies on html and parser.
 # note that the package statement in Main.java doesn't agree with its

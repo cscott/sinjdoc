@@ -3,7 +3,9 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import net.cscott.gjdoc.parser.FileUtil;
 import net.cscott.gjdoc.parser.ParserControl;
+import net.cscott.gjdoc.parser.PRootDoc;
 import net.cscott.gjdoc.html.HTMLDoclet;
 
 import java.lang.reflect.Modifier;
@@ -154,7 +156,8 @@ public class Main {
 		    (runData.classPath!=null) ? runData.classPath : ".";
 	    if (runData.classPath==null)
 		runData.classPath = System.getProperty("java.class.path");
-	    runData.parseControl.setSourcePath(splitPath(runData.sourcePath));
+	    FileUtil fu = new FileUtil
+		(runData.sourcePath, runData.parseControl.getSourceVersion());
 
 	    // check doclet options.
 	    boolean success=false;
@@ -163,32 +166,35 @@ public class Main {
 		// separate nonOptionArgs into packages and source files.
 		// note that '*' is accepted in the source file spec.
 		List<String> packages = new ArrayList<String>();
-		List<String> sourcefiles = new ArrayList<String>();
+		List<File> sourcefiles = new ArrayList<File>();
 		for (Iterator<String> it=nonOptionArgs.iterator();
-		     it.hasNext(); )
-		    for (Iterator<String> it2=expandStar(it.next()).iterator();
-			 it2.hasNext(); ) {
-			String candidate = it2.next();
-			// if the string is a legal package name and
-			// doesn't end in .java, then it's a package.
-			if (candidate.toLowerCase().endsWith(".java")) {
-			    // check if this is a valid source file.
-			    File f = new File(candidate);
-			    if (isValidClassName(f.getName()) &&
-				f.isFile() && f.exists())
-				sourcefiles.add(candidate);
-			} else if (isValidPackageName(candidate))
-			    // valid package.
+		     it.hasNext(); ) {
+		    String candidate = it.next();
+		    if (candidate.indexOf('*')<0 &&
+			!candidate.toLowerCase().endsWith(".java")) {
+			// try as package name.
+			if (fu.isValidPackageName(candidate))
 			    packages.add(candidate);
+		    } else {
+			// try as source file name.
+			for (Iterator<File> it2 =
+				 fu.expandFileStar(candidate).iterator();
+			     it2.hasNext(); ) {
+			    File f = it2.next();
+			    if (fu.isValidClassName(f.getName()) &&
+				f.isFile() && f.exists())
+				sourcefiles.add(f);
+			}
 		    }
+		}
+		// expand subpackage spec.
+		packages.addAll(fu.expandPackages(runData.subpackages,
+						  runData.exclude));
 		// okay.  have parsed all options.
-		RootDoc rootDoc =
-		    runData.parseControl.parse(packages,
-					       sourcefiles,
-					       splitColon(runData.subpackages),
-					       splitColon(runData.exclude),
-					       docletOptions);
-	    
+		runData.parseControl.setSourceFiles(sourcefiles);
+		runData.parseControl.setPackages(packages);
+		PRootDoc rootDoc = runData.parseControl.parse(fu);
+		if (rootDoc!=null) rootDoc.setOptions(docletOptions);
 		success = doclet.start(rootDoc);
 	    }
 	    // okay, report on errors and warnings.
@@ -205,39 +211,16 @@ public class Main {
 	    return (success&&runData.reporter.errNum==0)?0:1;
 	} catch (Throwable t) {
 	    // if anything escapes, return w/ an error code.
+	    noticeWriter.flush(); // make sure order is correct by flushing
+	    warnWriter.flush(); // other streams.
 	    t.printStackTrace(errWriter);
 	    return 1;
 	} finally {
-	    errWriter.flush();
-	    warnWriter.flush();
 	    noticeWriter.flush();
+	    warnWriter.flush();
+	    errWriter.flush();
 	}
     }
-    static boolean isValidPackageName(String str) {
-	Pattern p = Pattern.compile("[.]");
-	for (Iterator<String> it=Arrays.asList(p.split(str,-1)).iterator();
-	     it.hasNext(); )
-	    if (!isValidIdentifier(it.next()))
-		return false;
-	return true;
-    }
-    static boolean isValidClassName(String str) {
-	if (!str.toLowerCase().endsWith(".java")) return false;
-	return isValidIdentifier(str.substring(0,str.length()-5));
-    }
-    static boolean isValidIdentifier(String str) {
-	if (str.length()<1) return false;
-	if (!Character.isJavaIdentifierStart(str.charAt(0))) return false;
-	for(int i=1; i<str.length(); i++)
-	    if (!Character.isJavaIdentifierPart(str.charAt(i)))
-		return false;
-	// check that it is not a reserved word.
-	if (stoplist.matcher(str).matches()) return false;
-	// okay, we've passed.
-	return true;
-    }
-    static Pattern stoplist = Pattern.compile
-	("true|false|null|abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while");
 
     /** Create a doclet instance given its classname.
      *  XXX Note that we don't do anything with the docletPath here.
@@ -359,13 +342,13 @@ public class Main {
 	addOption(new Option("-exclude", "<pkglist>", 2,
 			     "Specify a list of packages to exclude") {
 		void process(RunData rd, List<String> args) {
-		    rd.exclude = args.get(1);
+		    rd.exclude.addAll(FileUtil.splitColon(args.get(1)));
 		}
 	    });
 	addOption(new Option("-subpackages", "<subpkglist>", 2,
 			     "Specify subpackages to recursively load") {
 		void process(RunData rd, List<String> args) {
-		    rd.subpackages = args.get(1);
+		    rd.subpackages.addAll(FileUtil.splitColon(args.get(1)));
 		}
 	    });
 	addOption(new IgnoreOption
@@ -465,7 +448,8 @@ public class Main {
 	Doclet doclet=null;
 
 	String sourcePath=null, classPath=null;
-	String subpackages="", exclude="";
+	List<String> subpackages = new ArrayList<String>();
+	List<String> exclude = new ArrayList<String>();
 
 	RunData(String programName,
 		PrintWriter errWriter, PrintWriter warnWriter,
@@ -509,36 +493,5 @@ public class Main {
 	    this.warnWriter = warnWriter;
 	    this.noticeWriter = noticeWriter;
 	}
-    }
-    private static List<String> splitPath(String str) {
-	String pathSep = System.getProperty("path.separator");
-	if (pathSep==null) pathSep=":"; // safe default.
-	return Arrays.asList(Pattern.compile(pathSep).split(str));
-    }
-    private static List<String> splitColon(String str) {
-	return Arrays.asList(Pattern.compile(":").split(str));
-    }
-    private static List<String> expandStar(String str) {
-	// xxx note this doesn't work for strings like: asd/*/asdas.java
-	int idx = str.indexOf('*');
-	if (idx<0) return Collections.singletonList(str);
-	String lhs = str.substring(0, idx);
-	final String rhs = str.substring(idx+1);
-	File lhsF = new File(lhs);
-	final String namePrefix = lhsF.isDirectory()?"":lhsF.getName();
-	File dir = lhsF.isDirectory()?lhsF:lhsF.getParentFile();
-	if (dir==null) dir=new File(".");
-	File[] matches = dir.listFiles(new FilenameFilter() {
-		public boolean accept(File dir, String name) {
-		    return
-			name.length()>=(namePrefix.length()+rhs.length()) &&
-			name.startsWith(namePrefix) &&
-			name.endsWith(rhs);
-		}
-	    });
-	String[] result = new String[matches.length];
-	for (int i=0; i<matches.length; i++)
-	    result[i] = matches[i].getPath();
-	return Arrays.asList(result);
     }
 }

@@ -6,9 +6,12 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.RootDoc;
 
+import net.cscott.jutil.UniqueVector;
+
 import java.lang.reflect.Modifier;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 /**
@@ -27,10 +30,12 @@ public class ParserControl {
     boolean verbose=false;
     /** Source file encoding name. */
     String encoding=null;
-    /** Sourcepath to use. */
-    List<File> sourcePath = new ArrayList<File>();
     /** Source version to use. */
     int sourceVersion=5;
+    /** Source files to document. */
+    List<File> sourceFiles = Arrays.asList(new File[0]);
+    /** Packages to document. */
+    List<String> packages = Arrays.asList(new String[0]);
 
     public ParserControl(DocErrorReporter reporter) { this.reporter=reporter; }
 
@@ -45,15 +50,15 @@ public class ParserControl {
 	assert v>=1 && v<=5;
 	this.sourceVersion=v;
     }
-    public void setSourcePath(List<String> sp) {
-	sourcePath.clear();
-	for (Iterator<String> it=sp.iterator(); it.hasNext(); ) {
-	    File f = new File(it.next());
-	    if (f.isDirectory())
-		sourcePath.add(f);
-	    else
-		reporter.printWarning("Ignoring non-directory source path "+f);
-	}
+    public int getSourceVersion() { return this.sourceVersion; }
+
+    public void setSourceFiles(List<File> sp) {
+	// eliminate duplicates.
+	this.sourceFiles = new UniqueVector<File>(sp);
+    }
+    public void setPackages(List<String> packages) {
+	// eliminate duplicates
+	this.packages = new UniqueVector<String>(packages);
     }
 
     public boolean showPublic() { return true; }
@@ -63,16 +68,9 @@ public class ParserControl {
     public boolean showPrivate() { return access==Modifier.PRIVATE; }
 
 
-    public RootDoc parse(List<String> packageNames,
-			 List<String> sourcefileNames,
-			 List<String> subpackages,
-			 List<String> excludePackages,
-			 List<List<String>> docletOptions) {
-	reporter.printNotice("PACKAGE NAMES: "+packageNames);
-	reporter.printNotice("SOURCE FILE NAMES: "+sourcefileNames);
-	reporter.printNotice("SUBPACKAGES: "+subpackages);
-	reporter.printNotice("EXCLUDE PACKAGES: "+excludePackages);
-	reporter.printNotice("DOCLET OPTIONS: "+docletOptions);
+    public PRootDoc parse(FileUtil fu) {
+	reporter.printNotice("PACKAGE NAMES: "+packages);
+	reporter.printNotice("SOURCE FILE NAMES: "+sourceFiles);
 	return null;
     }
 }

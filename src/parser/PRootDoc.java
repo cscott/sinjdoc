@@ -17,13 +17,19 @@ import java.util.List;
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
-abstract class PRootDoc extends PDoc
+public abstract class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
     PRootDoc(DocErrorReporter reporter) { this.reporter=reporter; }
     final DocErrorReporter reporter;
+
+    public List<List<String>> options() { return options; }
+    public void setOptions(List<List<String>> options) {
+	this.options = options;
+    }
+    private List<List<String>> options=null;
+
     public abstract List<ClassDoc> classes();
     public abstract ClassDoc classNamed(String qualifiedName);
-    public abstract List<List<String>> options();
     public abstract PackageDoc packageNamed(String name);
     public abstract List<ClassDoc> specifiedClasses();
     public abstract List<PackageDoc> specifiedPackages();
