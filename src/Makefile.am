@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = . lexer parser html main
-EXTRA_DIST := package.html overview.html
+EXTRA_DIST := package.html overview.html.in
 
 AM_JAVACFLAGS = -g -warnunchecked
 # JAVAROOT directory must exist!
