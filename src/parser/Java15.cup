@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -98,6 +99,26 @@ action code {:
       parser.typeContexts.pop();
       parser.outerClasses.pop();
   }
+  // field declaration
+  private void doFieldDeclaration(int modifiers, Type ty,
+				  List<VariableDeclarator> variables) {
+      // one comment string for all fields declared.
+      String commentText = parser.lexer.lastComment();
+      PSourcePosition commentPos = sp(parser.lexer.lastCommentPos());
+      parser.lexer.clearComment();
+      // this is the class to which this field belongs.
+      PClassDoc parent = parser.outerClasses.peek();
+
+      for (Iterator<VariableDeclarator> it=variables.iterator();it.hasNext();){
+	  VariableDeclarator vd = it.next();
+	  Type vty = (vd.dims==0) ? ty : new PArrayType(ty, vd.dims);
+	  PFieldDoc fd = new PFieldDoc(parser.rootDoc.pc, parent,
+				       modifiers, vty, vd.name, sp(vd.pos),
+				       commentText, commentPos,
+				       parser.typeContexts.peek());
+	  parent.fields.add(fd);
+      }
+  }
 
   PClassType lookupClassType(String name) {
       return new PLazyClassType(parser.typeContexts.peek(), name);
@@ -134,7 +155,17 @@ action code {:
   static class TypeList extends ArrayList<Type> {
 	TypeList() { super(1); }
 	TypeList(Type ty) { super(2); add(ty); }
- }
+  }
+  static class VariableDeclarator {
+      final String name; final int pos;
+      int dims=0;
+      VariableDeclarator(String name, int pos) {
+	  this.name = name; this.pos = pos;
+      }
+  }
+  static class VariableDeclaratorList extends ArrayList<VariableDeclarator> {
+      VariableDeclaratorList(VariableDeclarator vd) { super(2); add(vd); }
+  }
 :};
 
 scan with {: return lexer.nextToken(); :};
@@ -237,8 +268,10 @@ non terminal class_body;
 non terminal class_body_declarations, class_body_declarations_opt;
 non terminal class_body_declaration, class_member_declaration;
 // 19.8.2) Field Declarations
-non terminal field_declaration, variable_declarators, variable_declarator;
-non terminal variable_declarator_id, variable_initializer;
+non terminal field_declaration;
+non terminal VariableDeclaratorList variable_declarators;
+non terminal VariableDeclarator variable_declarator, variable_declarator_id;
+non terminal variable_initializer;
 // 19.8.3) Method Declarations
 non terminal method_declaration, method_header, method_declarator;
 non terminal formal_parameter_list_opt, formal_parameter_list;
@@ -684,19 +717,26 @@ class_member_declaration ::=
 
 // 19.8.2) Field Declarations
 field_declaration ::= 
-		modifiers_opt type variable_declarators SEMICOLON
+		modifiers_opt:m type:ty variable_declarators:vdl SEMICOLON
+		{: doFieldDeclaration(m.intValue(), ty, vdl); :}
 	;
 variable_declarators ::=
-		variable_declarator
-	|	variable_declarators COMMA variable_declarator
+		variable_declarator:vd
+    		{: RESULT=new VariableDeclaratorList(vd); :}
+	|	variable_declarators:vdl COMMA variable_declarator:vd
+		{: vdl.add(vd); RESULT=vdl; :}
 	;
 variable_declarator ::=
-		variable_declarator_id
-	|	variable_declarator_id EQ variable_initializer
+		variable_declarator_id:vd
+		{: RESULT=vd; :}
+	|	variable_declarator_id:vd EQ variable_initializer
+		{: RESULT=vd; /* ignoring the initializer. */ :}
 	;
 variable_declarator_id ::=
-		IDENTIFIER
-	|	variable_declarator_id LBRACK RBRACK
+		IDENTIFIER:id
+    		{: RESULT=new VariableDeclarator(id, idleft); :}
+	|	variable_declarator_id:vd LBRACK RBRACK
+		{: vd.dims++; RESULT=vd; :}
 	;
 variable_initializer ::=
 		expression_l
