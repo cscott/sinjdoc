@@ -1,4 +1,5 @@
-This directory contains java sources for the GJDoc documentation tool.
+This directory contains java sources for the SinjDoc documentation tool.
+SinjDoc expands to "SinjDoc is not javadoc" -- it's better!
 
 If you've grabbed the sources from CVS, you'll want to run ./autogen.sh
 to let autoheader/autoconf/automake do their thing.  This is not necessary

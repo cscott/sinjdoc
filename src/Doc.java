@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * The <code>Doc</code> class is the abstract base class representing
  * all java language constructs (classes, packages, methods, etc) which
- * have comments and have been processed by this run of GJDoc.  All
+ * have comments and have been processed by this run of SinjDoc.  All
  * <code>Doc</code> items are <code>ReferenceUnique</code>, that is, they
  * are == comparable.
  * 

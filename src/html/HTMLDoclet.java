@@ -13,7 +13,7 @@ import net.cscott.gjdoc.RootDoc;
 import java.io.*;
 import java.util.*;
 /**
- * The <code>HTMLDoclet</code> is the standard doclet for GJDoc.  It
+ * The <code>HTMLDoclet</code> is the standard doclet for SinjDoc.  It
  * generates HTML-format documentation.
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)

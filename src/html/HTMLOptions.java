@@ -48,7 +48,7 @@ class HTMLOptions {
 	    optionMap.get(anOption.get(0).toLowerCase()).process(anOption);
 	}
 	// now deal with defaults. !J means that this logic is not implemented
-	// in javadoc; it is specific to GJDoc.
+	// in javadoc; it is specific to SinjDoc.
 	if (windowTitle==null) windowTitle=docTitle;
 	if (charSet==null) charSet = Charset.forName("UTF-8");
 	if (windowTitle!=null && docTitle==null) docTitle=windowTitle;// !J

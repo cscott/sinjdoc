@@ -11,7 +11,7 @@ import java.util.List;
  * The <code>PackageDoc</code> class represents a java package.  It
  * provides access to information about the package, the package's
  * comment and tags, and the classes in the package.  It does *not*
- * necessarily represent a package included in the current GJDoc run.
+ * necessarily represent a package included in the current SinjDoc run.
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$

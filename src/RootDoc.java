@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 /**
  * The <code>RootDoc</code> class holds the information from one run of
- * GJDoc; in particular the packages, classes, and options specified by
+ * SinjDoc; in particular the packages, classes, and options specified by
  * the user.
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)

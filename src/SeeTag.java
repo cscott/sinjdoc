@@ -19,7 +19,7 @@ public interface SeeTag extends Tag {
     /**
      * Return the class referenced by the class name part of @see,
      * or <code>null</code> if the class is not a class specified on the
-     * GJDoc command line. */
+     * SinjDoc command line. */
     public ClassDoc referencedClass();
     /** 
      * Return the class name part of @see.  For example, if the

@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * The <code>PDoc</code> class is the abstract base class representing
  * all java language constructs (classes, packages, methods, etc) which
- * have comments and have been processed by this run of GJDoc.  All
+ * have comments and have been processed by this run of SinjDoc.  All
  * <code>PDoc</code> items are <code>ReferenceUnique</code>, that is, they
  * are == comparable.
  * 
