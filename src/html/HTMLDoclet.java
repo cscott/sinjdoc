@@ -95,12 +95,6 @@ public class HTMLDoclet extends Doclet {
 	    (root, options, new URLContext("overview-summary.html"));
 	TemplateWriter tw = new TemplateWriter
 	    ("overview-summary.html"/*resource*/, hu, context);
-	tw.copyToSplit(root);
-	// first split is first sentence of overview tags.
-	TagEmitter.emit(tw, root.firstSentenceTags(), context);
-	tw.copyToSplit(root);
-	// second split is full contents of overview tags.
-	TagEmitter.emit(tw, root.tags(), context);
 	tw.copyRemainder(root); // done!
     }
     void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
@@ -124,12 +118,6 @@ public class HTMLDoclet extends Doclet {
 	     pd);
 	TemplateWriter tw = new TemplateWriter
 	    ("package-summary.html"/*resource*/, hu, context);
-	tw.copyToSplit(root);
-	// first split is first sentence of package tags.
-	TagEmitter.emit(tw, pd.firstSentenceTags(), context);
-	tw.copyToSplit(root);
-	// second split is full contents of package tags.
-	TagEmitter.emit(tw, pd.tags(), context);
 	tw.copyRemainder(root); // done!
     }
     void makePackageTree(RootDoc root, HTMLUtil hu, PackageDoc pd) {
@@ -144,9 +132,6 @@ public class HTMLDoclet extends Doclet {
 	     cd.containingPackage(), cd);
 	TemplateWriter tw = new TemplateWriter
 	    ("class-page.html"/*resource*/, hu, context);
-	tw.copyToSplit(root);
-	// first split is full contents of class tags.
-	TagEmitter.emit(tw, cd.tags(), context);
 	tw.copyRemainder(root); // done!
     }
 

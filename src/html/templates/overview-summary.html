@@ -40,11 +40,14 @@
     <p class="clear"><!--empty--></p>
    </div>
    <h1>@DOCTITLE@</h1>
-   <p>
-   @SPLIT@
-   </p>
 @IF_TAGS@
-   <dl class="seetag"><dt>See:</dt><dd><a href="#overview_description" class="seetag">Description</a></dd></dl>
+   <p>
+   @TAG_SUMMARY@
+   </p>
+   <p class="tag tag_see">
+     <span class="tagName">See:</span>
+     <span class="tagContents"><a href="#overview_description" class="seetag">Description</a></span>
+   </p>
 @END@
    <table class="package_summary linklist">
      <tr><th colspan="2">Java 2 Platform Packages</th></tr>
@@ -57,14 +60,14 @@
      <tr><td><a href="java/applet/package-summary.html" class="packageRef">java.applet</a></td><td>Provides the classes...</td></tr>
    </table>
 
-   <div class="description">
 @IF_TAGS@
+   <div class="description">
    <h2><a name="overview_description" id="overview_description">
    Description:
    </a></h2>
-@END@
-   @SPLIT@
+   @TAGS@
    </div>
+@END@
    <div class="navbar">
     <p class="nav navtop">
       <span class="over selected">Overview</span>

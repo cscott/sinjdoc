@@ -39,11 +39,14 @@
     <p class="clear"><!--empty--></p>
    </div>
    <h1>Package @PKGNAME@</h1>
-   <p>
-   @SPLIT@
-   </p>
 @IF_TAGS@
-   <dl class="seetag"><dt>See:</dt><dd><a href="#package_description" class="seetag">Description</a></dd></dl>
+   <p>
+   @TAG_SUMMARY@
+   </p>
+   <p class="tag tag_see">
+     <span class="tagName">See:</span>
+     <span class="tagContents"><a href="#package_description" class="seetag">Description</a></span>
+   </p>
 @END@
    <table class="interface_summary linklist">
      <tr><th colspan="2">Interface Summary</th></tr>
@@ -69,9 +72,9 @@
    <h2><a name="package_description" id="package_description">
    Package @PKGNAME@ Description:
    </a></h2>
-@END@
-   @SPLIT@
+   @TAGS@
    </div>
+@END@
    <div class="navbar">
     <p class="nav navtop">
       <span class="over"><a href="@ROOT@overview-summary.html">Overview</a></span>
