@@ -47,10 +47,12 @@ class HTMLUtil {
 	sb.append(".html");
 	return sb.toString();
     }
-    /** Construct the URL for the package-summary page for the given
-     *  package. */
-    public static String toURL(PackageDoc p) {
-	return toBaseURL(p)+"package-summary.html";
+    /** Construct the URL for the package-summary page for the given package.
+     *  The pageName parameter should be one of "package-summary.html",
+     *  "package-frame.html", or "package-tree.html". */
+    public static String toURL(PackageDoc p, String pageName) {
+	assert Pattern.matches("package-(summary|frame|tree)\\.html",pageName);
+	return toBaseURL(p)+pageName;
     }
     /** Construct the URL representing the *directory* information
      *  regarding the specified package (including pages for classes
@@ -65,9 +67,8 @@ class HTMLUtil {
      *  "package-frame.html", or "package-tree.html". */
     public static String toLink(URLContext context, PackageDoc p,
 				String pageName) {
-	assert Pattern.matches("package-(summary|frame|tree)\\.html",pageName);
 	StringBuffer sb = new StringBuffer("<a href=\"");
-	sb.append(context.makeRelative(toBaseURL(p)+pageName));
+	sb.append(context.makeRelative(toURL(p, pageName)));
 	sb.append("\" class=\"packageRef\">");
 	if (p.name().length()==0)
 	    sb.append("&lt;unnamed package&gt;");

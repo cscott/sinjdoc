@@ -58,7 +58,8 @@ public class HTMLDoclet extends Doclet {
 				   (root.specifiedClasses(),
 				    new DocComparator<ClassDoc>()));
 	else if (numPackages==1 && root.specifiedClasses().size()==0)
-	    mainURL=HTMLUtil.toURL(root.specifiedPackages().get(0));
+	    mainURL=HTMLUtil.toURL(root.specifiedPackages().get(0),
+				   "package-summary.html");
 	else
 	    mainURL=null;
 
@@ -78,14 +79,9 @@ public class HTMLDoclet extends Doclet {
 	// done!
     }
     void makeOverviewFrame(RootDoc root, HTMLUtil hu) {
-	// first collect all referenced packages.
-	Map<String,PackageDoc> pkgMap = new HashMap<String,PackageDoc>();
-	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
-	    PackageDoc pd = it.next().containingPackage();
-	    pkgMap.put(pd.name(), pd);
-	}
-	// now sort them.
-	List<PackageDoc> pkgList = new ArrayList<PackageDoc>(pkgMap.values());
+	// sort all referenced packages.
+	List<PackageDoc> pkgList = new ArrayList<PackageDoc>
+	    (allDocumentedPackages(root));
 	Collections.sort(pkgList, new DocComparator<PackageDoc>());
 	// okay, emit the overview-frame header:
 	TemplateContext context = new TemplateContext
@@ -98,8 +94,10 @@ public class HTMLDoclet extends Doclet {
 				 "package-frame.html"));
 	// emit the footer.
 	tw.copyRemainder(root);
-	// XXX now emit package-frame, package-tree, and package-summary
-	//     for these packages.
+	// now emit package-frame.html for these packages.
+	//  (not referenced except by this file)
+	for (Iterator<PackageDoc> it=pkgList.iterator(); it.hasNext(); )
+	    makePackageFrame(root, hu, it.next());
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
 	// XXX do me.
@@ -118,6 +116,29 @@ public class HTMLDoclet extends Doclet {
 	    tw.println(hu.toLink(context.curURL, it.next(), true));
 	tw.copyRemainder(root);
     }
+    void makePackageFrame(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	// xxx do me.
+    }
+    void makePackageSummary(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	// xxx do me.
+    }
+    void makePackageTree(RootDoc root, HTMLUtil hu, PackageDoc pd) {
+	// xxx do me.
+    }
+    void makeClassPage(RootDoc root, HTMLUtil hu, ClassDoc cd) {
+	// xxx do me.
+    }
+
+    private static List<PackageDoc> allDocumentedPackages(RootDoc root) {
+	// first collect all referenced packages.
+	Map<String,PackageDoc> pkgMap = new LinkedHashMap<String,PackageDoc>();
+	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
+	    PackageDoc pd = it.next().containingPackage();
+	    pkgMap.put(pd.name(), pd);
+	}
+	Collection<PackageDoc> c = pkgMap.values();
+	return Arrays.asList(c.toArray(new PackageDoc[c.size()]));
+    }
 
     public boolean start(RootDoc root) {
 	// parse options.
@@ -131,10 +152,30 @@ public class HTMLDoclet extends Doclet {
 	// list all documented classes.
 	makeAllClassesFrame(root, hu);
 	// create main index page
-	// for each package listed...
-	//   create package page.
-	//   for each class in the package...
-	//      create class page.
+	// for each package to be documented...
+	for (Iterator<PackageDoc> it=allDocumentedPackages(root).iterator();
+	     it.hasNext(); ) {
+	    PackageDoc pd = it.next();
+	    // create package pages.
+	    makePackageSummary(root, hu, pd);
+	    makePackageTree(root, hu, pd);
+	    // XXX copy doc-files.
+	}
+	// for each class to be documented...
+	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ){
+	    ClassDoc cd = it.next();
+	    // create class page.
+	    makeClassPage(root, hu, cd);
+	}
+	// XXX create overview-tree.html
+	// XXX create class-use
+	// XXX create package-list
+	// XXX create index pages
+	// XXX create help-doc.html
+	// XXX create deprecated-list.html
+	// XXX create constant-values.html
+	// XXX create serialized-form.html
+	// XXX create annotated source code.
 	return true; /* do nothing */
     }
 
