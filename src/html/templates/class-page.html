@@ -71,8 +71,15 @@
    <p class="declaration">@MODIFIERS@
    @IF_INTERFACE@ interface @END@ @IFNOT_INTERFACE@ class @END@
    <span class="className">@CLASSSHORTNAME@@TYPEPARAMS_DECL@</span>
-   @IFNOT_INTERFACE@<span class="extends">extends @SUPERCLASS@</span>@END@
-   <span class="implements">implements <a href="List.html">List</a></span>
+   @IF_INTERFACE@@IF_SUPERINTERFACES@
+      <span class="extends">extends @SUPERINTERFACES@</span>
+   @END@@END@
+   @IFNOT_INTERFACE@
+      <span class="extends">extends @SUPERCLASS@</span>
+      @IF_SUPERINTERFACES@
+        <span class="implements">implements @SUPERINTERFACES@</span>
+      @END@
+   @END@
    </p>
 
    <div class="description">

@@ -421,6 +421,16 @@ class TemplateWriter extends PrintWriter  {
 					     context.curClass.superclass()));
 		}
 	    });
+	register("SUPERINTERFACES", new TemplateAction() {
+		void process(TemplateWriter tw, TemplateContext context) {
+		    assert context.curClass!=null;
+		    for (Iterator<Type> it=context.curClass.interfaces()
+			     .iterator(); it.hasNext(); ) {
+			tw.write(HTMLUtil.toLink(context.curURL, it.next()));
+			if (it.hasNext()) tw.write(", ");
+		    }
+		}
+	    });
 	register("MODIFIER_SUMMARY", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curMember!=null || context.curClass!=null;
@@ -577,6 +587,13 @@ class TemplateWriter extends PrintWriter  {
 				       boolean isFirst, boolean isLast) {
 		    assert c.curClass!=null;
 		    return c.curClass.isInterface();
+		}
+	    });
+	registerConditional("SUPERINTERFACES", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    assert c.curClass!=null;
+		    return c.curClass.interfaces().size() > 0;
 		}
 	    });
 	// iterator over all package groups
