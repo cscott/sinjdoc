@@ -36,14 +36,14 @@
    <p class="nav navbot">
       <span class="summary">Summary:
        <span class="nested">Nested</span>
-       <span class="field">Field</span>
-       <span class="constr">Constr</span>
-       <span class="method">Method</span>
+       <span class="field">@IF_FIELDS@<a href="#field_summary">@END@Field@IF_FIELDS@</a>@END@</span>
+       <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_summary">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
+       <span class="method">@IF_METHODS@<a href="#method_summary">@END@Method@IF_METHODS@</a>@END@</span>
       </span>
       <span class="detail">Detail:
-       <span class="field">Field</span>
-       <span class="constr">Constr</span>
-       <span class="method">Method</span>
+       <span class="field">@IF_FIELDS@<a href="#field_detail">@END@Field@IF_FIELDS@</a>@END@</span>
+       <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_detail">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
+       <span class="method">@IF_METHODS@<a href="#method_detail">@END@Method@IF_METHODS@</a>@END@</span>
       </span>
    </p>
     <div class="navtitle">
@@ -103,7 +103,7 @@
 @FORALL_FIELDS@
 @IF_FIRST@
    <table class="field_summary summary">
-     <tr><th colspan="2">Field Summary</th></tr>
+     <tr><th colspan="2"><a name="field_summary" id="field_summary">Field Summary</a></th></tr>
 @END@
      <tr><td>@MODIFIER_SUMMARY@ @FIELD_TYPE@</td><td><span class="memberName">@MEMBER_NAME_LINK@</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
 @IF_LAST@
@@ -113,7 +113,7 @@
 @FORALL_CONSTRUCTORS@
 @IF_FIRST@
    <table class="constructor_summary summary">
-     <tr><th colspan="2">Constructor Summary</th></tr>
+     <tr><th colspan="2"><a name="constructor_summary" id="constructor_summary">Constructor Summary</a></th></tr>
 @END@
      <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
 @IF_LAST@
@@ -123,7 +123,7 @@
 @FORALL_METHODS@
 @IF_FIRST@
    <table class="constructor_summary summary">
-     <tr><th colspan="2">Method Summary</th></tr>
+     <tr><th colspan="2"><a name="method_summary" id="method_summary">Method Summary</a></th></tr>
 @END@
      <tr><td>@MODIFIER_SUMMARY@ @TYPEPARAMS@ @METHOD_RETURN_TYPE@</td><td><span class="memberName">@MEMBER_NAME_LINK@(@METHOD_PARAMS@)</span><div class="memberDescription">@TAG_SUMMARY@</div></td></tr>
 @IF_LAST@
@@ -154,7 +154,7 @@
 
 @FORALL_FIELDS@
 @IF_FIRST@
-   <h2>Field Detail</h2>
+   <h2><a name="field_detail" id="field_detail">Field Detail</a></h2>
 @END@
    <h3><a name="@MEMBER_NAME@" id="@MEMBER_NAME@">@MEMBER_NAME@</a></h3>
    <div class="memberName">@MODIFIERS@ @FIELD_TYPE@ @MEMBER_NAME@</div>
@@ -163,7 +163,7 @@
 
 @FORALL_CONSTRUCTORS@
 @IF_FIRST@
-   <h2>Constructor Detail</h2>
+   <h2><a name="constructor_detail" id="constructor_detail">Constructor Detail</a></h2>
 @END@
    <h3><a name="@MEMBER_NAME@@METHOD_SIGNATURE@" id="@MEMBER_NAME@@METHOD_SIGNATURE@">@MEMBER_NAME@</a></h3>
    <div class="memberName">@MODIFIERS@ @TYPEPARAMS_DECL@ @MEMBER_NAME@(@METHOD_PARAMS@)</div>
@@ -172,7 +172,7 @@
 
 @FORALL_METHODS@
 @IF_FIRST@
-   <h2>Method Detail</h2>
+   <h2><a name="method_detail" id="method_detail">Method Detail</a></h2>
 @END@
    <h3><a name="@MEMBER_NAME@@METHOD_SIGNATURE@" id="@MEMBER_NAME@@METHOD_SIGNATURE@">@MEMBER_NAME@</a></h3>
    <div class="memberName">@MODIFIERS@ @TYPEPARAMS_DECL@ @METHOD_RETURN_TYPE@ @MEMBER_NAME@(@METHOD_PARAMS@)</div>
@@ -204,14 +204,14 @@
    <p class="nav navbot">
       <span class="summary">Summary:
        <span class="nested">Nested</span>
-       <span class="field">Field</span>
-       <span class="constr">Constr</span>
-       <span class="method">Method</span>
+       <span class="field">@IF_FIELDS@<a href="#field_summary">@END@Field@IF_FIELDS@</a>@END@</span>
+       <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_summary">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
+       <span class="method">@IF_METHODS@<a href="#method_summary">@END@Method@IF_METHODS@</a>@END@</span>
       </span>
       <span class="detail">Detail:
-       <span class="field">Field</span>
-       <span class="constr">Constr</span>
-       <span class="method">Method</span>
+       <span class="field">@IF_FIELDS@<a href="#field_detail">@END@Field@IF_FIELDS@</a>@END@</span>
+       <span class="constr">@IF_CONSTRUCTORS@<a href="#constructor_detail">@END@Constr@IF_CONSTRUCTORS@</a>@END@</span>
+       <span class="method">@IF_METHODS@<a href="#method_detail">@END@Method@IF_METHODS@</a>@END@</span>
       </span>
    </p>
     <div class="navtitle">
