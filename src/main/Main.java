@@ -73,10 +73,10 @@ public class Main {
 			      final PrintWriter noticeWriter,
 			      String defaultDocletClassName,
 			      String[] args) {
+	RunData runData = new RunData(programName,
+				      errWriter, warnWriter, noticeWriter,
+				      defaultDocletClassName);
 	try {
-	    RunData runData = new RunData(programName,
-					  errWriter, warnWriter, noticeWriter,
-					  defaultDocletClassName);
 	    List<String> nonOptionArgs = new ArrayList<String>();
 	    List<List<String>> docletOptions = new ArrayList<List<String>>();
 	    
@@ -195,7 +195,11 @@ public class Main {
 		runData.parseControl.setPackages(packages);
 		PRootDoc rootDoc = runData.parseControl.parse();
 		if (rootDoc!=null) rootDoc.setOptions(docletOptions);
-		success = doclet.start(rootDoc);
+		// start the doclet! (if we haven't seen any errors yet)
+		if (runData.reporter.errNum==0) {
+		    runData.reporter.flush(); // show all pre-doclet messages
+		    success = doclet.start(rootDoc);
+		}
 	    }
 	    // okay, report on errors and warnings.
 	    if (runData.reporter.errNum>0)
@@ -211,14 +215,11 @@ public class Main {
 	    return (success&&runData.reporter.errNum==0)?0:1;
 	} catch (Throwable t) {
 	    // if anything escapes, return w/ an error code.
-	    noticeWriter.flush(); // make sure order is correct by flushing
-	    warnWriter.flush(); // other streams.
+	    runData.reporter.flush(); // make sure order of output is correct.
 	    t.printStackTrace(errWriter);
 	    return 1;
 	} finally {
-	    noticeWriter.flush();
-	    warnWriter.flush();
-	    errWriter.flush();
+	    runData.reporter.flush(); // print all messages.
 	}
     }
 
@@ -504,6 +505,11 @@ public class Main {
 	private void print(PrintWriter pw, SourcePosition pos, String msg) {
 	    // XXX do something with pos.
 	    pw.println(msg);
+	}
+	void flush() {
+	    noticeWriter.flush();
+	    warnWriter.flush();
+	    errWriter.flush();
 	}
 	Reporter(PrintWriter errWriter, PrintWriter warnWriter,
 		 PrintWriter noticeWriter) {
