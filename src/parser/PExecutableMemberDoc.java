@@ -10,6 +10,8 @@ import net.cscott.gjdoc.ThrowsTag;
 import net.cscott.gjdoc.Type;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 /**
  * The <code>PExecutableMemberDoc</code> class represents a method or
@@ -20,13 +22,18 @@ import java.util.List;
  */
 abstract class PExecutableMemberDoc extends PMemberDoc 
     implements net.cscott.gjdoc.ExecutableMemberDoc {
-    final String name;
+    final List<MethodTypeVariable> typeParameters =
+	new ArrayList<MethodTypeVariable>(2);
     PExecutableMemberDoc(ParseControl pc, PClassDoc containingClass,
-			 int modifiers, String name, PSourcePosition position){
-	super(pc, containingClass, modifiers, position);
-	this.name = name;
+			 int modifiers, String name, PSourcePosition position,
+			 String commentText, PSourcePosition commentPosition,
+			 TypeContext commentContext) {
+	super(pc, containingClass, modifiers, name, position,
+	      commentText, commentPosition, commentContext);
     }
-    public abstract List<MethodTypeVariable> typeParameters();
+    public List<MethodTypeVariable> typeParameters() {
+	return Collections.unmodifiableList(typeParameters);
+    }
     public final boolean isNative() {
 	return Modifier.isNative(modifierSpecifier());
     }
@@ -38,6 +45,9 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     public abstract String signature();
     public abstract List<Type> thrownExceptions();
     public abstract List<ThrowsTag> throwsTags();
+    public String qualifiedName() {
+	return containingClass().qualifiedName()+"."+name()+signature();
+    }
     // methods abstract in PDoc
     public String name() { return name; }
 }

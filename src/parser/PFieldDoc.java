@@ -7,6 +7,7 @@ import net.cscott.gjdoc.SerialFieldTag;
 import net.cscott.gjdoc.Type;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 /**
  * The <code>PFieldDoc</code> class represents a field in a java class.
@@ -14,28 +15,41 @@ import java.util.List;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PFieldDoc extends PMemberDoc
+class PFieldDoc extends PMemberDoc
     implements net.cscott.gjdoc.FieldDoc {
     final Type type;
-    final String name;
+
     PFieldDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
-	      Type type, String name, PSourcePosition position) {
-	super(pc, containingClass, modifiers, position);
+	      Type type, String name, PSourcePosition position,
+	      String commentText, PSourcePosition commentPosition,
+	      TypeContext commentContext) {
+	super(pc, containingClass, modifiers, name, position,
+	      commentText, commentPosition, commentContext);
 	this.type = type;
-	this.name = name;
     }
-    public abstract Object constantValue();
-    public abstract String constantValueExpression();
+    public Object constantValue() {
+	// XXX unimplemented.
+	return null;
+    }
+    public String constantValueExpression() {
+	// XXX unimplemented
+	return null;
+    }
     public final boolean isTransient() {
 	return Modifier.isTransient(modifierSpecifier());
     }
     public final boolean isVolatile() {
 	return Modifier.isVolatile(modifierSpecifier());
     }
-    public abstract List<SerialFieldTag> serialFieldTags();
+    public List<SerialFieldTag> serialFieldTags() {
+	// XXX unimplemented
+	return Arrays.asList(new SerialFieldTag[0]);
+    }
     public Type type() { return type; }
-    // methods abstract in PDoc
-    public String name() { return name; }
+    // methods abstract in PProgramElementDoc
+    public String qualifiedName() {
+	return containingClass().qualifiedName()+"."+name();
+    }
     // override methods from PDoc
     public boolean isField() { return true; }
 }

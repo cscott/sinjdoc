@@ -17,8 +17,11 @@ import java.lang.reflect.Modifier;
 abstract class PMethodDoc extends PExecutableMemberDoc
     implements net.cscott.gjdoc.MethodDoc {
     PMethodDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
-	       String name, PSourcePosition position) {
-	super(pc, containingClass, modifiers, name, position);
+	       String name, PSourcePosition position,
+	       String commentText, PSourcePosition commentPosition,
+	       TypeContext commentContext) {
+	super(pc, containingClass, modifiers, name, position,
+	      commentText, commentPosition, commentContext);
     }
     public final boolean isAbstract() {
 	return Modifier.isAbstract(modifierSpecifier());

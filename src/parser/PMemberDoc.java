@@ -16,11 +16,28 @@ import java.lang.reflect.Modifier;
  */
 abstract class PMemberDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.MemberDoc {
+    final String name;
+    final String commentText;
+    final PSourcePosition commentPosition;
+    final TypeContext commentContext;
+
     boolean isSynthetic = false;
+
     PMemberDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
-	       PSourcePosition position) {
+	       String name, PSourcePosition position,
+	       String commentText, PSourcePosition commentPosition,
+	       TypeContext commentContext) {
 	super(pc, containingClass.containingPackage(), containingClass,
 	      modifiers, position);
+	this.name = name;
+	this.commentText = commentText;
+	this.commentPosition = commentPosition;
+	this.commentContext = commentContext;
     }
     public boolean isSynthetic() { return isSynthetic; }
+    // methods abstract in PDoc
+    public String name() { return name; }
+    public String getRawCommentText() { return commentText; }
+    public PSourcePosition getRawCommentPosition() { return commentPosition; }
+    public TypeContext getCommentContext() { return commentContext; }
 }
