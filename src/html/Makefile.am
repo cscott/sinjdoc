@@ -9,6 +9,7 @@ CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
 HTMLDoclet.java \
+URLContext.java \
 Version.java
 
 # automake 1.6.3 is broken: it doesn't actually include java sources
