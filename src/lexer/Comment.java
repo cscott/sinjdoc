@@ -5,7 +5,12 @@ abstract class Comment extends InputElement {
 
   String getComment() { return comment.toString(); }
 
-  void appendLine(String more) { // 'more' is '\n' terminated.
+  void appendLine(String more) {
+      comment.append(more);
+  }
+  // CSA tweak: for our purposes here we want the full comment with
+  // leading white space and stars and everything.
+  void appendLineNoStars(String more) { // 'more' is '\n' terminated.
     int i=0;
 
     // skip leading white space.

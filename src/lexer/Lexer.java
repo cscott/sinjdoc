@@ -110,9 +110,11 @@ public class Lexer {
     return !(ie instanceof EOF);
   }
 
-  String comment=""; int comment_start=0;
+  String comment=""; int comment_start=-2;
   public String lastComment() { return comment; }
-  public int lastCommentPos() { return comment_start; }
+  // adjust reported comment position because comment string omits the leading
+  // "/*" characters.
+  public int lastCommentPos() { return comment_start+2; }
   public void clearComment() { comment=""; }
   
   InputElement getInputElement() throws java.io.IOException {
