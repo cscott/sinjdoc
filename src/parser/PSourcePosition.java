@@ -14,27 +14,42 @@ import java.io.File;
  */
 class PSourcePosition
     implements net.cscott.gjdoc.SourcePosition {
-    final File file; final int line; final int column;
-    PSourcePosition(File file, int line, int column) {
-	this.file = file; this.line = line; this.column = column;
+    // Represent source position as a File and a raw character index.
+    // calls to the interface accessors lazily convert the index to a
+    // line and column number.
+    final PFile pfile; final int charIndex;
+    PSourcePosition(PFile pfile, int charIndex) {
+	this.pfile = pfile; this.charIndex = charIndex;
+	assert charIndex >= 0;
     }
-    /** The source file.  Returns null if no file information is available. */
-    public File file() { return file; }
-    /** The line in the source file.  The first line is numbered 1; 0 means
-     *  no line number information is available. */
-    public int line() { return line; }
-    /** The column in the source file.  The first column is numbered 1; 0 means
-     *  no column information is available.  Columns count characters in the
-     *  input stream; a tab advances the column number to the next 8-column
-     *  tab stop. */
-    public int column() { return column; }
+    public File file() { return pfile.file; }
+    public int line() { return sp().line(); }
+    public int column() { return sp().column(); }
+    /** mathematical operations. */
+    PSourcePosition add(int i) {
+	return new PSourcePosition(pfile, charIndex+i);
+    }
+    PSourcePosition subtract(int i) {
+	return new PSourcePosition(pfile, charIndex-i);
+    }
+
     /** Convert the source position to the form "Filename:line".
      */
     public final String toString() {
 	String filename = file()!=null?file().getPath():"<unknown>";
 	return filename+":"+line();
     }
-
+    // lookup line and column and cache.
+    private transient net.cscott.gjdoc.SourcePosition sp=null;
+    private net.cscott.gjdoc.SourcePosition sp() {
+	if (sp==null) sp=pfile.convert(charIndex);
+	assert sp!=null;
+	return sp;
+    }
     public static final net.cscott.gjdoc.SourcePosition NO_INFO =
-	new PSourcePosition(null, 0, 0);
+	new net.cscott.gjdoc.SourcePosition() {
+	    public File file() { return null; }
+	    public int line() { return 0; }
+	    public int column() { return 0; }
+	};
 }
