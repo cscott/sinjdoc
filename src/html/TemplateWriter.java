@@ -89,13 +89,15 @@ class TemplateWriter extends PrintWriter  {
     }
     /** Copy all remaining text from the template and close the files. */
     void copyRemainder() throws IOException {
+	boolean failure=true;
 	try {
 	    while (copyToSplit())
 		/* repeat */;
+	    failure=false;
 	} finally {
 	    close();
 	    templateReader.close();
-	    assert contextStack.size()==1 : "unmatched blocks.";
+	    assert failure || contextStack.size()==1;
 	}
     }
     /** Read from the template, performing macro substition, until the
