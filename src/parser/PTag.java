@@ -3,15 +3,18 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 import net.cscott.gjdoc.TagVisitor;
+import net.cscott.gjdoc.Type;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -46,6 +49,52 @@ abstract class PTag
 	if (isInline()) sb.append("}");
 	return sb.toString();
     }
+
+    // utility functions.
+    static Type parseParameterizedType(TypeContext tagContext, String typeName,
+				       PSourcePosition pos)
+	throws TagParseException {
+	Stack<List<Type>> typeStack = new Stack<List<Type>>();
+	typeStack.push(new ArrayList<Type>(2));
+	Matcher matcher = PIECE.matcher(typeName);
+	int lastMatch = 0;
+	while (matcher.find()) {
+	    lastMatch=matcher.end();
+	    typeStack.peek().add(tagContext.lookupTypeName(matcher.group(1),
+							   true/*lazy*/));
+	    if ("<".equals(matcher.group(2))) { // start new parameterized type
+		if (!(typeStack.peek().get(typeStack.peek().size()-1)
+		      instanceof ClassType))
+		    throw new TagParseException
+			(pos.add(matcher.start(1)),
+			 "can't parameterize a type variable");
+		typeStack.push(new ArrayList<Type>(2));
+	    } else if (">".equals(matcher.group(2))) {// end parameterized type
+		if (typeStack.size()==1)
+		    throw new TagParseException
+			(pos.add(matcher.start(2)), "unmatched > in type");
+		List<Type> typeArgs = typeStack.pop();
+		int last = typeStack.peek().size()-1;
+		assert last>=0; // regexp doesn't match otherwise
+		ClassType base = (ClassType) typeStack.peek().get(last);
+		Type pt = new PParameterizedType(base,typeArgs);
+		typeStack.peek().set(last, pt);
+	    }
+	}
+	if (lastMatch!=typeName.length())
+	    throw new TagParseException
+		(pos.add(lastMatch), "Trailing garbage");
+	if (typeStack.size()!=1)
+	    throw new TagParseException
+		(pos.add(lastMatch-1), "unmatched < in type");
+	if (typeStack.peek().size()<1)
+	    throw new TagParseException(pos, "no type found");
+	if (typeStack.peek().size()>1)
+	    throw new TagParseException(pos, "too many types found");
+	return typeStack.peek().get(0);
+    }
+    private static final Pattern PIECE=Pattern.compile
+	("\\G\\s*([^<>,]+)\\s*(\\z|[<>,])");
 
     static class Text extends PTag {
 	final String text;

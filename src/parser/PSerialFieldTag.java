@@ -40,8 +40,11 @@ class PSerialFieldTag extends PTag.Trailing
 	// okay, assign to the fields of the object.
 	this.fieldName = pair.left.group(1);
 	this.fieldTypeString = pair.left.group(2);
-	// XXX what if field type is parameterized?
-	this.fieldType = tagContext.lookupTypeName(fieldTypeString,true);
+	// XXX what if field type is array?
+	this.fieldType = parseParameterizedType
+	    (tagContext, fieldTypeString,
+	     ((PSourcePosition)contents.get(0).position()).add
+	     (pair.left.start(2)));
 	this.fieldDescription = pair.right;
     }
     private static final Pattern NAME_AND_TYPE = Pattern.compile
