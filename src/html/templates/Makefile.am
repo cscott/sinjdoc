@@ -4,6 +4,7 @@ JAVAROOT=$(top_builddir)/classes
 TEMPLATE_ROOT=$(JAVAROOT)/net/cscott/gjdoc/html/templates
 
 TEMPLATE_FILES = \
+allclasses-frame.html \
 overview-frame.html \
 index-packages.html \
 index-nopackages.html \

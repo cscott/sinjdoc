@@ -12,7 +12,6 @@ import net.cscott.gjdoc.RootDoc;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Pattern;
 /**
  * The <code>HTMLDoclet</code> is the standard doclet for GJDoc.  It
  * generates HTML-format documentation.
@@ -94,7 +93,8 @@ public class HTMLDoclet extends Doclet {
 	tw.copyToSplit(root);
 	// now emit the sorted package list.
 	for (Iterator<PackageDoc> it=pkgList.iterator(); it.hasNext(); )
-	    tw.println(hu.toLink(it.next(), "package-frame.html"));
+	    tw.println(hu.toLink(context.curURL, it.next(),
+				 "package-frame.html"));
 	// emit the footer.
 	tw.copyRemainder(root);
 	// XXX now emit package-frame, package-tree, and package-summary
@@ -102,6 +102,20 @@ public class HTMLDoclet extends Doclet {
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
 	// XXX do me.
+    }
+    void makeAllClassesFrame(RootDoc root, HTMLUtil hu) {
+	// create sorted list of all documented classes.
+	List<ClassDoc> clsList = new ArrayList<ClassDoc>(root.classes());
+	Collections.sort((List)clsList);
+	// now emit!
+	TemplateContext context = new TemplateContext
+	    (root, options, new URLContext("allclasses-frame.html"),null,null);
+	TemplateWriter tw = new TemplateWriter
+	    ("allclasses-frame.html", hu, context);
+	tw.copyToSplit(root);
+	for (Iterator<ClassDoc> it=clsList.iterator(); it.hasNext(); )
+	    tw.println(hu.toLink(context.curURL, it.next(), true));
+	tw.copyRemainder(root);
     }
 
     public boolean start(RootDoc root) {
@@ -113,6 +127,8 @@ public class HTMLDoclet extends Doclet {
 	makeStylesheet(root, hu);
 	// top-level index.
 	makeTopIndex(root, hu);
+	// list all documented classes.
+	makeAllClassesFrame(root, hu);
 	// create main index page
 	// for each package listed...
 	//   create package page.

@@ -63,11 +63,11 @@ class HTMLUtil {
     /** Return a link to the specified package-related page in the package.
      *  The pageName parameter should be one of "package-summary.html",
      *  "package-frame.html", or "package-tree.html". */
-    public static String toLink(PackageDoc p, String pageName) {
+    public static String toLink(URLContext context, PackageDoc p,
+				String pageName) {
 	assert Pattern.matches("package-(summary|frame|tree)\\.html",pageName);
 	StringBuffer sb = new StringBuffer("<a href=\"");
-	sb.append(toBaseURL(p));
-	sb.append(pageName);
+	sb.append(context.makeRelative(toBaseURL(p)+pageName));
 	sb.append("\" class=\"packageRef\">");
 	if (p.name().length()==0)
 	    sb.append("&lt;unnamed package&gt;");
@@ -76,9 +76,10 @@ class HTMLUtil {
 	sb.append("</a>");
 	return sb.toString();
     }
-    public static String toLink(ClassDoc c, boolean withParam) {
+    public static String toLink(URLContext context, ClassDoc c,
+				boolean withParam) {
 	StringBuffer sb = new StringBuffer("<a href=\"");
-	sb.append(toURL(c));
+	sb.append(context.makeRelative(toURL(c)));
 	sb.append("\" class=\"");
 	if (c.isInterface()) sb.append("interfaceRef");
 	else if (c.isError()) sb.append("errorRef");
