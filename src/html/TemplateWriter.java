@@ -7,6 +7,7 @@ import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.Tag;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
 
 import java.io.*;
@@ -364,6 +365,20 @@ class TemplateWriter extends PrintWriter  {
 		boolean isBlockEmitted(TemplateContext c,
 				       boolean isFirst, boolean isLast) {
 		    return isLast;
+		}
+	    });
+	registerConditional("TAGS", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    List<Tag> lt;
+		    if (c.curMember!=null) lt=c.curMember.tags();
+		    else if (c.curClass!=null) lt=c.curClass.tags();
+		    else if (c.curPackage!=null) lt=c.curPackage.tags();
+		    else lt = c.root.tags();
+		    return lt.size()>1 ||
+			(lt.size()==1 && 
+			 !(lt.get(0).isText() &&
+			   lt.get(0).text().trim().length()==0));
 		}
 	    });
 	// iterator over all packages with documented classes

@@ -39,8 +39,9 @@
    <p>
    @SPLIT@
    </p>
+@IF_TAGS@
    <dl class="seetag"><dt>See:</dt><dd><a href="#overview_description" class="seetag">Description</a></dd></dl>
-
+@END@
    <table>
      <tr><th colspan="2">Java 2 Platform Packages</th></tr>
      <tr><td><a href="java/applet/package-summary.html" class="packageRef bold">java.applet</a></td><td>Provides the classes...</td></tr>
@@ -53,9 +54,11 @@
    </table>
 
    <div class="description">
+@IF_TAGS@
    <h2><a name="overview_description" id="overview_description">
    Description:
    </a></h2>
+@END@
    @SPLIT@
    </div>
    <div class="navbar">
