@@ -20,17 +20,17 @@ import java.util.List;
  * @version $Id$
  */
 abstract class PClassType implements ClassType {
-    final PRootDoc rootDoc;
+    final ParseControl pc;
     final List<ClassTypeVariable> typeParameters;
-    PClassType(PRootDoc rootDoc, List<ClassTypeVariable> typeParameters) {
-	this.rootDoc = rootDoc;
+    PClassType(ParseControl pc, List<ClassTypeVariable> typeParameters) {
+	this.pc = pc;
 	this.typeParameters = typeParameters;
     }
     public List<ClassTypeVariable> typeParameters() {
 	return Collections.unmodifiableList(typeParameters);
     }
     public final ClassDoc asClassDoc() {
-	return rootDoc.classNamed(qualifiedTypeName());
+	return pc.rootDoc.classNamed(qualifiedTypeName());
     }
     public final String toString() {
 	return typeName();

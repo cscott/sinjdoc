@@ -26,7 +26,7 @@ class PLazyClassType extends PClassType {
     String typeName;
     PLazyClassType(TypeContext typeContext, String typeName,
 		   List<ClassTypeVariable> typeParameters) {
-	super(typeContext.rootDoc, typeParameters);
+	super(typeContext.pc, typeParameters);
 	this.cache = null;
 	this.typeContext = typeContext;
 	this.typeName = typeName;

@@ -30,11 +30,16 @@ import java.util.regex.Pattern;
  */
 abstract class PDoc implements net.cscott.gjdoc.Doc {
     final ParseControl pc;
-    PDoc(ParseControl pc) { this.pc = pc; }
+    PDoc(ParseControl pc) {
+	this.pc = pc;
+    }
     public abstract String getRawCommentText();
     /** Return a <code>PSourcePosition</code> object corresponding to the
      *  position of the raw comment text. */
     public abstract PSourcePosition getRawCommentPosition();
+    /** Return a <code>TypeContext</code> that should be used for @see
+     *  tags on this doc item. */
+    public abstract TypeContext getCommentContext();
     /** Return true if leading stars should be stripped from the raw
      *  comment text for this doc item.
      * @return true

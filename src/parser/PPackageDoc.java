@@ -30,6 +30,7 @@ class PPackageDoc extends PDoc
     final boolean isIncluded;
     final String packageText;
     final PSourcePosition packagePosition;
+    final TypeContext packageContext;
     PPackageDoc(ParseControl pc, String packageName, boolean isIncluded) {
 	super(pc);
 	this.name = packageName;
@@ -41,10 +42,12 @@ class PPackageDoc extends PDoc
 				 pc.reporter, pc.encoding);
 	this.packageText = pair.left;
 	this.packagePosition = pair.right;
+	this.packageContext = new TypeContext(pc, this);
     }
     // methods abstract in PDoc
     public String getRawCommentText() { return packageText; }
     public PSourcePosition getRawCommentPosition() { return packagePosition; }
+    public TypeContext getCommentContext() { return packageContext; }
     public boolean isIncluded() { return isIncluded; }
     public String name() { return name; }
     // PackageDoc implementation:

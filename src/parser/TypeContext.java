@@ -20,24 +20,28 @@ import java.util.List;
  * @version $Id$
  */
 class TypeContext {
-    final PRootDoc rootDoc;
+    final ParseControl pc;
     final PPackageDoc packageScope;
     final PCompilationUnit compilationUnit;
     final PClassDoc classScope; // class type variables available here.
     final PMethodDoc methodScope; // method type variables available here.
 
-    public TypeContext(PRootDoc rootDoc, PPackageDoc packageScope,
+    public TypeContext(ParseControl pc, PPackageDoc packageScope,
 		       PCompilationUnit compilationUnit, PClassDoc classScope,
 		       PMethodDoc methodScope) {
-	this.rootDoc = rootDoc;
+	this.pc = pc;
 	this.packageScope = packageScope;
 	this.compilationUnit = compilationUnit;
 	this.classScope = classScope;
 	this.methodScope = methodScope;
     }
     /** A "no context" constructor. Appropriate for fully-qualified names. */
-    public TypeContext(PRootDoc rootDoc) {
-	this(rootDoc, null, null, null, null);
+    public TypeContext(ParseControl pc) {
+	this(pc, null, null, null, null);
+    }
+    /** A "package context" constructor.  */
+    public TypeContext(ParseControl pc, PPackageDoc packageScope) {
+	this(pc, packageScope, null, null, null);
     }
 
     // type resolution methods.
@@ -87,7 +91,7 @@ class TypeContext {
 		     .iterator(); it.hasNext(); ) {
 		String qualName = it.next();
 		if (qualName.endsWith(id))
-		    return new TypeContext(rootDoc).lookupTypeName
+		    return new TypeContext(pc).lookupTypeName
 			(qualName, typeParameters);
 	    }
 	    for (Iterator<PClassDoc> it = compilationUnit.classes
@@ -117,14 +121,14 @@ class TypeContext {
 	// 6. Otherwise, undefined; if not error then it could be in
 	//    same package or in an opaque type-import-on-demand.
 	//    we'll just make it opaque.
-	return new PEagerClassType(rootDoc, "<unknown>", id, typeParameters);
+	return new PEagerClassType(pc, "<unknown>", id, typeParameters);
     }
     private Type lookupQualifiedTypeName(String Q, String id,
 					 List<ClassTypeVariable> typeParameters){
 	// recursively determine whether Q is a package or type name.
 	// then determine if 'id' is a type within Q
 	//   1) try package first.
-	PPackageDoc pkg = rootDoc.packageNamed(Q);
+	PPackageDoc pkg = pc.rootDoc.packageNamed(Q);
 	// XXX also try creating an 'unincluded' package for reflection?
 	if (pkg!=null)
 	    for (Iterator<ClassType> it = pkg.allClasses().iterator();
@@ -145,6 +149,6 @@ class TypeContext {
 	//      XXX try this using reflection.
 	// give up; assume is fully qualified.
 	// XXX should add to pkg if pkg!=null?  should create package?
-	return new PEagerClassType(rootDoc, Q, id, typeParameters);
+	return new PEagerClassType(pc, Q, id, typeParameters);
     }
 }// TypeContext

@@ -29,6 +29,7 @@ public class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
     final String overviewText;
     final PSourcePosition overviewPosition;
+    final TypeContext overviewContext;
     private final Map<String,PPackageDoc> packageMap =
 	new HashMap<String,PPackageDoc>();
     private final Map<File,PCompilationUnit> sourceFileMap =
@@ -41,6 +42,7 @@ public class PRootDoc extends PDoc
 	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
 	this.overviewText = pair.left;
 	this.overviewPosition = pair.right;
+	this.overviewContext = new TypeContext(pc);
     }
 
     public List<List<String>> options() { return options; }
@@ -121,6 +123,7 @@ public class PRootDoc extends PDoc
     // inherited from PDoc
     public String getRawCommentText() { return overviewText; }
     public PSourcePosition getRawCommentPosition() { return overviewPosition; }
+    public TypeContext getCommentContext() { return overviewContext; }
     /** @return false */
     public boolean shouldStripStars() { return false; }
     public boolean isIncluded() { return true; }

@@ -15,10 +15,10 @@ import java.util.List;
 public class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.
-    PEagerClassType(PRootDoc rootDoc,
+    PEagerClassType(ParseControl pc,
 		    String packageName, String className,
 		    List<ClassTypeVariable> typeParameters) {
-	super(rootDoc, typeParameters);
+	super(pc, typeParameters);
 	this.packageName = packageName.intern();
 	this.className = className.intern();
     }
