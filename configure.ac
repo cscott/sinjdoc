@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(SinjDoc, 0.5, cscott@cscott.net)
-AC_COPYRIGHT(Copyright (c) 2003 C. Scott Ananian)
+AC_COPYRIGHT(Copyright (c) 2003-2004 C. Scott Ananian)
 AC_REVISION($Revision$)
 AC_CONFIG_SRCDIR(configure.ac) # double check --srcdir validity.
 AC_CONFIG_AUX_DIR(scripts)
@@ -17,7 +17,7 @@ CLS=f$$
 echo "abstract class $CLS extends java.util.AbstractList<Integer> { }" \
      > /tmp/$CLS.java
 for jc in jikes javac ${JCC} ${JSR14DISTR:+$JSR14DISTR/scripts/javac} \
-          ${HOME}/{,jsr14_}adding_generics-2_2-ea/scripts/javac ; do
+          ${HOME}/jsr14-ea-2_4a1/scripts/javac ; do
     if $jc -d /tmp -source 1.5 /tmp/$CLS.java 1>/dev/null 2>/dev/null; then
       JAVAC="$jc"
       break
