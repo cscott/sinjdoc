@@ -185,8 +185,7 @@ public class FileUtil {
 	}
 	StringBuffer sb=new StringBuffer();
 	try {
-	    Reader reader = (encoding==null) ? new FileReader(f) :
-		new InputStreamReader(new FileInputStream(f), encoding);
+	    Reader reader = fileReader(f, encoding, reporter);
 	    char[] buf=new char[8192];
 	    int len;
 	    while (-1!=(len=reader.read(buf)))
@@ -197,5 +196,16 @@ public class FileUtil {
 	}
 	return new Pair<String,PSourcePosition>
 	    (sb.toString(), new PSourcePosition(f, 0));
+    }
+    static Reader fileReader(File f, String encoding,
+			     DocErrorReporter reporter)
+	throws java.io.FileNotFoundException {
+	if (encoding!=null) try {
+	    return new InputStreamReader(new FileInputStream(f), encoding);
+	} catch (java.io.UnsupportedEncodingException e) {
+	    reporter.printWarning("Encoding "+encoding+" is not supported; "+
+				  "using default.");
+	}
+	return new FileReader(f);
     }
 }// FileUtil

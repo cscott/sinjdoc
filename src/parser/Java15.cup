@@ -37,7 +37,9 @@ parser code  {:
       this.compilationUnit = new PCompilationUnit(file);
       this.rootDoc = rootDoc;
       this.lexer = new Lexer
-	  (new BufferedReader(new FileReader(file)), rootDoc.pc.sourceVersion);
+	  (new BufferedReader(FileUtil.fileReader
+                              (file, rootDoc.pc.encoding, rootDoc)),
+           rootDoc.pc.sourceVersion);
       this.expectedPackage = expectedPackage;
   }
 
