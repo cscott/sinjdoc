@@ -53,8 +53,8 @@ public class Main {
      */
     public static int execute(String programName,
 			      String defaultDocletClassName, String[] args) {
-	PrintWriter err = new PrintWriter(System.err);
-	PrintWriter out = new PrintWriter(System.out);
+	PrintWriter err = new PrintWriter(System.err, true);
+	PrintWriter out = new PrintWriter(System.out, true);
 	return execute(programName, err, err, out,
 		       defaultDocletClassName, args);
     }
