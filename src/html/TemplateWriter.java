@@ -5,8 +5,12 @@ package net.cscott.gjdoc.html;
 
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.ClassTypeVariable;
+import net.cscott.gjdoc.ConstructorDoc;
 import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.FieldDoc;
+import net.cscott.gjdoc.MemberDoc;
+import net.cscott.gjdoc.MethodDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.Tag;
 import net.cscott.gjdoc.html.ReplayReader.Mark;
@@ -547,8 +551,57 @@ class TemplateWriter extends PrintWriter  {
 		    };
 		}
 	    });
+	// iterator over included fields of the class.
+	register("FORALL_FIELDS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    assert c.curClass!=null;
+		    return new FilterList<FieldDoc,TemplateContext>
+			(sorted(visible(c.curClass.fields()))) {
+			public TemplateContext filter(FieldDoc fd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       c.curClass, fd);
+			}
+		    };
+		}
+	    });
+	// iterator over included constructors of the class.
+	register("FORALL_CONSTRUCTORS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    assert c.curClass!=null;
+		    return new FilterList<ConstructorDoc,TemplateContext>
+			(sorted(visible(c.curClass.constructors()))) {
+			public TemplateContext filter(ConstructorDoc cd) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       c.curClass, cd);
+			}
+		    };
+		}
+	    });
+	// iterator over included non-constructor methods of the class.
+	register("FORALL_METHODS", new TemplateSimpleForAll() {
+		List<TemplateContext> process(final TemplateContext c) {
+		    assert c.curClass!=null;
+		    return new FilterList<MethodDoc,TemplateContext>
+			(sorted(visible(c.curClass.methods()))) {
+			public TemplateContext filter(MethodDoc md) {
+			    return new TemplateContext(c.root, c.options,
+						       c.curURL, c.curPackage,
+						       c.curClass, md);
+			}
+		    };
+		}
+	    });
     }
 
+    /** Helper function. */
+    private static <D extends MemberDoc> List<D> visible(Collection<D> l) {
+	List<D> result = new ArrayList<D>(l);
+	for (Iterator<D> it=result.iterator(); it.hasNext(); )
+	    if (!it.next().isIncluded()) it.remove();
+	return result;
+    }
     /** Helper function. */
     private static <D extends Doc> List<D> sorted(Collection<D> l) {
 	List<D> result = new ArrayList<D>(l);
