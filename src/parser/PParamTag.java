@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
@@ -16,24 +17,37 @@ import java.util.regex.Pattern;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-class PParamTag extends PTag.Trailing
+class PParamTag extends PTag.Trailing<Pair<String,List<Tag>>>
     implements net.cscott.gjdoc.ParamTag {
-    PParamTag(SourcePosition sp, String name, List<Tag> contents) {
-	super(sp, name, contents);
+    PParamTag(SourcePosition sp, String name, List<Tag> contents,
+	      TypeContext tagContext, DocErrorReporter reporter) {
+	super(sp, name, contents, tagContext, reporter);
 	assert name()=="param";
     }
-    public List<Tag> parameterComment() { return parse().right; }
-    public String parameterName() { return parse().left; }
+    public List<Tag> parameterComment() { return parsed.right; }
+    public String parameterName() { return parsed.left; }
 
-    private Pair<String,List<Tag>> parse() {
+    protected Pair<String,List<Tag>> parse(List<Tag> contents,
+					   TypeContext tagContext,
+					   DocErrorReporter reporter) {
+	Pair<String,List<Tag>> ERROR = new Pair<String,List<Tag>>("",contents);
 	// parameter name should be first word in tag.
-	List<Tag> contents = contents();
-	// xxx how to handle errors?  just throwing exceptions for now.
-	if (contents.size()==0) throw new RuntimeException("bad tag");
+	if (contents.size()==0) {
+	    reporter.printError(position(), "Empty @param tag");
+	    return ERROR;
+	}
 	Tag first = contents.get(0);
-	if (!first.isText()) throw new RuntimeException("bad tag");
+	if (!first.isText()) {
+	    reporter.printError(first.position(), "Parameter name must not "+
+				"be a tag");
+	    return ERROR;
+	}
 	Matcher matcher = NAME.matcher(first.text());
-	if (!matcher.find()) throw new RuntimeException("bad tag");
+	if (!matcher.find()) {
+	    reporter.printError(first.position(), "Can't find parameter "+
+				"name for @param tag");
+	    return ERROR;
+	}
 	String name = matcher.group();
 	List<Tag> nContents = new ArrayList<Tag>(contents.size());
 	if (matcher.end()!=first.text().length())

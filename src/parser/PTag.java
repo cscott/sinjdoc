@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
@@ -50,28 +51,34 @@ abstract class PTag
 	    this.text = text;
 	}
     }
-    static class Trailing extends PTag {
+    private static abstract class NonText<T> extends PTag {
 	final String name;
-	List<Tag> contents;
-	public boolean isTrailing() { return true; }
+	final List<Tag> contents;
+	final T parsed;
 	public String name() { return name; }
-	public List<Tag> contents() { return contents; }
-	Trailing(SourcePosition sp, String name, List<Tag> contents) {
+	public final List<Tag> contents() { return contents; }
+	NonText(SourcePosition sp, String name, List<Tag> contents,
+		TypeContext tagContext, DocErrorReporter reporter) {
 	    super(sp);
 	    this.name = name.intern();
-	    this.contents = Collections.unmodifiableList(contents);
+	    this.contents = contents;
+	    this.parsed = parse(contents, tagContext, reporter);
+	}
+	abstract protected T parse(List<Tag> contents, TypeContext tagContext,
+				   DocErrorReporter reporter);
+    }
+    abstract static class Trailing<T> extends NonText<T> {
+	public boolean isTrailing() { return true; }
+	Trailing(SourcePosition sp, String name, List<Tag> contents,
+		 TypeContext tagContext, DocErrorReporter reporter) {
+	    super(sp, name, contents, tagContext, reporter);
 	}
     }
-    static class Inline extends PTag {
+    abstract static class Inline<T> extends NonText<T> {
 	public boolean isInline() { return true; }
-	final String name;
-	List<Tag> contents;
-	public String name() { return name; }
-	public List<Tag> contents() { return contents; }
-	Inline(SourcePosition sp, String name, List<Tag> contents) {
-	    super(sp);
-	    this.name = name.intern();
-	    this.contents = Collections.unmodifiableList(contents);
+	Inline(SourcePosition sp, String name, List<Tag> contents,
+	       TypeContext tagContext, DocErrorReporter reporter) {
+	    super(sp, name, contents, tagContext, reporter);
 	}
     }
     /** Convenience method to create a new 'Tag' representing plain-text;
@@ -82,24 +89,40 @@ abstract class PTag
     /** Select a new non-inline Tag object to create based on the tagname. */
     static Tag newTag(String tagname, List<Tag> contents,
 		      SourcePosition pos, TypeContext tagContext) {
+	DocErrorReporter reporter = tagContext.pc.reporter;
 	tagname=tagname.intern();
-	if (tagname=="param") return new PParamTag(pos, tagname, contents);
+	if (tagname=="param")
+	    return new PParamTag(pos, tagname, contents, tagContext, reporter);
 	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
 	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
-	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents, tagContext);
 	*/
-	return new Trailing(pos, tagname, contents);
+	if (tagname=="throws" || tagname=="exception")
+	    return new PThrowsTag(pos, tagname, contents, tagContext,reporter);
+	return new Trailing<List<Tag>>(pos, tagname, contents,
+				       tagContext, reporter) {
+	    protected List<Tag> parse(List<Tag> contents, TypeContext tc,
+				      DocErrorReporter reporter) {
+		return contents;
+	    }
+	};
     }
     /** Select a new inline Tag object to create based on the tagname. */
     // sp is position of first char of 'tagname'
     static Tag newInlineTag(String tagname, List<Tag> contents,
 			    SourcePosition pos, TypeContext tagContext) {
+	DocErrorReporter reporter = tagContext.pc.reporter;
 	tagname=tagname.intern();
 	/* XXX uncomment when PSeeTag is not abstract.
 	if (tagname=="link" || tagname=="linkplain")
 	    return new PSeeTag(pos, tagname, contents, tagContext);
 	*/
-	return new Inline(pos, tagname, contents);
+	return new Inline<List<Tag>>(pos, tagname, contents,
+				     tagContext, reporter) {
+	    protected List<Tag> parse(List<Tag> contents, TypeContext tc,
+				      DocErrorReporter reporter) {
+		return contents;
+	    }
+	};
     }
 }
