@@ -143,6 +143,14 @@ class TypeContext {
 		    ClassType t = it2.next();
 		    if (id.equals(t.typeName())) return t;
 		}
+	//   (5b) The java.lang package is always implicitly imported.
+	PPackageDoc pkg = pc.rootDoc.packageNamed("java.lang");
+	if (pkg!=null)
+	    for (Iterator<ClassType> it=pkg.allClasses().iterator();
+		 it.hasNext(); ) {
+		ClassType t = it.next();
+		if (id.equals(t.typeName())) return t;
+	    }
 	// 6. Otherwise, undefined; if not error then it could be in
 	//    same package or in an opaque type-import-on-demand.
 	//    we'll just make it opaque.
