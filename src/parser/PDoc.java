@@ -64,6 +64,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	String raw = getRawCommentText();
 	PSourcePosition sp = getRawCommentPosition();
 	boolean stripStars = shouldStripStars();
+	TypeContext tagContext = getCommentContext();
 	// pull out all the non-inline tags.
 	Pattern tagPattern = (stripStars?TAGPATSS:TAGPAT);
 	Matcher tagMatcher = tagPattern.matcher(raw);
@@ -71,7 +72,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	String firstPart = raw.substring(0,start); // doc comment.
 	String lastPart = raw.substring(start); // tag portion.
 	// create the initial 'text' section.
-	result.addAll(parseInline(firstPart, sp, stripStars));
+	result.addAll(parseInline(firstPart, sp));
 	// now the tags.
 	sp = sp.add(start);
 	int lastTagStart=0, lastTagEnd=0;  String lastTagName=null;
@@ -82,9 +83,9 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 		List<Tag> contents =
 		    parseInline(lastPart.substring
 				(lastTagEnd, tagMatcher.start()),
-				sp.add(lastTagEnd), stripStars);;
+				sp.add(lastTagEnd));
 		result.add(PTag.newTag(lastTagName, contents,
-					  sp.add(lastTagStart)));
+				       sp.add(lastTagStart), tagContext));
 	    }
 	    lastTagStart= tagMatcher.start();
 	    lastTagEnd  = tagMatcher.end();
@@ -93,10 +94,9 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	// last tag went from lastTagStart to lastPart.length()
 	if (lastTagName!=null) {
 	    List<Tag> contents =
-		parseInline(lastPart.substring(lastTagEnd),
-			    sp.add(lastTagEnd), stripStars);;
+		parseInline(lastPart.substring(lastTagEnd),sp.add(lastTagEnd));
 	    result.add(PTag.newTag(lastTagName, contents,
-				      sp.add(lastTagStart)));
+				   sp.add(lastTagStart), tagContext));
 	}
 	// done!
 	tagCache = shrinkList(result);
@@ -108,8 +108,9 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     private static final Pattern TAGPATSS = Pattern.compile
 	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
     /** Parse the raw text into a series of 'Text' and 'inline' tags. */
-    private List<Tag> parseInline(String rawText, PSourcePosition sp,
-				  boolean stripStars) {
+    private List<Tag> parseInline(String rawText, PSourcePosition sp) {
+	boolean stripStars = shouldStripStars();
+	TypeContext tagContext = getCommentContext();
 	class TagInfo {
 	    public final String name;
 	    public final PSourcePosition pos;
@@ -143,7 +144,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 		    TagInfo ti = tagStack.pop();
 		    tagStack.peek().tags.add
 			(PTag.newInlineTag
-			 (ti.name, shrinkList(ti.tags), ti.pos));
+			 (ti.name, shrinkList(ti.tags), ti.pos, tagContext));
 		}
 	    }
 	    pos = tagMatcher.end();
@@ -158,8 +159,9 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	while (tagStack.size()>1) {
 	    TagInfo ti = tagStack.pop();
 	    pc.reporter.printError(ti.pos, "Inline tag without end brace.");
-	    tagStack.peek().tags.add(PTag.newInlineTag
-				     (ti.name, shrinkList(ti.tags), ti.pos));
+	    tagStack.peek().tags.add
+		(PTag.newInlineTag
+		 (ti.name, shrinkList(ti.tags), ti.pos, tagContext));
 	}
 	// done!
 	assert tagStack.size()==1;

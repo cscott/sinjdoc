@@ -80,11 +80,12 @@ abstract class PTag
 	return new Text(pos, text);
     }
     /** Select a new non-inline Tag object to create based on the tagname. */
-    static Tag newTag(String tagname, List<Tag> contents, SourcePosition pos) {
+    static Tag newTag(String tagname, List<Tag> contents,
+		      SourcePosition pos, TypeContext tagContext) {
 	tagname=tagname.intern();
 	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="param") return new PParamTag(pos, tagname, contents);
-	if (tagname=="see") return new PSeeTag(pos, tagname, contents);
+	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
 	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
 	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents);
 	*/
@@ -92,11 +93,12 @@ abstract class PTag
     }
     /** Select a new inline Tag object to create based on the tagname. */
     // sp is position of first char of 'tagname'
-    static Tag newInlineTag(String tagname, List<Tag> contents, SourcePosition pos) {
+    static Tag newInlineTag(String tagname, List<Tag> contents,
+			    SourcePosition pos, TypeContext tagContext) {
 	tagname=tagname.intern();
 	/* XXX uncomment when PSeeTag is not abstract.
 	if (tagname=="link" || tagname=="linkplain")
-	    return new PSeeTag(pos, tagname, contents);
+	    return new PSeeTag(pos, tagname, contents, tagContext);
 	*/
 	return new Inline(pos, tagname, contents);
     }
