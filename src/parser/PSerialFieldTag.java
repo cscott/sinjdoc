@@ -8,6 +8,7 @@ import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.SerialFieldTag;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
 import net.cscott.gjdoc.Type;
 
 import java.util.List;
@@ -62,4 +63,6 @@ class PSerialFieldTag extends PTag.Trailing
 	//     types?
 	return null;
     }
+
+    public <T> T accept(TagVisitor<T> visitor) { return visitor.visit(this); }
 }

@@ -45,4 +45,7 @@ public interface Tag {
     public SourcePosition position();
     /** Return a human-readable representation of this tag object. */
     public String toString();
+
+    /** Accept a visitor. */
+    public <T> T accept(TagVisitor<T> visitor);
 }

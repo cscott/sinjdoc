@@ -11,6 +11,7 @@ import net.cscott.gjdoc.MethodDoc;
 import net.cscott.gjdoc.PackageDoc;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -148,4 +149,6 @@ class PSeeTag extends PTag.NonText
 	if (memberNamePart!=null) return null; // it's a member, not a package
 	return tagContext.pc.rootDoc.packageNamed(classPart);
     }
+
+    public <T> T accept(TagVisitor<T> visitor) { return visitor.visit(this); }
 }

@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
 import net.cscott.gjdoc.Type;
 
 import java.util.ArrayList;
@@ -43,4 +44,6 @@ class PThrowsTag extends PTag.Trailing
     public Type exception() { return exceptionType; }
     public List<Tag> exceptionComment() { return exceptionComment; }
     public String exceptionName() { return exceptionName; }
+
+    public <T> T accept(TagVisitor<T> visitor) { return visitor.visit(this); }
 }

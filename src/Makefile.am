@@ -33,6 +33,7 @@ SeeTag.java \
 SerialFieldTag.java \
 SourcePosition.java \
 Tag.java \
+TagVisitor.java \
 ThrowsTag.java \
 Type.java \
 TypeVariable.java

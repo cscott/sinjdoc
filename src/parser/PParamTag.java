@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,4 +36,6 @@ class PParamTag extends PTag.Trailing
 
     public List<Tag> parameterComment() { return parameterComment; }
     public String parameterName() { return parameterName; }
+
+    public <T> T accept(TagVisitor<T> visitor) { return visitor.visit(this); }
 }

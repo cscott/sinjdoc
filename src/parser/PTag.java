@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.DocErrorReporter;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
+import net.cscott.gjdoc.TagVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,7 @@ abstract class PTag
     public String text() { return null; }
     public SourcePosition position() { return sp; }
     public List<Tag> contents() { return null; }
+    public <T> T accept(TagVisitor<T> visitor) { return visitor.visit(this); }
 
     public String toString() {
 	if (isText()) return text();
