@@ -140,6 +140,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 		tagStack.push(new TagInfo(tagName, sp.add(start)));
 	    } else { // end tag.
 		if (tagStack.size()==1) { // don't allow mismatched ends.
+		    if (false) // suppress this warning; it's not useful.
 		    pc.reporter.printWarning(sp.add(start),
 					   "End brace without inline tag.");
 		} else {
