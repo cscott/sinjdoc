@@ -57,7 +57,6 @@ public class ReplayReader extends Reader {
 	int nchars = delegate.read(buf, 0, buf.length);
 	if (nchars<=0) return nchars;
 	replayBuffer.append(buf, 0, nchars);
-	replayLoc+=nchars;
 	return read(cbuf, off, len); // recurse to do it again.
     }
     /** @return true */
