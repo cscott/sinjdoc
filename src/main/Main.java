@@ -503,7 +503,8 @@ public class Main {
 	    print(noticeWriter, pos, msg);
 	}
 	private void print(PrintWriter pw, SourcePosition pos, String msg) {
-	    // XXX do something with pos.
+	    // XXX do something with line number and column information
+	    if (pos!=null&&pos.file()!=null) msg=pos.file()+": "+msg;
 	    pw.println(msg);
 	}
 	void flush() {
