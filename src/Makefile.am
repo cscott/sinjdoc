@@ -3,7 +3,7 @@ MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = . lexer parser html main
 EXTRA_DIST := package.html overview.html.in
 
-AM_JAVACFLAGS = -g -warnunchecked
+AM_JAVACFLAGS = -g -source 1.5 -warnunchecked
 # JAVAROOT directory must exist!
 JAVAROOT=$(top_builddir)/classes
 

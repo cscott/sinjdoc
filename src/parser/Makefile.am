@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = Java15.java Sym.java
-AM_JAVACFLAGS = -g -warnunchecked
+AM_JAVACFLAGS = -g -source 1.5 -warnunchecked
 EXTRA_DIST := package.html Java15.cup
 
 JAVAROOT=$(top_builddir)/classes

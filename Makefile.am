@@ -20,7 +20,7 @@ pkgdata_DATA = @PACKAGE_TARNAME@.jar
 
 run:
 	$(MAKE)
-	java -ea -jar @PACKAGE_TARNAME@.jar
+	$(JAVA) -ea -jar @PACKAGE_TARNAME@.jar
 
 doc-link:
 	$(RM) -rf doc-link
@@ -30,7 +30,7 @@ doc:
 	$(MAKE)
 	$(MAKE) doc-link
 	$(RM) -rf doc
-	java -ea -jar @PACKAGE_TARNAME@.jar \
+	$(JAVA) -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 -quiet \
 	   -overview src/overview.html \
 	   -windowtitle "@PACKAGE_STRING@ documentation" \

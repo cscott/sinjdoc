@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 
-AM_JAVACFLAGS = -g -warnunchecked
+AM_JAVACFLAGS = -g -source 1.5 -warnunchecked
 # JAVAROOT directory must exist!
 JAVAROOT=$(top_builddir)/classes
 

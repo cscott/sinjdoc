@@ -17,13 +17,9 @@ CLS=f$$
 echo "abstract class $CLS extends java.util.AbstractList<Integer> { }" \
      > /tmp/$CLS.java
 for jc in jikes javac ${JCC} ${JSR14DISTR:+$JSR14DISTR/scripts/javac} \
-          ${HOME}/jsr14_adding_generics-1_{3,2,0}-ea/scripts/javac ; do
+          ${HOME}/{,jsr14_}adding_generics-2_2-ea/scripts/javac ; do
     if $jc -d /tmp -source 1.5 /tmp/$CLS.java 1>/dev/null 2>/dev/null; then
-      JAVAC="$jc -source 1.5"
-      break
-    fi
-    if $jc -d /tmp -source 1.4 -gj /tmp/$CLS.java 1>/dev/null 2>/dev/null; then
-      JAVAC="$jc -source 1.4 -gj"
+      JAVAC="$jc"
       break
     fi
 done
@@ -33,6 +29,12 @@ AC_SUBST(JAVAC)
 if test "$JAVAC" = "not-found" -o "$JAR" = "not-found" ; then
    AC_MSG_ERROR([Can't find tools to build java programs.])
 fi
+# use jsr14 java script as well as compiler if necessary.
+case "$JAVAC" in
+*/scripts/javac)
+	JAVA="$(dirname $JAVAC)/java";
+	;;
+esac
 
 # Checks for libraries.
 
