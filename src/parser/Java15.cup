@@ -1196,7 +1196,7 @@ constructor_body ::=
 	|	LBRACE explicit_constructor_invocation RBRACE
 	|	LBRACE block_statements RBRACE
 	|	LBRACE RBRACE
-	|	SEMICOLON // allow stubs
+	|	SEMICOLON // support stubs
 	;
 explicit_constructor_invocation ::=
 		THIS LPAREN argument_list_opt RPAREN SEMICOLON
@@ -1628,12 +1628,12 @@ unary_expression_not_plus_minus ::=
 	|	cast_expression
 	;
 // This parsing technique was discovered by Eric Blake <ebb9@email.byu.edu>
-// We solving grammar ambiguities with between parenthesized less-than
+// We solve grammar ambiguities between parenthesized less-than
 // relational operations and type casts with a slightly-more-complicated
 // cast_expression production.
 // Illustrative example:  LPAREN name LT name ...
-//  is this going to be a cast_expression or a relational_expression?
-// canonically, this production is:
+//   Is this going to be a cast_expression or a relational_expression?
+// Canonically, the cast_expression production is:
 //     cast_expression ::= LPAREN type RPAREN unary_expression_not_plus_minus
 cast_expression ::=
 		LPAREN primitive_type dims_opt RPAREN unary_expression
