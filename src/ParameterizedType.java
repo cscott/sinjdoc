@@ -14,6 +14,10 @@ import java.util.List;
  * @see java.lang.reflect.ParameterizedType
  */
 public interface ParameterizedType extends Type {
+    /** Return the type arguments that this parameterized type has been
+     *  instantiated with. */
     public List<Type> getActualTypeArguments();
+    /** Return the <code>Type</code> corresponding to the "raw class"
+     *  of this parameterized type; that is, the type without parameters. */
     public Type getRawClass();
 }

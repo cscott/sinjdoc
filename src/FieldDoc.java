@@ -12,10 +12,21 @@ import java.util.List;
  * @see com.sun.javadoc.FieldDoc
  */
 public interface FieldDoc extends MemberDoc {
+    /** Get the value of a constant field, wrapped in an object if it
+     *  has a primitive type.  If the field is not constant, returns
+     *  <code>null</code>. */
     public Object constantValue();
+    /** The text of a Java language expression whose value is the value
+     *  of the constant.  The expression uses no identifiers other than
+     *  primitive literals.  If the field is not constant, returns
+     *  <code>null</code>. */
     public String constantValueExpression();
+    /** Return true if this field is transient. */
     public boolean isTransient();
+    /** Return true if this field is volatile. */
     public boolean isVolatiile();
+    /** Return the @serialField tags for this item. */
     public List<SerialFieldTag> serialFieldTags();
+    /** Return the type of this field. */
     public Type type();
 }

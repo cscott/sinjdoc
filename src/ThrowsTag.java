@@ -12,7 +12,12 @@ package net.cscott.gjdoc;
  * @see com.sun.javadoc.ThrowsTag
  */
 public interface ThrowsTag extends Tag {
+    /** Return a <code>Type</code> object representing the exception. */
     public Type exception();
+    /** Return the exception comment associated with this
+     *  <code>ThrowsTag</code>>. */
     public String exceptionComment();
+    /** Return the name of the exception associated with this
+     *  <code>ThrowsTag</code>. */
     public String exceptionName();
 }

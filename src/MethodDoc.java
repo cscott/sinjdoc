@@ -12,9 +12,11 @@ package net.cscott.gjdoc;
  * @see com.sun.javadoc.MethodDoc
  */
 public interface MethodDoc extends ExecutableMemberDoc {
+    /** Return true if this method is abstract. */
     public boolean isAbstract();
-    public Type overriddenClass();
-    // xxx what if overridden method is not in this javadoc set?
+    /** Return the method that this method overrides, or <code>null</code>
+     *  if there is no such method. */
     public MethodDoc overriddenMethod();
+    /** Return the return type of this method. */
     public Type returnType();
 }

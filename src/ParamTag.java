@@ -11,6 +11,10 @@ package net.cscott.gjdoc;
  * @see com.sun.javadoc.ParamTag
  */
 public interface ParamTag extends Tag {
+    /** Return the parameter comment associated with this
+     *  <code>ParamTag</code>. */
     public String parameterComment();
+    /** Return the name of the parameter associated with this
+     *  <code>ParamTag</code>. */
     public String parameterName();
 }

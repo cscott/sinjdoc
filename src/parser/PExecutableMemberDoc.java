@@ -20,7 +20,6 @@ import java.util.List;
 abstract class PExecutableMemberDoc extends PMemberDoc 
     implements net.cscott.gjdoc.ExecutableMemberDoc {
     public abstract List<MethodTypeVariable> typeParameters();
-    public abstract String flatSignature();
     public abstract boolean isNative();
     public abstract boolean isSynchronized();
     public abstract List<Parameter> parameters();

@@ -21,25 +21,26 @@ abstract class PProgramElementDoc extends PDoc
     public abstract PackageDoc containingPackage();
     public abstract int modifierSpecifier();
     public abstract String qualifiedName();
-    public boolean isFinal() {
+    public final boolean isFinal() {
 	return Modifier.isFinal(modifierSpecifier());
     }
-    public boolean isPackagePrivate() {
+    public final boolean isPackage() {
 	return !(isPublic() || isProtected() || isPrivate());
     }
-    public boolean isPrivate() {
+    public final boolean isPrivate() {
 	return Modifier.isPrivate(modifierSpecifier());
     }
-    public boolean isProtected() {
+    public final boolean isProtected() {
 	return Modifier.isProtected(modifierSpecifier());
     }
-    public boolean isPublic() {
+    public final boolean isPublic() {
 	return Modifier.isPublic(modifierSpecifier());
     }
-    public boolean isStatic() {
+    public final boolean isStatic() {
 	return Modifier.isStatic(modifierSpecifier());
     }
-    public String modifiers() {
+    // XXX do we spell out synchronized and native?
+    public final String modifiers() {
 	return Modifier.toString(modifierSpecifier());
     }
 }

@@ -18,12 +18,24 @@ import java.util.List;
  * @see com.sun.javadoc.PackageDoc
  */
 public interface PackageDoc extends Doc {
+    /** Return all classes in this package, including exceptions, errors, 
+     *  and interfaces, and classes which aren't being documented. */
     public List<Type> allClasses();
+    /**
+     * Return all included classes and interfaces in this package,
+     * including exceptions and errors. */
     public List<ClassDoc> includedClasses();
+    /** Return all included error classes in this package. */
     public List<ClassDoc> includedErrors();
+    /** Return all included exception classes in this package. */
     public List<ClassDoc> includedExceptions();
+    /** Return all included interfaces in this package. */
     public List<ClassDoc> includedInterfaces();
+    /** Return all included non-interface classes in this package which
+     *  are not errors or exceptions. */
     public List<ClassDoc> includedOrdinaryClasses();
     // xxx fully qualified name, or just partial name?  let's say either.
+    /** Lookup a class within this package.  Returns <code>null</code>
+     *  if the class is not found. */
     public ClassDoc findClass(String className);
 }

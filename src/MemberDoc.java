@@ -15,5 +15,6 @@ package net.cscott.gjdoc;
  * @see com.sun.javadoc.MemberDoc
  */
 public interface MemberDoc extends ProgramElementDoc {
+    /** Returns true if this member was synthesized by the compiler. */
     public boolean isSynthetic();
 }

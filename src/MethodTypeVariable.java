@@ -12,5 +12,6 @@ package net.cscott.gjdoc;
  * @see java.lang.reflect.MethodTypeVariable
  */
 public interface MethodTypeVariable extends TypeVariable {
+    /** Return the generic method which declares this type variable. */
     public MethodDoc declaringMethod();
 }

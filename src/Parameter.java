@@ -12,7 +12,15 @@ package net.cscott.gjdoc;
  * @see com.sun.javadoc.Parameter
  */
 public interface Parameter {
+    /** Return the local name of this parameter.   For example, if this
+     *  parameter is <code>short index</code>, returns "index". */
     public abstract String name();
+    /** Return the type of this parameter.  For example, if this
+     *  parameter is <code>short index</code>, then
+     *  <code>type().typeName()</code> would be the string "short". */
     public abstract Type type();
+    /** Return a human-readable string representing this parameter.
+     *  For example, if this parameter is <code>short index</code>,
+     *  returns "short index". */
     public abstract String toString();
 }

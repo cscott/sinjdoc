@@ -12,5 +12,6 @@ package net.cscott.gjdoc;
  * @see java.lang.reflect.ClassTypeVariable
  */
 public interface ClassTypeVariable extends TypeVariable {
+    /** Return the class where this type variable was declared. */
     public ClassDoc declaringClass();
 }

@@ -16,8 +16,7 @@ import net.cscott.gjdoc.Type;
 abstract class PMethodDoc extends PExecutableMemberDoc
     implements net.cscott.gjdoc.MethodDoc {
     public abstract boolean isAbstract();
-    public abstract Type overriddenClass();
-    // xxx what if overridden method is not in this javadoc set?
+    // xxx return null if overridden method is not being documented.
     public abstract MethodDoc overriddenMethod();
     public abstract Type returnType();
 }
