@@ -12,6 +12,7 @@ noinst_JAVA = \
 HTMLDoclet.java \
 HTMLOptions.java \
 HTMLUtil.java \
+SimpleCharSequence.java \
 URLContext.java \
 Version.java
 

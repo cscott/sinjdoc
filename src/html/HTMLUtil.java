@@ -88,7 +88,7 @@ class HTMLUtil {
 	public void flush() throws IOException { delegate.flush(); }
 	public void write(char[] cbuf, int off, int len)
 	    throws IOException {
-	    CharSequence cs = new ImmutableCharSequence(cbuf, off, len);
+	    CharSequence cs = new SimpleCharSequence(cbuf, off, len);
 	    if (encoder.canEncode(cs))
 		delegate.write(cbuf, off, len); // everything okie-dokie.
 	    else if (len>1) { // divide and conquer.
@@ -97,18 +97,6 @@ class HTMLUtil {
 		this.write(cbuf, off+half, len-half);
 	    } else { // HTML-escape exactly one character.
 		delegate.write("&#"+Integer.toString(cbuf[off], 10)+";");
-	    }
-	}
-	private static class ImmutableCharSequence implements CharSequence {
-	    private final char[] buf; final int off, len;
-	    ImmutableCharSequence(char[] buf, int off, int len) {
-		this.buf = buf; this.off = off; this.len = len;
-	    }
-	    public char charAt(int index) { return buf[off+index]; }
-	    public int length() { return len; }
-	    public String toString() { return new String(buf, off, len); }
-	    public CharSequence subSequence(int start, int end) {
-		return new ImmutableCharSequence(buf, off+start, end-start);
 	    }
 	}
     }
