@@ -14,21 +14,37 @@
   </head>
   <body class="smallframe">
    <h1>@PKGSUMMARYLINK@</h1>
+@FORALL_INTERFACES@
+@IF_FIRST@
    <h2>Interfaces</h2>
    <p>
-   @SPLIT@
+@END@ @CLASSLINK_P@ @IF_LAST@
    </p>
+@END@
+@END@
+@FORALL_ORDINARYCLASSES@
+@IF_FIRST@
    <h2>Classes</h2>
    <p>
-   @SPLIT@
+@END@ @CLASSLINK_P@ @IF_LAST@
    </p>
+@END@
+@END@
+@FORALL_EXCEPTIONS@
+@IF_FIRST@
    <h2>Exceptions</h2>
    <p>
-   @SPLIT@
+@END@ @CLASSLINK_P@ @IF_LAST@
    </p>
+@END@
+@END@
+@FORALL_ERRORS@
+@IF_FIRST@
    <h2>Errors</h2>
    <p>
-   @SPLIT@
+@END@ @CLASSLINK_P@ @IF_LAST@
    </p>
+@END@
+@END@
   </body>
 </html>
