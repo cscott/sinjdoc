@@ -1122,6 +1122,7 @@ constructor_body ::=
 	|	LBRACE explicit_constructor_invocation RBRACE
 	|	LBRACE block_statements RBRACE
 	|	LBRACE RBRACE
+	|	SEMICOLON // allow stubs
 	;
 explicit_constructor_invocation ::=
 		THIS LPAREN argument_list_opt RPAREN SEMICOLON
