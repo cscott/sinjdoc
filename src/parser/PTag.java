@@ -51,34 +51,28 @@ abstract class PTag
 	    this.text = text;
 	}
     }
-    private static abstract class NonText<T> extends PTag {
+    private static abstract class NonText extends PTag {
 	final String name;
 	final List<Tag> contents;
-	final T parsed;
-	public String name() { return name; }
+	public final String name() { return name; }
 	public final List<Tag> contents() { return contents; }
-	NonText(SourcePosition sp, String name, List<Tag> contents,
-		TypeContext tagContext, DocErrorReporter reporter) {
+	NonText(SourcePosition sp, String name, List<Tag> contents) {
 	    super(sp);
 	    this.name = name.intern();
 	    this.contents = contents;
-	    this.parsed = parse(contents, tagContext, reporter);
 	}
-	abstract protected T parse(List<Tag> contents, TypeContext tagContext,
-				   DocErrorReporter reporter);
+	// some generic parsing functions here?
     }
-    abstract static class Trailing<T> extends NonText<T> {
+    static class Trailing extends NonText {
 	public boolean isTrailing() { return true; }
-	Trailing(SourcePosition sp, String name, List<Tag> contents,
-		 TypeContext tagContext, DocErrorReporter reporter) {
-	    super(sp, name, contents, tagContext, reporter);
+	Trailing(SourcePosition sp, String name, List<Tag> contents) {
+	    super(sp, name, contents);
 	}
     }
-    abstract static class Inline<T> extends NonText<T> {
+    static class Inline extends NonText {
 	public boolean isInline() { return true; }
-	Inline(SourcePosition sp, String name, List<Tag> contents,
-	       TypeContext tagContext, DocErrorReporter reporter) {
-	    super(sp, name, contents, tagContext, reporter);
+	Inline(SourcePosition sp, String name, List<Tag> contents) {
+	    super(sp, name, contents);
 	}
     }
     /** Convenience method to create a new 'Tag' representing plain-text;
@@ -89,23 +83,22 @@ abstract class PTag
     /** Select a new non-inline Tag object to create based on the tagname. */
     static Tag newTag(String tagname, List<Tag> contents,
 		      SourcePosition pos, TypeContext tagContext) {
-	DocErrorReporter reporter = tagContext.pc.reporter;
 	tagname=tagname.intern();
-	if (tagname=="param")
-	    return new PParamTag(pos, tagname, contents, tagContext, reporter);
+	try {
+	    if (tagname=="param")
+		return new PParamTag(pos, tagname, contents);
 	/* XXX uncomment when tag subtypes are not abstract.
 	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
 	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
 	*/
-	if (tagname=="throws" || tagname=="exception")
-	    return new PThrowsTag(pos, tagname, contents, tagContext,reporter);
-	return new Trailing<List<Tag>>(pos, tagname, contents,
-				       tagContext, reporter) {
-	    protected List<Tag> parse(List<Tag> contents, TypeContext tc,
-				      DocErrorReporter reporter) {
-		return contents;
-	    }
-	};
+	    if (tagname=="throws" || tagname=="exception")
+		return new PThrowsTag(pos, tagname, contents, tagContext);
+	} catch (TagParseException tpe) {
+	    tagContext.pc.reporter.printError
+		(tpe.getPosition(), tpe.getMessage());
+	}
+	// opaque tag, no internal structure.
+	return new Trailing(pos, tagname, contents);
     }
     /** Select a new inline Tag object to create based on the tagname. */
     // sp is position of first char of 'tagname'
@@ -117,12 +110,15 @@ abstract class PTag
 	if (tagname=="link" || tagname=="linkplain")
 	    return new PSeeTag(pos, tagname, contents, tagContext);
 	*/
-	return new Inline<List<Tag>>(pos, tagname, contents,
-				     tagContext, reporter) {
-	    protected List<Tag> parse(List<Tag> contents, TypeContext tc,
-				      DocErrorReporter reporter) {
-		return contents;
-	    }
-	};
+	return new Inline(pos, tagname, contents);
+    }
+
+    static protected class TagParseException extends Exception {
+	private final SourcePosition position;
+	TagParseException(SourcePosition position, String message) {
+	    super(message);
+	    this.position = position;
+	}
+	public SourcePosition getPosition() { return position; }
     }
 }

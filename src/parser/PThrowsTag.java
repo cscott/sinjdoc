@@ -9,6 +9,7 @@ import net.cscott.gjdoc.Tag;
 import net.cscott.gjdoc.Type;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,50 +19,47 @@ import java.util.regex.Pattern;
  * 
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
+ * @param
  */
-class PThrowsTag extends PTag.Trailing<Pair<Type,List<Tag>>>
+class PThrowsTag extends PTag.Trailing
     implements net.cscott.gjdoc.ThrowsTag {
+    final Type exceptionType;
+    final String exceptionName;
+    final List<Tag> exceptionComment;
     PThrowsTag(SourcePosition sp, String name, List<Tag> contents,
-	       TypeContext tagContext, DocErrorReporter reporter) {
-	super(sp, name, contents, tagContext, reporter);
+	       TypeContext tagContext) throws TagParseException {
+	super(sp, name, contents);
 	assert name()=="throws" || name()=="exception";
-    }
-    public Type exception() { return parsed.left; }
-    public List<Tag> exceptionComment() { return parsed.right; }
-    public String exceptionName() { return parsed.toString(); }
-    // parse.
-    protected Pair<Type,List<Tag>> parse(List<Tag> contents,
-					 TypeContext tagContext,
-					 DocErrorReporter reporter) {
-	Pair<Type,List<Tag>> ERROR = new Pair<Type,List<Tag>>
-	    (new PEagerClassType(tagContext.pc,"java.lang","Object"),contents);
-	// parameter name should be first word in tag.
-	if (contents.size()==0) {
-	    reporter.printError(position(), "Empty @"+name()+" tag");
-	    return ERROR;
-	}
+	//  now parse the tag.
+	// exception name should be first word in tag.
+	if (contents.size()==0)
+	    throw new TagParseException(position(), "Empty @"+name()+" tag");
 	Tag first = contents.get(0);
-	if (!first.isText()) {
-	    reporter.printError(first.position(), "Exception name must not "+
-				"be a tag");
-	    return ERROR;
-	}
+	if (!first.isText())
+	    throw new TagParseException(first.position(),
+					"Exception name must not be a tag");
 	Matcher matcher = NAME.matcher(first.text());
-	if (!matcher.find()) {
-	    reporter.printError(first.position(), "Can't find exception "+
-				"name for @"+name()+" tag");
-	    return ERROR;
-	}
-	String name = matcher.group();
-	List<Tag> nContents = new ArrayList<Tag>(contents.size());
+	if (!matcher.find())
+	    throw new TagParseException(first.position(),
+					"Can't find exception name for "+
+					"@"+name()+" tag");
+	String exName = matcher.group();
+	ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
 	if (matcher.end()!=first.text().length())
 	    nContents.add
 		(PTag.newTextTag
 		 (first.text().substring(matcher.end()),
 		  ((PSourcePosition)first.position()).add(matcher.end())));
 	nContents.addAll(contents.subList(1, contents.size()));
-	return new Pair<Type,List<Tag>>(tagContext.lookupTypeName(name),
-					nContents);
+	nContents.trimToSize();
+	// okay, assign to the fields of the object.
+	this.exceptionType = tagContext.lookupTypeName(exName);
+	this.exceptionName = exName;
+	this.exceptionComment = Collections.unmodifiableList(nContents);
     }
     private static final Pattern NAME = Pattern.compile("\\S+");
+
+    public Type exception() { return exceptionType; }
+    public List<Tag> exceptionComment() { return exceptionComment; }
+    public String exceptionName() { return exceptionName; }
 }
