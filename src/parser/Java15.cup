@@ -1,6 +1,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.lexer.Lexer;
+import net.cscott.gjdoc.Parameter;
 import net.cscott.gjdoc.Type;
 import java_cup.runtime.*;
 import java.lang.reflect.Modifier;
@@ -9,8 +10,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -36,8 +37,8 @@ parser code  {:
   Stack<PClassDoc> outerClasses = new Stack<PClassDoc>();
   Stack<TypeContext> typeContexts = new Stack<TypeContext>();
   Map<String,PTypeVariable> additionalTypeVariables =
-      new HashMap<String,PTypeVariable>();
-  PExecutableMemberDoc currentMethod;
+      new LinkedHashMap<String,PTypeVariable>();
+  boolean isClassTypeVariable=false;
   private PSourcePosition startPos;
 
   public Java15(PRootDoc rootDoc, File file, PPackageDoc expectedPackage)
@@ -51,7 +52,6 @@ parser code  {:
            rootDoc.pc.sourceVersion);
       this.startPos = new PSourcePosition(file, rootDoc.pc.encoding, rootDoc);
       this.expectedPackage = expectedPackage;
-      this.currentMethod = null;
   }
 
   public PSourcePosition sp(int leftPos) {
@@ -87,12 +87,13 @@ action code {:
       parser.outerClasses.push(cd);
       // new environment scope for type variables.
       assert parser.additionalTypeVariables.isEmpty();
-      parser.currentMethod=null; // type vars go in class, not method.
+      parser.isClassTypeVariable=true; // type vars go in this class!
   }
   // just before class body
   private void midTypeDeclaration() {
       parser.typeContexts.push(parser.outerClasses.peek().typeContext);
       parser.additionalTypeVariables.clear(); // type vars now in type context
+      parser.isClassTypeVariable=false; // type vars now belong to some method
   }
   // after class body
   private void endTypeDeclaration() {
@@ -119,6 +120,45 @@ action code {:
 	  parent.fields.add(fd);
       }
   }
+  private void doMethodDeclaration(int modifiers, Type ty, MethodDeclarator md,
+				   List<Type> thrownExceptions) {
+      // doc comment for this method
+      String commentText = parser.lexer.lastComment();
+      PSourcePosition commentPos = sp(parser.lexer.lastCommentPos());
+      parser.lexer.clearComment();
+      // this is the class to which this method belongs.
+      PClassDoc parent = parser.outerClasses.peek();
+      // create the MethodDoc!
+      PExecutableMemberDoc emd;
+      if (md.name==null) { // constructor.
+	  assert ty==null && md.dims==0; // constructors are void.
+	  PConstructorDoc pcd =
+	      new PConstructorDoc(parser.rootDoc.pc, parent, modifiers,
+				  sp(md.pos), md.parameters,thrownExceptions,
+				  commentText, commentPos,
+				  parser.typeContexts.peek());
+	  parent.constructors.add(pcd);
+	  emd = pcd;
+      } else { // method
+	  PMethodDoc pmd =
+	      new PMethodDoc(parser.rootDoc.pc, parent, modifiers,
+			     arrayType(ty, md.dims), md.name, sp(md.pos),
+			     md.parameters, thrownExceptions,
+			     commentText, commentPos,
+			     parser.typeContexts.peek());
+	  parent.methods.add(pmd);
+	  emd = pmd;
+      }
+      // fixup the MethodTypeVariables and add them to the MethodDoc
+      for (Iterator<PTypeVariable> it=parser.additionalTypeVariables.values()
+	       .iterator(); it.hasNext(); ) {
+	  PMethodTypeVariable mtv = (PMethodTypeVariable) it.next();
+	  mtv.declaringMethod = emd;
+	  emd.typeParameters.add(mtv);
+      }
+      // let's skip creating a new type context for the method.
+      parser.additionalTypeVariables.clear(); // type vars now in method.
+  }
 
   PClassType lookupClassType(String name) {
       return new PLazyClassType(parser.typeContexts.peek(), name);
@@ -138,18 +178,17 @@ action code {:
       if (bounds.size()==0)
 	  bounds = new TypeList(lookupClassType("java.lang.Object"));
       // are we in method or class context?
-      if (parser.currentMethod!=null) {  // method context
-	  PExecutableMemberDoc parent = parser.currentMethod;
-	  PMethodTypeVariable mtv = new PMethodTypeVariable
-	      (parent, name, bounds);
-	  parent.typeParameters.add(mtv);
-	  parser.additionalTypeVariables.put(name, mtv);
-      } else { // class context
+      if (parser.isClassTypeVariable) { // class context
 	  PClassDoc parent = parser.outerClasses.peek();
 	  PClassTypeVariable ctv = new PClassTypeVariable
 	      (parent, name, bounds);
 	  parent.typeParameters.add(ctv);
 	  parser.additionalTypeVariables.put(name, ctv);
+      } else {  // method context
+	  PMethodTypeVariable mtv = new PMethodTypeVariable(name, bounds);
+	  parser.additionalTypeVariables.put(name, mtv);
+	  // have to wait until we see the name of the method and create
+	  // the methodDoc before we can add set the declaringMethod field
       }
   }
   Type arrayType(Type ty, int dims) {
@@ -173,6 +212,14 @@ action code {:
   }
   static class VariableDeclaratorList extends ArrayList<VariableDeclarator> {
       VariableDeclaratorList(VariableDeclarator vd) { super(2); add(vd); }
+  }
+  static class MethodDeclarator {
+      final String name; final int pos;
+      final List<PParameter> parameters;
+      int dims=0;
+      MethodDeclarator(String name, int pos, List<PParameter> parameters) {
+	  this.name = name; this.pos = pos; this.parameters = parameters;
+      }
   }
 :};
 
@@ -281,15 +328,17 @@ non terminal VariableDeclaratorList variable_declarators;
 non terminal VariableDeclarator variable_declarator, variable_declarator_id;
 non terminal variable_initializer;
 // 19.8.3) Method Declarations
-non terminal method_declaration, method_header, method_declarator;
+non terminal method_declaration, method_header;
+non terminal MethodDeclarator method_declarator;
 non terminal PParameterList formal_parameter_list_opt, formal_parameter_list;
 non terminal PParameter formal_parameter;
-non terminal throws_opt, throws;
-non terminal class_type_list, method_body;
+non terminal TypeList throws_opt, throws, class_type_list;
+non terminal method_body;
 // 19.8.4) Static Initializers
 non terminal static_initializer;
 // 19.8.5) Constructor Declarations
-non terminal constructor_declaration, constructor_declarator;
+non terminal constructor_declaration;
+non terminal MethodDeclarator constructor_declarator;
 non terminal constructor_body;
 non terminal explicit_constructor_invocation;
 // 19.9.1) Interface Declarations
@@ -763,14 +812,20 @@ method_header ::=
 	// but it might still turn out to be a field declaration).
 	// also, we can't rely on the special PLT token here, as the LT
 	// doesn't follow a IDENTIFIER
-		modifiers_opt type method_declarator throws_opt
-	|	modifiers_opt LT type_parameter_list_1 type method_declarator throws_opt
-	|	modifiers_opt VOID method_declarator throws_opt
-	|	modifiers_opt LT type_parameter_list_1 VOID method_declarator throws_opt
+		modifiers_opt:m type:ty method_declarator:md throws_opt:thr
+		{: doMethodDeclaration(m.intValue(), ty, md, thr); :}
+	|	modifiers_opt:m LT type_parameter_list_1 type:ty method_declarator:md throws_opt:thr
+		{: doMethodDeclaration(m.intValue(), ty, md, thr); :}
+	|	modifiers_opt:m VOID method_declarator:md throws_opt:thr
+		{: doMethodDeclaration(m.intValue(), null, md, thr); :}
+	|	modifiers_opt:m LT type_parameter_list_1 VOID method_declarator:md throws_opt:thr
+		{: doMethodDeclaration(m.intValue(), null, md, thr); :}
 	;
 method_declarator ::=
-		IDENTIFIER LPAREN formal_parameter_list_opt RPAREN
-	|	method_declarator LBRACK RBRACK // deprecated
+		IDENTIFIER:id LPAREN formal_parameter_list_opt:fpl RPAREN
+    		{: RESULT=new MethodDeclarator(id,idleft,fpl); :}
+	|	method_declarator:md LBRACK RBRACK // deprecated
+		{: md.dims++; RESULT=md; :}
 	// be careful; the above production also allows 'void foo() []'
 	;
 formal_parameter_list_opt ::=
@@ -791,13 +846,18 @@ formal_parameter ::=
     		{: RESULT=new PParameter(arrayType(ty, vd.dims), vd.name); :}
 	;
 throws_opt ::=	
-	|	throws
+		{: RESULT=new TypeList(); :}
+	|	throws:thr
+		{: RESULT=thr; :}
 	;
-throws ::=	THROWS class_type_list
+throws ::=	THROWS class_type_list:ctl
+		{: RESULT=ctl; :}
 	;
 class_type_list ::=
-		class_type
-	|	class_type_list COMMA class_type
+		class_type:ty
+		{: RESULT=new TypeList(ty); :}
+	|	class_type_list:ctl COMMA class_type:ty
+		{: ctl.add(ty); RESULT=ctl; :}
 	;
 method_body ::=	block
 	|	SEMICOLON
@@ -810,13 +870,17 @@ static_initializer ::=
 
 // 19.8.5) Constructor Declarations
 constructor_declaration ::=
-		modifiers_opt constructor_declarator
-			throws_opt constructor_body
-	|	modifiers_opt LT type_parameter_list_1 constructor_declarator
-			throws_opt constructor_body
+		modifiers_opt:m constructor_declarator:cd
+			throws_opt:thr constructor_body
+		{: doMethodDeclaration(m.intValue(), null, cd, thr); :}
+	|	modifiers_opt:m LT type_parameter_list_1
+		    constructor_declarator:cd throws_opt:thr constructor_body
+		{: doMethodDeclaration(m.intValue(), null, cd, thr); :}
 	;
 constructor_declarator ::=
-		simple_name LPAREN formal_parameter_list_opt RPAREN
+		simple_name:n LPAREN formal_parameter_list_opt:fpl RPAREN
+		{: /* assume that simple_name matches the class name */
+		   RESULT=new MethodDeclarator(null,nleft,fpl); :}
 	;
 constructor_body ::=
 		LBRACE explicit_constructor_invocation
