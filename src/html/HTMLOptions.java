@@ -41,7 +41,6 @@ class HTMLOptions {
     String bottom;
     Charset charSet=null;
 
-
     public void parseOptions(List<List<String>> options) {
 	for (Iterator<List<String>> it=options.iterator(); it.hasNext(); ) {
 	    List<String> anOption = it.next();
@@ -49,6 +48,7 @@ class HTMLOptions {
 	}
 	// now deal with defaults.
 	if (windowTitle==null) windowTitle=docTitle;
+	if (charSet==null) charSet = Charset.forName("UTF-8");
     }
     public boolean validOption(List<String> optionWithArgs,
 			       DocErrorReporter reporter) {
@@ -294,11 +294,12 @@ class HTMLOptions {
 			 DocErrorReporter reporter) {
 	    try {
 		Charset cs = Charset.forName(optionWithArgs.get(1));
-		return true; // valid charset.
+		if (cs.canEncode()) return true;
+		reporter.printError("Can't encode with charset "+cs);
 	    } catch (IllegalArgumentException e) {
 		reporter.printError(e.toString());
-		return false;
 	    }
+	    return false;
 	}
     }
     private final class IgnoreOption extends Option {
