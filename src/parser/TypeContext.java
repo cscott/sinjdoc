@@ -67,20 +67,23 @@ class TypeContext {
 	    }
 	// 2. if the simple type name occurs within the scope of a visible
 	//    member type, it denotes that type (if more than one, error)
-	if (classScope!=null) {
+	PClassDoc enclosing = classScope;
+	while (enclosing!=null) {
 	    // class type variables.
 	    for (Iterator<ClassTypeVariable> it =
-		     classScope.type().typeParameters().iterator();
+		     enclosing.type().typeParameters().iterator();
 		 it.hasNext(); ) {
 		ClassTypeVariable ctv = it.next();
 		if (id.equals(ctv.getName())) return ctv;
 	    }
 	    // class member types
-	    for (Iterator<ClassDoc> it=classScope.innerClasses().iterator();
+	    for (Iterator<ClassDoc> it=enclosing.innerClasses().iterator();
 		 it.hasNext(); ) {
 		ClassDoc cd = it.next();
 		if (id.equals(cd.name())) return cd.type();
 	    }
+	    // now go up to outer class
+	    enclosing = enclosing.containingClass();
 	}
 	// 3. if type is declared in the current compilation unit, either
 	//    by simple-type-import or by declaration, then denotes that type
@@ -94,6 +97,7 @@ class TypeContext {
 	    for (Iterator<PClassDoc> it = compilationUnit.classes
 		     .iterator(); it.hasNext(); ) {
 		PClassDoc cd = it.next();
+		if (cd.containingClass()!=null) continue; // not outer class.
 		if (id.equals(cd.name())) return cd.type();
 	    }
 	}
