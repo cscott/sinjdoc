@@ -17,8 +17,7 @@ import java.util.*;
  * @version $Id$
  */
 class TemplateWriter extends PrintWriter  {
-    final Stack<Pair<Mark,List<TemplateContext>>> contextStack =
-	new Stack<Pair<Mark,List<TemplateContext>>>();
+    final Stack<ExtendedContext> contextStack = new Stack<ExtendedContext>();
     final ReplayReader templateReader;
 
     /** Creates a <code>TemplateWriter</code> which uses the specified
@@ -29,8 +28,9 @@ class TemplateWriter extends PrintWriter  {
 		   TemplateContext context) {
         super(delegate);
 	this.templateReader = new ReplayReader(templateReader);
-	contextStack.push(new Pair<Mark,List<TemplateContext>>
-			  (null, Collections.singletonList(context)));
+	contextStack.push(new ExtendedContext
+			  (Collections.singletonList(context),
+			   this.templateReader));
     }
     /** Creates a <code>TemplateWriter</code> which uses the reader provided
      *  as a template and writes to the URL specified by the template
@@ -48,13 +48,11 @@ class TemplateWriter extends PrintWriter  {
     // helper functions.
     /** Returns the topmost context for this <code>TemplateWriter</code>. */
     private TemplateContext topContext() {
-	return contextStack.get(0).right.get(0);
+	return contextStack.get(0).contexts.get(0);
     }
     /** Returns false if the <code>TemplateWriter</code> is currently
      *  suppressing output. */
-    private boolean isEcho() {
-	return contextStack.peek().right.size() > 0;
-    }
+    private boolean isEcho() { return contextStack.peek().isEcho(); }
     /** Copy all remaining text from the template and close the files. */
     public void copyRemainder(DocErrorReporter reporter) {
 	try {
@@ -111,31 +109,24 @@ class TemplateWriter extends PrintWriter  {
 		    if (isEcho()) return true; // done.
 		} else if (tagName.equals("@END@")) {
 		    // repeat from mark or pop context.
-		    if (contextStack.peek().right.size()>1) {
+		    if (contextStack.peek().contexts.size()>1) {
 			// remove first element from context list.
-			Pair<Mark,List<TemplateContext>> pair =
-			    contextStack.pop();
-			contextStack.push(new Pair<Mark,List<TemplateContext>>
-					  (pair.left, pair.right.subList
-					   (1,pair.right.size())));
+			ExtendedContext ec = contextStack.peek();
+			ec.contexts=ec.contexts.subList(1,ec.contexts.size());
+			ec.isFirst=false;
 			// reset reader to mark.
-			templateReader.reset(pair.left);
+			templateReader.reset(ec.replayMark);
 		    } else if (contextStack.size()>1) {
 			// done with this block. pop context.
 			contextStack.pop();
 		    } else assert false : "too many @END@ tags";
 		} else if (macroMap.containsKey(tagName)) {
-		    TemplateContext context = isEcho() ?
-			contextStack.peek().right.get(0) : null;
-		    List<TemplateContext> ltc =
-			macroMap.get(tagName).doMacro(this, context);
-		    if (ltc!=null) {
-			// only need to make mark if ltc.size()>1.
-			Mark m = (ltc.size()>1) ? templateReader.getMark()
-			    : null;
-			contextStack.push(new Pair<Mark,List<TemplateContext>>
-					  (m, ltc));
-		    }
+		    ExtendedContext ec = contextStack.peek();
+		    List<TemplateContext> ltc = macroMap.get(tagName).doMacro
+			(this, ec.curContext(), ec.isFirst(), ec.isLast());
+		    if (ltc!=null)
+			contextStack.push(new ExtendedContext
+					  (ltc, templateReader));
 		} else // invalid tag.
 		    if (isEcho()) write(tag.toString());
 		break;
@@ -143,7 +134,28 @@ class TemplateWriter extends PrintWriter  {
 	}
 	return false; // eof found.
     }
-
+    /** An extended context object that allows for template conditionals
+     *  and repeats. */
+    static final class ExtendedContext {
+	boolean isFirst=true;
+	List<TemplateContext> contexts;
+	final ReplayReader.Mark replayMark;
+	ExtendedContext(List<TemplateContext> contexts,
+			ReplayReader.Mark replayMark) {
+	    this.contexts = contexts;
+	    this.replayMark = replayMark;
+	}
+	ExtendedContext(List<TemplateContext> contexts, ReplayReader r) {
+	    // only need to make mark if contexts.size()>1.
+	    this(contexts, contexts.size()>1 ? r.getMark() : null);
+	}
+	public boolean isFirst() { return isFirst; }
+	public boolean isLast() { return contexts.size()==1; }
+	boolean isEcho() { return contexts.size() > 0; }
+	public TemplateContext curContext() {
+	    return contexts.size()==0 ? null : contexts.get(0);
+	}
+    }
     /** Encapsulates a macro definition. */
     static abstract class TemplateMacro {
 	/** This is the most general interface to the macro-expansion
@@ -156,13 +168,18 @@ class TemplateWriter extends PrintWriter  {
 	 *  a list of size 0 is allowed, and suppresses output until the
 	 *  matching <code>@END@</code> macro is found.  The
 	 *  <code>context</code> parameter will be <code>null</code> if
-	 *  output is currently suppressed. */
+	 *  output is currently suppressed. The <code>isFirst</code>
+	 *  parameter will be true if this is the first repetition of
+	 *  this block.  The <code>isLast</code> parameter will be true
+	 *  if this is the last repetition of this block. */
 	abstract List<TemplateContext> doMacro
-	    (TemplateWriter tw, TemplateContext context);
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast);
     }
     static abstract class TemplateAction extends TemplateMacro {
 	final List<TemplateContext> doMacro
-	    (TemplateWriter tw, TemplateContext context) {
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast) {
 	    // process the macro...
 	    if (context!=null) process(tw, context);
 	    // no new contexts added, so return null.
@@ -174,10 +191,44 @@ class TemplateWriter extends PrintWriter  {
     }
     static abstract class TemplateForEach extends TemplateMacro {
 	final List<TemplateContext> doMacro
-	    (TemplateWriter tw, TemplateContext context) {
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast) {
 	    // don't really push new contexts if we're not currently echoing.
 	    if (context==null) return EMPTY_CONTEXT_LIST;
 	    // otherwise, go ahead and process this.
+	    return process(tw, context, isFirst, isLast);
+	}
+	/** Return a list of <code>TemplateContext</code>s; each one will
+	 *  be used in turn to process this block.  So if you return a
+	 *  list of size two, the block will be repeated twice, etc.  This
+	 *  method will only be invoked if output is not currently
+	 *  suppressed. */
+	abstract List<TemplateContext> process
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast);
+	/** An empty list object, static for efficiency. */
+	static final List<TemplateContext> EMPTY_CONTEXT_LIST =
+	    Arrays.asList(new TemplateContext[0]);
+    }
+    static abstract class TemplateConditional extends TemplateForEach {
+	final List<TemplateContext> process
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast) {
+	    assert context!=null;
+	    if (!isBlockEmitted(context, isFirst, isLast))
+		return EMPTY_CONTEXT_LIST;
+	    return Collections.singletonList(context);
+	}
+	/** Return true if this block following this conditional should be
+	 *  emitted, else return false.  This method will only be invoked
+	 *  if output is not currently suppressed. */
+	abstract boolean isBlockEmitted(TemplateContext context,
+					boolean isFirst, boolean isLast);
+    }
+    static abstract class TemplateSimpleForEach extends TemplateForEach {
+	final List<TemplateContext> process
+	    (TemplateWriter tw, TemplateContext context,
+	     boolean isFirst, boolean isLast) {
 	    return process(tw, context);
 	}
 	/** Return a list of <code>TemplateContext</code>s; each one will
@@ -187,44 +238,40 @@ class TemplateWriter extends PrintWriter  {
 	 *  suppressed. */
 	abstract List<TemplateContext> process
 	    (TemplateWriter tw, TemplateContext context);
-	/** An empty list object, static for efficiency. */
-	static final List<TemplateContext> EMPTY_CONTEXT_LIST =
-	    Arrays.asList(new TemplateContext[0]);
-    }
-    static abstract class TemplateConditional extends TemplateForEach {
-	final List<TemplateContext> process
-	    (TemplateWriter tw, TemplateContext context) {
-	    assert context!=null;
-	    if (!isBlockEmitted(context)) return EMPTY_CONTEXT_LIST;
-	    else return Collections.singletonList(context);
-	}
-	/** Return true if this block following this conditional should be
-	 *  emitted, else return false.  This method will only be invoked
-	 *  if output is not currently suppressed. */
-	abstract boolean isBlockEmitted(TemplateContext context);
     }
     /** A map from macro names to definitions. */
     private static final Map<String, TemplateMacro> macroMap =
 	new HashMap<String,TemplateMacro>();
     /** Convenience method to register macro definitions. */
     private static final void register(String name, TemplateMacro action) {
-	assert name.startsWith("@") && name.endsWith("@");
-	macroMap.put(name, action);
+	assert (!name.startsWith("@")) && (!name.endsWith("@"));
+	assert name.startsWith("IF")==(action instanceof TemplateConditional);
+	macroMap.put("@"+name+"@", action);
+    }
+    private static final void registerConditional(String name,
+						  final TemplateConditional c){
+	register("IF_"+name, (TemplateMacro) c);
+	register("IFNOT_"+name, (TemplateMacro) new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext context,
+				       boolean isFirst, boolean isLast) {
+		    return !c.isBlockEmitted(context, isFirst, isLast);
+		}
+	    });
     }
     static {
 	// macro definitions.  java is so noisy!
-	register("@CHARSET@", new TemplateAction() {
+	register("CHARSET", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    tw.write(context.options.charSet.name());
 		}
 	    });
-	register("@WINDOWTITLE@", new TemplateAction() {
+	register("WINDOWTITLE", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.windowTitle==null) return;
 		    tw.write(context.options.windowTitle);
 		}
 	    });
-	register("@TITLESUFFIX@", new TemplateAction() {
+	register("TITLESUFFIX", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.windowTitle==null) return;
 		    tw.write(" (");
@@ -232,46 +279,58 @@ class TemplateWriter extends PrintWriter  {
 		    tw.write(")");
 		}
 	    });
-	register("@DOCTITLE@", new TemplateAction() {
+	register("DOCTITLE", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.docTitle==null) return;
 		    tw.write(context.options.docTitle);
 		}
 	    });
-	register("@ROOT@", new TemplateAction() {
+	register("ROOT", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    tw.write(context.curURL.makeRelative(""));
 		}
 	    });
-	register("@HEADER@", new TemplateAction() {
+	register("HEADER", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.header==null) return;
 		    tw.write(context.options.header);
 		}
 	    });
-	register("@FOOTER@", new TemplateAction() {
+	register("FOOTER", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.footer==null) return;
 		    tw.write(context.options.footer);
 		}
 	    });
-	register("@BOTTOM@", new TemplateAction() {
+	register("BOTTOM", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    if (context.options.bottom==null) return;
 		    tw.write(context.options.bottom);
 		}
 	    });
-	register("@PKGNAME@", new TemplateAction() {
+	register("PKGNAME", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
 		    tw.write(context.curPackage.name());
 		}
 	    });
-	register("@PKGSUMMARYLINK@", new TemplateAction() {
+	register("PKGSUMMARYLINK", new TemplateAction() {
 		void process(TemplateWriter tw, TemplateContext context) {
 		    assert context.curPackage!=null;
 		    tw.write(HTMLUtil.toLink(context.curURL,context.curPackage,
 					     "package-summary.html"));
+		}
+	    });
+	registerConditional("FIRST", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    return isFirst;
+		}
+	    });
+	registerConditional("LAST", new TemplateConditional() {
+		boolean isBlockEmitted(TemplateContext c,
+				       boolean isFirst, boolean isLast) {
+		    return isLast;
 		}
 	    });
     }
