@@ -22,7 +22,7 @@ import java.util.List;
  */
 abstract class PDoc implements net.cscott.gjdoc.Doc {
     public abstract String commentText();
-    public abstract int compareTo(Doc d);
+    public abstract int compareTo(Object/*Doc*/ d);
     public abstract List<Tag> firstSentenceTags();
     public abstract String getRawCommentText();
     public abstract List<Tag> inlineTags();

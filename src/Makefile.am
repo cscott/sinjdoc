@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = . parser html
+SUBDIRS = . parser lexer html
 
 AM_JAVACFLAGS = -g -warnunchecked
 # JAVAROOT directory must exist!

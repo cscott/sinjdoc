@@ -41,6 +41,6 @@ fi
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile src/Makefile src/parser/Makefile
+AC_CONFIG_FILES([Makefile src/Makefile src/parser/Makefile src/lexer/Makefile
 			  src/html/Makefile src/html/Version.java])
 AC_OUTPUT

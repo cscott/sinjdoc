@@ -4,6 +4,7 @@
 package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
+import net.cscott.gjdoc.Doc;
 import net.cscott.gjdoc.Type;
 
 import java.util.ArrayList;

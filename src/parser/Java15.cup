@@ -1,6 +1,4 @@
-package net.cscott.gjdoc.parserx;
-
-import harpoon.Tools.Annotation.Lexer;
+package net.cscott.gjdoc.parser;
 
 import java_cup.runtime.*;
 

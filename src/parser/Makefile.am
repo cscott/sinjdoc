@@ -4,11 +4,12 @@ AM_JAVACFLAGS = -g -warnunchecked
 
 JAVAROOT=$(top_builddir)/classes
 
-CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/cup.jar:$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/cup.jar:$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
 Java15.java \
 Sym.java \
+Lexer.java \
 ParserControl.java \
 PClassDoc.java \
 PClassTypeVariable.java \
@@ -38,7 +39,6 @@ PTypeVariable.java
 	   echo Not able to regenerate "parser;" java interpreter not found.;\
 	   exit 1; \
 	fi
-	cd `dirname $@` && cat `basename $<`
 	cd `dirname $@` && \
 	$(JAVA) -cp $(top_srcdir)/lib/cup.jar java_cup.Main \
 		-parser `basename $@ .java` -symbols Sym \

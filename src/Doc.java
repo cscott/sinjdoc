@@ -18,9 +18,9 @@ import java.util.List;
  * @version $Id$
  * @see com.sun.javadoc.Doc
  */
-public interface Doc extends ReferenceUnique, Comparable<Doc> {
+public interface Doc extends ReferenceUnique, Comparable/*<Doc>*/ {
     public String commentText();
-    public int compareTo(Doc d);
+    public int compareTo(Object/*Doc*/ d);
     public List<Tag> firstSentenceTags();
     public String getRawCommentText();
     public List<Tag> inlineTags();
