@@ -14,6 +14,7 @@ pkgdata_DATA = @PACKAGE_TARNAME@.jar
 	echo "Manifest-Version: 1.0" > manifest
 	echo "Main-Class: net.cscott.gjdoc.Main" >> manifest
 	echo "Class-Path: lib/jutil.jar lib/cup.jar" >> manifest
+	echo "Implementation-Version: $(VERSION)" >> manifest
 	cd classes && $(JAR) -cfm ../$@ ../manifest net
 	-$(RM) manifest
 
@@ -32,9 +33,10 @@ doc:
 	java -ea -jar @PACKAGE_TARNAME@.jar \
 	   -version -author -breakiterator -source 1.5 \
 	   -overview src/overview.html \
-	   -windowtitle "GJDoc documentation" \
-	   -doctitle "GJDoc documentation" \
-	   -header "GJDoc" -bottom "Copyright &copy; 2003 C. Scott Ananian" \
+	   -windowtitle "GJDoc $(VERSION) documentation" \
+	   -doctitle "GJDoc $(VERSION) documentation" \
+	   -header "GJDoc $(VERSION)" \
+	   -bottom "Copyright &copy; 2003 C. Scott Ananian" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
 	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
@@ -58,6 +60,20 @@ dist: ChangeLog
 
 backup: dist
 	scp $(PACKAGE)-$(VERSION).tar.gz catfish.lcs.mit.edu:
+upload: dist doc ChangeLog @PACKAGE_TARNAME@.jar
+	$(RM) -rf $(PACKAGE)-$(VERSION)
+	mkdir $(PACKAGE)-$(VERSION)
+	tar -c doc | tar -C $(PACKAGE)-$(VERSION) -x
+	(date ; echo "Released version $(VERSION)" ; echo " " ; cat ChangeLog)\
+		> $(PACKAGE)-$(VERSION)/ChangeLog.txt
+	cp $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)/
+	cd $(PACKAGE)-$(VERSION) && \
+		ln -s $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE).tar.gz
+	cp @PACKAGE_TARNAME@.jar $(PACKAGE)-$(VERSION)/
+	touch $(PACKAGE)-$(VERSION)/VERSION_$(VERSION)
+	tar -c $(PACKAGE)-$(VERSION)/ | \
+		ssh catfish.lcs.mit.edu "cd public_html/Projects/GJ/ && /bin/rm -rf $(PACKAGE)-$(VERSION) && tar -xv"
+	$(RM) -rf $(PACKAGE)-$(VERSION)
 
 # the 'cvs' rules only make sense if you've got a copy checked out from CVS
 needs-cvs:
