@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(SinjDoc, 0.5, cscott@cscott.net)
+AC_INIT(SinjDoc, 0.6, cscott@cscott.net)
 AC_COPYRIGHT(Copyright (c) 2003-2004 C. Scott Ananian)
 AC_REVISION($Revision$)
 AC_CONFIG_SRCDIR(configure.ac) # double check --srcdir validity.
@@ -11,7 +11,7 @@ AM_INIT_AUTOMAKE
 AC_CHECK_PROGS(JAR, fastjar jar, not-found)
 AC_CHECK_PROGS(JAVA, java, not-found)
 # find a version of javac that compiles generic java.
-AC_MSG_CHECKING([for a jsr-14-compliant java 1.4 compiler])
+AC_MSG_CHECKING([for a jsr-14-compliant java 1.5 compiler])
 JAVAC=not-found
 CLS=f$$
 echo "abstract class $CLS extends java.util.AbstractList<Integer> { }" \
