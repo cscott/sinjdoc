@@ -1,5 +1,7 @@
 This directory contains java sources for the SinjDoc documentation tool.
 SinjDoc expands to "SinjDoc is not javadoc" -- it's better!
+[If recursion isn't your thing, you can alternatively expand SinjDoc to
+ "Scott's Improved and New JavaDoc".  That's nicer, now, isn't it?]
 
 If you've grabbed the sources from CVS, you'll want to run ./autogen.sh
 to let autoheader/autoconf/automake do their thing.  This is not necessary
