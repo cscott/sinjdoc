@@ -22,6 +22,7 @@ class PParameterizedType
     implements net.cscott.gjdoc.ParameterizedType {
     final ClassType baseType;
     final List<Type> actualTypeArguments;
+    /** Create a new parameterized class type. */
     PParameterizedType(ClassType baseType, List<Type> actualTypeArguments) {
 	this.baseType = baseType;
 	this.actualTypeArguments = actualTypeArguments;
