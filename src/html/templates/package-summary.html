@@ -48,24 +48,46 @@
      <span class="tagContents"><a href="#package_description" class="seetag">Description</a></span>
    </p>
 @END@
+@FORALL_INTERFACES@
+@IF_FIRST@
    <table class="interface_summary linklist">
      <tr><th colspan="2">Interface Summary</th></tr>
-     <tr><td><a href="CharSequence.html" class="interfaceRef">CharSequence</a></td><td>A CharSequence is a readable sequence of characters.</td></tr>
-     <tr><td><a href="Cloneable.html" class="interfaceRef">Cloneable</a></td><td>A class implements....</td></tr>
+@END@
+     <tr><td>@CLASSLINK_P@</td><td>@TAG_SUMMARY@</td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
+@FORALL_ORDINARYCLASSES@
+@IF_FIRST@
    <table class="class_summary linklist">
      <tr><th colspan="2">Class Summary</th></tr>
-     <tr><td><a href="Boolean.html" class="classRef">Boolean</a></td><td>Provides the classes...</td></tr>
-     <tr><td><a href="Boolean.html" class="classRef">Boolean</a></td><td>Provides the classes...</td></tr>
+@END@
+     <tr><td>@CLASSLINK_P@</td><td>@TAG_SUMMARY@</td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
+@FORALL_EXCEPTIONS@
+@IF_FIRST@
    <table class="exception_summary linklist">
      <tr><th colspan="2">Exception Summary</th></tr>
-     <tr><td><a href="ArithmeticException.html" class="exceptionRef">ArithmeticException</a></td><td>Provides the classes...</td></tr>
+@END@
+     <tr><td>@CLASSLINK_P@</td><td>@TAG_SUMMARY@</td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
+@FORALL_ERRORS@
+@IF_FIRST@
    <table class="error_summary linklist">
      <tr><th colspan="2">Error Summary</th></tr>
-     <tr><td><a href="AssertionError.html" class="errorRef">AssertionError</a></td><td>Provides the classes...</td></tr>
+@END@
+     <tr><td>@CLASSLINK_P@</td><td>@TAG_SUMMARY@</td></tr>
+@IF_LAST@
    </table>
+@END@
+@END@
 
    <div class="description">
 @IF_TAGS@
