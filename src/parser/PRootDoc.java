@@ -19,10 +19,9 @@ import java.util.List;
  */
 public abstract class PRootDoc extends PDoc
     implements net.cscott.gjdoc.RootDoc {
-    final ParserControl pc;
     final String overviewText;
     PRootDoc(ParserControl pc) {
-	this.pc = pc;
+	super(pc);
 	this.overviewText =
 	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
     }
