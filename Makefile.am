@@ -45,6 +45,7 @@ doc-clean:
 	-$(RM) -rf doc doc-link
 
 clean-local: doc-clean
+mostlyclean-local:
 	-$(RM) -rf classes/net
 
 list:
