@@ -15,5 +15,6 @@ package net.cscott.gjdoc.parser;
  */
 abstract class PMemberDoc extends PProgramElementDoc
     implements net.cscott.gjdoc.MemberDoc {
+    PMemberDoc(ParserControl pc) { super(pc); }
     public abstract boolean isSynthetic();
 }
