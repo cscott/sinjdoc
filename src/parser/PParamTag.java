@@ -3,14 +3,22 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.parser;
 
+import net.cscott.gjdoc.SourcePosition;
+import net.cscott.gjdoc.Tag;
+
+import java.util.List;
 /**
  * The <code>PParamTag</code> class represents a @param documentation tag.
  * 
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
-abstract class PParamTag extends PTag
+abstract class PParamTag extends PTag.Trailing
     implements net.cscott.gjdoc.ParamTag {
-    public abstract String parameterComment();
+    PParamTag(SourcePosition sp, String name, List<Tag> contents) {
+	super(sp, name, contents);
+	assert name()=="param";
+    }
+    public abstract List<Tag> parameterComment();
     public abstract String parameterName();
 }

@@ -6,7 +6,10 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.MemberDoc;
 import net.cscott.gjdoc.PackageDoc;
+import net.cscott.gjdoc.SourcePosition;
+import net.cscott.gjdoc.Tag;
 
+import java.util.List;
 /**
  * The <code>PSeeTag</code> class represents a "see also" documentation
  * tag.  The @see tag can be plain text, or reference a class or
@@ -15,8 +18,21 @@ import net.cscott.gjdoc.PackageDoc;
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
+// XXX shares implementation with the inline reference tag
 abstract class PSeeTag extends PTag
     implements net.cscott.gjdoc.SeeTag {
+    final String name; final List<Tag> contents;
+    PSeeTag(SourcePosition sp, String name, List<Tag> contents) {
+	super(sp);
+	this.name = name.intern();
+	this.contents = contents;
+	assert name()=="see" || name()=="link" || name()=="linkplain";
+    }
+    public boolean isTrailing() { return name=="see"; }
+    public boolean isInline() { return name=="link" || name=="linkplain"; }
+    public String name() { return name; }
+    public List<Tag> contents() { return contents; }
+    // parse!
     public abstract String label();
     public abstract ClassDoc referencedClass();
     public abstract String referencedClassName();

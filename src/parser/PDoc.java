@@ -113,9 +113,11 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 		result.add(PTag.newTextTag(text, sp.add(pos)));
 	    }
 	    // now this section becomes an inline tag.
-	    String text = tagMatcher.group(2);
-	    if (stripStars) text = removeLeadingStars(text);
-	    result.add(PTag.newInlineTag(tagMatcher.group(1), text,
+	    // XXX regexp doesn't handle nested inline tags properly.
+	    List<Tag> contents = parseInline(tagMatcher.group(2),
+					     sp.add(tagMatcher.start(2)),
+					     stripStars);
+	    result.add(PTag.newInlineTag(tagMatcher.group(1), contents,
 					 sp.add(tagMatcher.start(1))));
 	    pos = tagMatcher.end();
 	}
@@ -141,7 +143,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	StringBuffer sb = new StringBuffer();
 	for (Iterator<Tag> it=itags.iterator(); it.hasNext(); ) {
 	    Tag tag = it.next();
-	    if (tag.kind()=="Text")
+	    if (tag.isText())
 		sb.append(tag.text());
 	}
 	// now create a break iterator...
@@ -157,7 +159,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	//  ...find start position.
 	while (it.hasNext() && start < pos) {
 	    Tag curTag = it.next();
-	    if (curTag.kind()!="Text") continue;// ignore leading non-text tags
+	    if (!curTag.isText()) continue;// ignore leading non-text tags
 	    lastTag=curTag;
 	    lastPos=pos;
 	    pos += curTag.text().length();
@@ -171,7 +173,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	    if (lastTag!=null) result.add(lastTag);
 	    lastTag=curTag;
 	    lastPos=pos;
-	    if (curTag.kind()=="Text")
+	    if (curTag.isText())
 		pos += curTag.text().length();
 	}
 	// shorten end of tag.
@@ -187,7 +189,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	List<Tag> result = new ArrayList<Tag>();
 	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
 	    Tag tag = it.next();
-	    if (tag.kind()!="Text" && !tag.isInline())
+	    if (tag.isTrailing())
 		return result; // done!
 	    result.add(tag);
 	}
@@ -197,7 +199,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	List<Tag> result = new ArrayList<Tag>();
 	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
 	    Tag tag = it.next();
-	    if (tag.name().equals(tagname))
+	    if ((!tag.isText()) && tag.name().equals(tagname))
 		result.add(tag);
 	}
 	return Collections.unmodifiableList(result);
@@ -207,7 +209,7 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
 	StringBuffer sb = new StringBuffer();
 	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
 	    Tag tag = it.next();
-	    if (tag.kind()=="Text")
+	    if (tag.isText())
 		sb.append(tag.text());
 	}
 	return sb.toString();

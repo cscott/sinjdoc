@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.SourcePosition;
 import net.cscott.gjdoc.Tag;
 
+import java.util.Collections;
 import java.util.List;
 /**
  * The <code>PTag</code> class represents a documentation tag.  The
@@ -17,38 +18,83 @@ import java.util.List;
  */
 abstract class PTag 
     implements net.cscott.gjdoc.Tag {
-    public abstract boolean isInline();
-    public abstract String kind();
-    public abstract String name();
-    public abstract SourcePosition position();
-    public abstract String text();
-    public String toString() {
-	String str = "@"+name()+" "+text();
-	if (isInline()) str = "{"+str+"}";
-	return str;
+    final SourcePosition sp;
+    PTag(SourcePosition sp) { this.sp = sp; }
+    public boolean isInline() { return false; }
+    public boolean isText() { return false; }
+    public boolean isTrailing() { return false; }
+
+    public String name() { return null; }
+    public String text() { return null; }
+    public SourcePosition position() { return sp; }
+    public List<Tag> contents() { return null; }
+
+    public abstract String toString();
+
+    static class Text extends PTag {
+	final String text;
+	public boolean isText() { return true; }
+	public String text() { return text; }
+	Text(SourcePosition sp, String text) {
+	    super(sp);
+	    this.text = text;
+	}
+	public String toString() { return text; }
+    }
+    static class Trailing extends PTag {
+	final String name;
+	List<Tag> contents;
+	public boolean isTrailing() { return true; }
+	public String name() { return name; }
+	public List<Tag> contents() { return contents; }
+	Trailing(SourcePosition sp, String name, List<Tag> contents) {
+	    super(sp);
+	    this.name = name.intern();
+	    this.contents = Collections.unmodifiableList(contents);
+	}
+	public String toString() {
+	    return "@"+name()+" "+contents();
+	}
+    }
+    static class Inline extends PTag {
+	public boolean isInline() { return true; }
+	final String name;
+	List<Tag> contents;
+	public String name() { return name; }
+	public List<Tag> contents() { return contents; }
+	Inline(SourcePosition sp, String name, List<Tag> contents) {
+	    super(sp);
+	    this.name = name.intern();
+	    this.contents = Collections.unmodifiableList(contents);
+	}
+	public String toString() {
+	    return "{@"+name()+" "+contents()+"}";
+	}
     }
     /** Convenience method to create a new 'Tag' representing plain-text;
      *  i.e. it has kind()=="Text". */
     static Tag newTextTag(final String text, final SourcePosition pos) {
-	return new Tag() {
-		public String toString() { return text; }
-		public String text() { return text; }
-		public String kind() { return "Text"; }
-		public String name() { return ""; }
-		public boolean isInline() { return false; }
-		public SourcePosition position() { return pos; }
-	    };
+	return new Text(pos, text);
     }
     /** Select a new non-inline Tag object to create based on the tagname. */
     static Tag newTag(String tagname, List<Tag> contents, SourcePosition pos) {
-	assert false : "unimplemented";
-	return null;
+	tagname=tagname.intern();
+	/* XXX uncomment when tag subtypes are not abstract.
+	if (tagname=="param") return new PParamTag(pos, tagname, contents);
+	if (tagname=="see") return new PSeeTag(pos, tagname, contents);
+	if (tagname=="serialField") return new PSerialFieldTag(pos, tagname, contents);
+	if (tagname=="throws" || tagname=="exception") return new PThrowsTag(pos, tagname, contents);
+	*/
+	return new Trailing(pos, tagname, contents);
     }
     /** Select a new inline Tag object to create based on the tagname. */
     // sp is position of first char of 'tagname'
-    // we're not allowing nested inline tags.
-    static Tag newInlineTag(String tagname, String text, SourcePosition pos) {
-	assert false : "unimplemented";
-	return null;
+    static Tag newInlineTag(String tagname, List<Tag> contents, SourcePosition pos) {
+	tagname=tagname.intern();
+	/* XXX uncomment when PSeeTag is not abstract.
+	if (tagname=="link" || tagname=="linkplain")
+	    return new PSeeTag(pos, tagname, contents);
+	*/
+	return new Inline(pos, tagname, contents);
     }
 }

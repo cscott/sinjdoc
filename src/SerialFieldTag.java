@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import java.util.List;
 /**
  * The <code>SerialFieldTag</code> class documents a Serializable field
  * defined by an ObjectStreamField.
@@ -13,7 +14,7 @@ package net.cscott.gjdoc;
  */
 public interface SerialFieldTag extends Tag, Comparable<SerialFieldTag> {
     public int compareTo(SerialFieldTag tag);
-    public String description();
+    public List<Tag> description();
     public String fieldName();
     public String fieldType();
     public ClassDoc fieldTypeDoc();

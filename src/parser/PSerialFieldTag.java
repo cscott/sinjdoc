@@ -5,6 +5,10 @@ package net.cscott.gjdoc.parser;
 
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.SerialFieldTag;
+import net.cscott.gjdoc.SourcePosition;
+import net.cscott.gjdoc.Tag;
+
+import java.util.List;
 
 /**
  * The <code>PSerialFieldTag</code> class documents a Serializable field
@@ -13,10 +17,14 @@ import net.cscott.gjdoc.SerialFieldTag;
  * @author  C. Scott Ananian <cananian@alumni.princeton.edu>
  * @version $Id$
  */
-abstract class PSerialFieldTag extends PTag
+abstract class PSerialFieldTag extends PTag.Trailing
     implements net.cscott.gjdoc.SerialFieldTag {
+    PSerialFieldTag(SourcePosition sp, String name, List<Tag> contents) {
+	super(sp, name, contents);
+	assert name()=="serialField";
+    }
     public abstract int compareTo(SerialFieldTag tag);
-    public abstract String description();
+    public abstract List<Tag> description();
     public abstract String fieldName();
     public abstract String fieldType();
     public abstract ClassDoc fieldTypeDoc();

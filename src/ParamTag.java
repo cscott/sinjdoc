@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc;
 
+import java.util.List;
 /**
  * The <code>ParamTag</code> class represents a @param documentation tag.
  * 
@@ -13,7 +14,7 @@ package net.cscott.gjdoc;
 public interface ParamTag extends Tag {
     /** Return the parameter comment associated with this
      *  <code>ParamTag</code>. */
-    public String parameterComment();
+    public List<Tag> parameterComment();
     /** Return the name of the parameter associated with this
      *  <code>ParamTag</code>. */
     public String parameterName();
