@@ -65,9 +65,27 @@ abstract class TagEmitter {
 	new TagInfo("return", null, new SimpleBlockAction("Returns")),
 	new TagInfo("throws", ThrowsTag.class,
 		    new SimpleBlockAction("Throws")/*XXX*/),
-	new TagInfo("since", null, new SimpleBlockAction("Since")),
-	new TagInfo("version", null, new SimpleBlockAction("Version")),
-	new TagInfo("author", null, new SimpleBlockAction("Author")),
+	new TagInfo("since", null, new SimpleBlockAction("Since") {
+		void emit(PrintWriter pw, String kind, List<Tag> tags,
+			  TemplateContext context) {
+		    if (context.options.emitSinceTag)
+			super.emit(pw, kind, tags, context);
+		}
+	    }),
+	new TagInfo("version", null, new SimpleBlockAction("Version") {
+		void emit(PrintWriter pw, String kind, List<Tag> tags,
+			  TemplateContext context) {
+		    if (context.options.emitVersionTag)
+			super.emit(pw, kind, tags, context);
+		}
+	    }),
+	new TagInfo("author", null, new SimpleBlockAction("Author") {
+		void emit(PrintWriter pw, String kind, List<Tag> tags,
+			  TemplateContext context) {
+		    if (context.options.emitAuthorTag)
+			super.emit(pw, kind, tags, context);
+		}
+	    }),
 	new TagInfo(".unknown", null, new SimpleBlockAction("UNKNOWN")),
 	new TagInfo("see", SeeTag.class, new SimpleBlockAction("See Also")),
     };
