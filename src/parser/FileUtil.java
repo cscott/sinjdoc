@@ -24,9 +24,8 @@ public class FileUtil {
     FileUtil(String sourcePath, int sourceVersion) {
 	assert sourceVersion>=1 && sourceVersion<=5;
 	this.sourceVersion = sourceVersion;
-	for (Iterator<String> it=splitPath(sourcePath).iterator();
-	     it.hasNext(); ) {
-	    File f = new File(it.next());
+	for (String filename : splitPath(sourcePath)) {
+	    File f = new File(filename);
 	    if (f.isDirectory())
 		this.sourcePath.add(f);
 	}
@@ -34,9 +33,8 @@ public class FileUtil {
 
     /** Returns true if the given string is a valid java package name. */
     public boolean isValidPackageName(String str) {
-	for (Iterator<String> it=Arrays.asList(DOT.split(str,-1)).iterator();
-	     it.hasNext(); )
-	    if (!isValidIdentifier(it.next()))
+	for (String name : DOT.split(str,-1))
+	    if (!isValidIdentifier(name))
 		return false;
 	return true;
     }
@@ -99,20 +97,19 @@ public class FileUtil {
     public List<String> expandPackages(List<String> subpackages,
 				       List<String> exclude) {
 	List<String> result = new ArrayList<String>();
-	for (Iterator<String> it=subpackages.iterator(); it.hasNext(); )
+	for (String subpkg : subpackages)
 	    // expand the packages one at a time.
-	    _expandOnePackage_(result, it.next(), exclude);
+	    _expandOnePackage_(result, subpkg, exclude);
 	return result;
     }
     private void _expandOnePackage_(List<String> result,
 				    String packageName,
 				    List<String> exclude) {
 	// if this package is on the exclude list, we're done.
-	for (Iterator<String> it=exclude.iterator(); it.hasNext(); ) {
-	    String ex = it.next();
+	for (String ex : exclude)
 	    if (packageName.equals(ex) || packageName.startsWith(ex+"."))
 		return; // done already!  quick finish.
-	}
+
 	// okay, it's not to be excluded.  Does it exist on the source path?
 	File pkgDir = findPackage(packageName);
 	if (pkgDir==null) return; // doesn't exist; we're done.
@@ -121,10 +118,9 @@ public class FileUtil {
 	if (sourceFilesInPackage(pkgDir).size()>0)
 	    result.add(packageName);
 	// now look for subdirectories containing java source files.
-	for (Iterator<File> it=Arrays.asList(pkgDir.listFiles(new FileFilter(){
+	for (File subDir : pkgDir.listFiles(new FileFilter(){
 		public boolean accept(File f) { return f.isDirectory(); }
-	    })).iterator(); it.hasNext(); ) {
-	    File subDir = it.next();
+	    })) {
 	    String newPkg = packageName+"."+subDir.getName();
 	    // must be a valid name for a java package.
 	    if (!isValidPackageName(newPkg)) continue;
@@ -154,8 +150,8 @@ public class FileUtil {
 	// convert package name to path.
 	String path = DOT.matcher(packageName).replaceAll
 	    (System.getProperty("file.separator"));
-	for (Iterator<File> it=sourcePath.iterator(); it.hasNext(); ) {
-	    File candidate = new File(it.next(), path);
+	for (File sourcePathPiece : sourcePath ) {
+	    File candidate = new File(sourcePathPiece, path);
 	    if (candidate.isDirectory() && candidate.exists())
 		return candidate;
 	}

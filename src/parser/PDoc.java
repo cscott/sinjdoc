@@ -195,11 +195,9 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
 	List<Tag> itags = inlineTags();
 	// create a plain-text version of these tags.
 	StringBuffer sb = new StringBuffer();
-	for (Iterator<Tag> it=itags.iterator(); it.hasNext(); ) {
-	    Tag tag = it.next();
+	for (Tag tag : itags)
 	    if (tag.isText())
 		sb.append(tag.text());
-	}
 	// now create a break iterator...
 	BreakIterator boundary = BreakIterator.getSentenceInstance(pc.locale);
 	// ...and identify the start end of the first sentence.
@@ -242,8 +240,7 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
     }
     public List<Tag> inlineTags() {
 	List<Tag> result = new ArrayList<Tag>();
-	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
-	    Tag tag = it.next();
+	for (Tag tag : tags()) {
 	    if (tag.isTrailing())
 		return result; // done!
 	    result.add(tag);
@@ -252,21 +249,17 @@ abstract class PDoc implements net.cscott.sinjdoc.Doc {
     }
     public final List<Tag> tags(String tagname) {
 	List<Tag> result = new ArrayList<Tag>();
-	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
-	    Tag tag = it.next();
+	for (Tag tag : tags())
 	    if ((!tag.isText()) && tag.name().equals(tagname))
 		result.add(tag);
-	}
 	return shrinkList(result);
     }
     public final String commentText() {
 	// strip out all tags not of kind 'Text'.  append the rest.
 	StringBuffer sb = new StringBuffer();
-	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
-	    Tag tag = it.next();
+	for (Tag tag : tags())
 	    if (tag.isText())
 		sb.append(tag.text());
-	}
 	return sb.toString();
     }
     /**

@@ -57,8 +57,8 @@ class HTMLUtil {
     public static List<PackageDoc> allDocumentedPackages(RootDoc root) {
 	// first collect all referenced packages.
 	Map<String,PackageDoc> pkgMap = new LinkedHashMap<String,PackageDoc>();
-	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ) {
-	    PackageDoc pd = it.next().containingPackage();
+	for (ClassDoc cd : root.classes()) {
+	    PackageDoc pd = cd.containingPackage();
 	    pkgMap.put(pd.name(), pd);
 	}
 	Collection<PackageDoc> c = pkgMap.values();

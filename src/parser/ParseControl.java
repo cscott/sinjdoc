@@ -97,27 +97,22 @@ public class ParseControl {
     public PRootDoc parse() {
 	rootDoc = new PRootDoc(this);
 	// make PPackage objects for every included package first.
-	for (Iterator<String> it=packages.iterator(); it.hasNext(); )
-	    rootDoc.findOrCreatePackage(it.next(), true);
+	for (String pkg : packages )
+	    rootDoc.findOrCreatePackage(pkg, true);
 	// parse every source file in specified packages.
-	for (Iterator<String> it=packages.iterator(); it.hasNext(); ) {
-	    PPackageDoc ppd = rootDoc.findOrCreatePackage(it.next(), true);
+	for (String pkg : packages ) {
+	    PPackageDoc ppd = rootDoc.findOrCreatePackage(pkg, true);
 	    assert ppd.isIncluded(); // double-check.
-	    for (Iterator<File> it2=sourcePath.sourceFilesInPackage(ppd.name())
-		     .iterator(); it2.hasNext(); ) {
-		File f = it2.next();
+	    for (File f : sourcePath.sourceFilesInPackage(ppd.name()))
 		// note that 'package' is non-null here because package is
 		// always included.
 		rootDoc.findOrCreateClasses(f, ppd);
-	    }
 	}
 	// now parse the stand-alone source files.
-	for (Iterator<File> it=sourceFiles.iterator(); it.hasNext(); ) {
-	    File f = it.next();
+	for (File f : sourceFiles)
 	    // note that 'package' is null here because package may not be
 	    // included.
 	    rootDoc.findOrCreateClasses(f, null);
-	}
 	// we're done!
 	return rootDoc;
     }

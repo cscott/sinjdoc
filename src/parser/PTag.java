@@ -45,8 +45,8 @@ abstract class PTag
 	StringBuffer sb=new StringBuffer();
 	if (isInline()) sb.append("{");
 	sb.append("@"); sb.append(name()); sb.append(" ");
-	for (Iterator<Tag> it=contents().iterator(); it.hasNext(); )
-	    sb.append(it.next().toString());
+	for (Tag t : contents())
+	    sb.append(t.toString());
 	if (isInline()) sb.append("}");
 	return sb.toString();
     }

@@ -86,9 +86,8 @@ class PClassDoc extends PProgramElementDoc
     }
     public final List<ClassType> importedClasses() {
 	ArrayList<ClassType> result = new ArrayList<ClassType>();
-	for (Iterator<String> it=typeContext.compilationUnit.singleTypeImport
-		 .iterator(); it.hasNext(); )
-	    result.add(typeContext.lookupClassTypeName(it.next(),false));
+	for (String name : typeContext.compilationUnit.singleTypeImport)
+	    result.add(typeContext.lookupClassTypeName(name, false));
 	result.trimToSize();
 	return Collections.unmodifiableList(result);
     }

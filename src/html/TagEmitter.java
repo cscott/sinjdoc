@@ -118,8 +118,7 @@ abstract class TagEmitter {
 		  TemplateContext context) {
 	    pw.print("<p class=\"tag tag_"+kind+"\">");
 	    String desc = tagDescription; boolean first=true;
-	    for (Iterator<Tag> it=tags.iterator(); it.hasNext(); ) {
-		Tag t = it.next();
+	    for (Tag t : tags) {
 		assert t.isTrailing();
 		if (desc==null) desc = t.name();
 		if (first) {
@@ -310,8 +309,7 @@ abstract class TagEmitter {
     private static void emitInline(PrintWriter pw, List<Tag> tags,
 				   TemplateContext context) {
 	// no tag in this list should be trailing.
-	for (Iterator<Tag> it=tags.iterator(); it.hasNext(); ) {
-	    Tag t = it.next();
+	for (Tag t : tags) {
 	    assert !t.isTrailing();
 	    inlineActions.get(inlineTagKind(t)).emit(pw, t, context);
 	}
@@ -326,8 +324,7 @@ abstract class TagEmitter {
 	// now group trailing tags & invoke actions.
 	List<Tag> group = new ArrayList<Tag>();
 	TagInfo groupType=null;
-	for (Iterator<Tag> it=sorted.iterator(); it.hasNext(); ) {
-	    Tag t = it.next();
+	for (Tag t : sorted) {
 	    TagInfo ti = lookup(t);
 	    if (groupType!=ti) { // this is a new group!
 		if (groupType!=null) // emit old group

@@ -62,18 +62,16 @@ abstract class PExecutableMemberDoc extends PMemberDoc
     }
     public final List<ParamTag> paramTags() {
 	List<ParamTag> result = new ArrayList<ParamTag>(tags().size());
-	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
-	    Tag t = it.next();
-	    if (t instanceof ParamTag) result.add((ParamTag)t);
-	}
+	for (Tag t : tags())
+	    if (t instanceof ParamTag)
+		result.add((ParamTag)t);
 	return Collections.unmodifiableList(result);
     }
     public final List<ThrowsTag> throwsTags() {
 	List<ThrowsTag> result = new ArrayList<ThrowsTag>(tags().size());
-	for (Iterator<Tag> it=tags().iterator(); it.hasNext(); ) {
-	    Tag t = it.next();
-	    if (t instanceof ThrowsTag) result.add((ThrowsTag)t);
-	}
+	for (Tag t : tags())
+	    if (t instanceof ThrowsTag)
+		result.add((ThrowsTag)t);
 	return Collections.unmodifiableList(result);
     }
     public final String signature() {

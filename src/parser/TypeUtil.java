@@ -157,12 +157,9 @@ abstract class TypeUtil {
 	    Type ty = workList.removeFirst();
 	    if (areEqual(ty, left))
 		return true;
-	    for (Iterator<Type> it=superinterfaces(ty).iterator();
-		 it.hasNext(); ) {
-		ty = it.next();
-		if (!seen.contains(ty.signature()))
-		    workList.addLast(ty);
-	    }
+	    for (Type nxty : superinterfaces(ty))
+		if (!seen.contains(nxty.signature()))
+		    workList.addLast(nxty);
 	}
 	// ran out of possibilities.
 	return false;
@@ -231,8 +228,8 @@ abstract class TypeUtil {
     private static List<Type> subst(final Map<TypeVariable,Type> substMap,
 				    List<Type> typeList) {
 	List<Type> result = new ArrayList<Type>(typeList.size());
-	for (Iterator<Type> it=typeList.iterator(); it.hasNext(); )
-	    result.add(subst(substMap, it.next()));
+	for (Type ty : typeList)
+	    result.add(subst(substMap, ty));
 	return result;
     }
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
@@ -240,11 +237,9 @@ abstract class TypeUtil {
     private static List<TypeArgument> substA
 	(final Map<TypeVariable,Type> substMap, List<TypeArgument> argsList) {
 	List<TypeArgument> result=new ArrayList<TypeArgument>(argsList.size());
-	for (Iterator<TypeArgument> it=argsList.iterator(); it.hasNext(); ) {
-	    TypeArgument a = it.next();
+	for (TypeArgument a : argsList)
 	    result.add(new PTypeArgument(subst(substMap, a.getType()),
 					 a.isCovariant(),a.isContravariant()));
-	}
 	return result;
     }
     /** Substitute <code>Type</code>s for <code>TypeVariable</code>s in
@@ -308,10 +303,8 @@ abstract class TypeUtil {
 	    public Type visit(TypeVariable t) {
 		assert false: "superclass of a type variable!?";
 		// return type of non-interface bound, if there is one.
-		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
-		    Type bound = it.next();
+		for (Type bound : t.getBounds())
 		    if (!isInterface(bound)) return bound;
-		}
 		return null; // no superclasses here. (just interfaces)
 	    }
 	};
@@ -346,8 +339,7 @@ abstract class TypeUtil {
 		assert false : "superinterfaces of a type variable?";
 		// kinda bogus; return least interface bound, if there is one.
 		Type least=null;
-		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
-		    Type bound = it.next();
+		for (Type bound : t.getBounds()) {
 		    if (!isInterface(bound)) continue;
 		    if (least==null ||
 			least.signature().compareTo(bound.signature()) > 0)
@@ -386,8 +378,8 @@ abstract class TypeUtil {
 		//      bounds) the interface among the erasures of all
 		//      interface types which has the least canonical name
 		//      (JLS 6.7) using lexicographic ordering.
-		for (Iterator<Type> it=t.getBounds().iterator();it.hasNext();){
-		    Type bound = erasedType(it.next());
+		for (Type origBound : t.getBounds() ) {
+		    Type bound = erasedType(origBound);
 		    assert !(bound instanceof TypeVariable);
 		    if (!isInterface(bound)) return bound;
 		    if (least==null ||

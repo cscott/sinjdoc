@@ -52,11 +52,10 @@ public class PRootDoc extends PDoc
     private List<List<String>> options=null;
 
     public Collection<ClassDoc> classes() {
-	List<ClassDoc> result = new ArrayList<ClassDoc>
-	    (specifiedClasses());
-	for (Iterator<PackageDoc> it=specifiedPackages().iterator();
-	     it.hasNext(); )
-	    result.addAll(it.next().includedClasses());
+	List<ClassDoc> result = new ArrayList<ClassDoc>(specifiedClasses());
+	    
+	for (PackageDoc pd : specifiedPackages())
+	    result.addAll(pd.includedClasses());
 	return Collections.unmodifiableCollection(result);
     }
     public ClassDoc classNamed(String canonicalName) {
@@ -99,27 +98,22 @@ public class PRootDoc extends PDoc
 		//   by the parser, with better info than we have here.
 	    }
 	    sourceFileMap.put(f, pcu);
-	    for (Iterator<PClassDoc> it=pcu.classes.iterator();
-		 it.hasNext(); ) {
-		PClassDoc pcd = it.next();
+	    for (PClassDoc pcd : pcu.classes)
 		classMap.put(pcd.canonicalName(), pcd);
-	    }
 	}
 	return sourceFileMap.get(f);
     }
     public List<ClassDoc> specifiedClasses() {
-	List<ClassDoc> result = new ArrayList<ClassDoc>
-	    (pc.sourceFiles.size());
-	for (Iterator<File> it=pc.sourceFiles.iterator(); it.hasNext(); )
-	    result.addAll(findOrCreateClasses(it.next(),null/*not included*/)
-			  .classes);
+	List<ClassDoc> result = new ArrayList<ClassDoc>(pc.sourceFiles.size());
+	for (File f : pc.sourceFiles)
+	    result.addAll(findOrCreateClasses(f,null/*not included*/).classes);
 	return Collections.unmodifiableList(result);
     }
     public List<PackageDoc> specifiedPackages() {
-	List<PackageDoc> result = new ArrayList<PackageDoc>
-	    (pc.packages.size());
-	for (Iterator<String> it=pc.packages.iterator(); it.hasNext(); )
-	    result.add(findOrCreatePackage(it.next(), true));
+	List<PackageDoc> result =
+	    new ArrayList<PackageDoc>(pc.packages.size());
+	for (String pkg : pc.packages)
+	    result.add(findOrCreatePackage(pkg, true));
 	return Collections.unmodifiableList(result);
     }
 

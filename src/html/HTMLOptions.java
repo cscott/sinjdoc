@@ -43,10 +43,8 @@ class HTMLOptions {
     Charset charSet=null;
 
     public void parseOptions(List<List<String>> options) {
-	for (Iterator<List<String>> it=options.iterator(); it.hasNext(); ) {
-	    List<String> anOption = it.next();
+	for (List<String> anOption : options)
 	    optionMap.get(anOption.get(0).toLowerCase()).process(anOption);
-	}
 	// now deal with defaults. !J means that this logic is not implemented
 	// in javadoc; it is specific to SinjDoc.
 	if (windowTitle==null) windowTitle=docTitle;
@@ -74,8 +72,7 @@ class HTMLOptions {
     public void printHelp(DocErrorReporter reporter) {
 	List<Option> options = new ArrayList<Option>(optionMap.values());
 	Collections.sort(options);
-	for (Iterator<Option> it=options.iterator(); it.hasNext(); ) {
-	    Option opt = it.next();
+	for (Option opt : options) {
 	    StringBuffer sb=new StringBuffer();
 	    sb.append(opt.optionName);
 	    sb.append(' ');

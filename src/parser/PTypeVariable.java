@@ -38,8 +38,7 @@ abstract class PTypeVariable
     /** Check that the bounds specified for the Type Variable are legit. */
     private boolean boundsValid() {
 	boolean seenClass=false;
-	for (Iterator<Type> it=bounds.iterator(); it.hasNext(); ) {
-	    Type t = it.next();
+	for (Type t : bounds) {
 	    assert !(t instanceof ArrayType);
 	    if (!(t instanceof TypeVariable || TypeUtil.isInterface(t))) {
 		// XXX this test is not valid because isInterface is not exact

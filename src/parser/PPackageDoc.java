@@ -65,8 +65,8 @@ class PPackageDoc extends PDoc
     public List<ClassDoc> includedClasses() {
 	List<ClassType> all = allClasses();
 	List<ClassDoc> result = new ArrayList<ClassDoc>(all.size());
-	for (Iterator<ClassType> it=all.iterator(); it.hasNext(); ) {
-	    ClassDoc cd = it.next().asClassDoc();
+	for (ClassType ct : all) {
+	    ClassDoc cd = ct.asClassDoc();
 	    if (cd==null || !cd.isIncluded()) continue;
 	    result.add(cd);
 	}
@@ -98,9 +98,7 @@ class PPackageDoc extends PDoc
     }
     // xxx canonical name, or just partial name?  let's say either.
     public ClassDoc findClass(String className) {
-	for (Iterator<ClassDoc> it=includedClasses().iterator();
-	     it.hasNext(); ) {
-	    ClassDoc cd = it.next();
+	for (ClassDoc cd : includedClasses()) {
 	    if (cd.name().equals(className) ||
 		cd.canonicalName().equals(className))
 		return cd;

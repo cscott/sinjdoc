@@ -42,16 +42,14 @@ class PackageGroup {
     static void groupPackages(List<PackageGroup> groups,
 			      List<PackageDoc> allPackages) {
 	List<PackageDoc> pkgs = new ArrayList<PackageDoc>(allPackages);
-	for (Iterator<PackageGroup> it=groups.iterator(); it.hasNext(); ) {
-	    PackageGroup pg = it.next();
+	for (PackageGroup pg : groups) {
 	    pg.packageList.clear();
-	    for (Iterator<String> it2=pg.patterns.iterator(); it2.hasNext(); ){
-		String pattern = it2.next();
-		for (Iterator<PackageDoc> it3=pkgs.iterator(); it3.hasNext();){
-		    PackageDoc pd = it3.next();
+	    for (String pattern : pg.patterns){
+		for (Iterator<PackageDoc> it=pkgs.iterator(); it.hasNext();){
+		    PackageDoc pd = it.next();
 		    if (matches(pattern, pd.name())) {
 			pg.packageList.add(pd);
-			it3.remove();
+			it.remove();
 		    }
 		}
 	    }

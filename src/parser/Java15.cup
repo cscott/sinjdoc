@@ -265,8 +265,7 @@ action code {:
       // fields in interfaces are implicitly public. (JLS 6.6.1)
       if (parent.isInterface()) modifiers |= Modifier.PUBLIC;
 
-      for (Iterator<VariableDeclarator> it=variables.iterator();it.hasNext();){
-	  VariableDeclarator vd = it.next();
+      for (VariableDeclarator vd : variables) {
 	  Type vty = arrayType(ty, vd.dims);
 	  PFieldDoc fd = new PFieldDoc(parser.rootDoc.pc, parent,
 				       modifiers, vty, vd.name, sp(vd.pos),
@@ -310,9 +309,8 @@ action code {:
 	  emd = pmd;
       }
       // fixup the MethodTypeVariables and add them to the MethodDoc
-      for (Iterator<PTypeVariable> it=parser.additionalTypeVariables.values()
-	       .iterator(); it.hasNext(); ) {
-	  PMethodTypeVariable mtv = (PMethodTypeVariable) it.next();
+      for (PTypeVariable tv : parser.additionalTypeVariables.values()) {
+	  PMethodTypeVariable mtv = (PMethodTypeVariable) tv;
 	  mtv.declaringMethod = emd;
 	  emd.typeParameters.add(mtv);
       }

@@ -86,9 +86,8 @@ public class HTMLDoclet extends Doclet {
 	tw.copyRemainder(root);
 	// now emit package-frame.html for packages with included classes
 	//  (not referenced except by this file)
-	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
-	     it.hasNext(); )
-	    makePackageFrame(root, hu, it.next());
+	for (PackageDoc pd : hu.allDocumentedPackages(root))
+	    makePackageFrame(root, hu, pd);
     }
     void makeOverviewSummary(RootDoc root, HTMLUtil hu) {
 	TemplateContext context = new TemplateContext
@@ -145,9 +144,8 @@ public class HTMLDoclet extends Doclet {
 	URLContext context = new URLContext("package-list");
 	// note that package-list will be in specified output encoding.
 	PrintWriter pw = hu.fileWriter(context, options);
-	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
-	     it.hasNext(); )
-	    pw.println(it.next().name());
+	for (PackageDoc pd : hu.allDocumentedPackages(root))
+	    pw.println(pd.name());
 	pw.close(); // done!
     }
 
@@ -170,9 +168,7 @@ public class HTMLDoclet extends Doclet {
 	    // XXX create overview-tree.html
 	}
 	// for each package to be documented...
-	for (Iterator<PackageDoc> it=hu.allDocumentedPackages(root).iterator();
-	     it.hasNext(); ) {
-	    PackageDoc pd = it.next();
+	for (PackageDoc pd : hu.allDocumentedPackages(root)) {
 	    // create package pages.
 	    makePackageSummary(root, hu, pd);
 	    if (options.emitTreePage)
@@ -180,11 +176,10 @@ public class HTMLDoclet extends Doclet {
 	    // XXX copy doc-files.
 	}
 	// for each class to be documented...
-	for (Iterator<ClassDoc> it=root.classes().iterator(); it.hasNext(); ){
-	    ClassDoc cd = it.next();
+	for (ClassDoc cd : root.classes())
 	    // create class page.
 	    makeClassPage(root, hu, cd);
-	}
+	// make package list
 	makePackageList(root, hu);
 	if (options.emitUsePage) {
 	    // XXX create class-use
@@ -209,8 +204,8 @@ public class HTMLDoclet extends Doclet {
     }
     public boolean validOptions(List<List<String>> optionList,
 				DocErrorReporter reporter) {
-	for (Iterator<List<String>> it=optionList.iterator(); it.hasNext(); )
-	    if (!options.validOption(it.next(), reporter))
+	for (List<String> anOption : optionList )
+	    if (!options.validOption(anOption, reporter))
 		return false;
 	// all options valid.
 	return true;

@@ -83,9 +83,7 @@ public class Main {
 	    
 	    // expand all '@' options first.
 	    LinkedList<String> argList = new LinkedList<String>();
-	    for (Iterator<String> it=Arrays.asList(args).iterator();
-		 it.hasNext(); ) {
-		String anArg = it.next();
+	    for (String anArg : args) {
 		if (anArg.startsWith("@")) {
 		    // process arg file.
 		    try {
@@ -168,9 +166,7 @@ public class Main {
 		// note that '*' is accepted in the source file spec.
 		List<String> packages = new ArrayList<String>();
 		List<File> sourcefiles = new ArrayList<File>();
-		for (Iterator<String> it=nonOptionArgs.iterator();
-		     it.hasNext(); ) {
-		    String candidate = it.next();
+		for (String candidate : nonOptionArgs) {
 		    if (candidate.indexOf('*')<0 &&
 			!candidate.toLowerCase().endsWith(".java")) {
 			// try as package name.
@@ -178,10 +174,7 @@ public class Main {
 			    packages.add(candidate);
 		    } else {
 			// try as source file name.
-			for (Iterator<File> it2 =
-				 fu.expandFileStar(candidate).iterator();
-			     it2.hasNext(); ) {
-			    File f = it2.next();
+			for (File f : fu.expandFileStar(candidate)) {
 			    if (fu.isValidClassName(f.getName()) &&
 				f.isFile() && f.exists())
 				sourcefiles.add(f);
@@ -258,8 +251,7 @@ public class Main {
 	// now iterate over standard options.
 	List<Option> options = new ArrayList<Option>(stdOptions.values());
 	Collections.sort(options);
-	for (Iterator<Option> it=options.iterator(); it.hasNext();) {
-	    Option opt = it.next();
+	for (Option opt : options) {
 	    StringBuffer sb=new StringBuffer();
 	    sb.append(opt.optionName);
 	    sb.append(' ');

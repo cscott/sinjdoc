@@ -115,17 +115,13 @@ class PSeeTag extends PTag.NonText
 	// XXX should really look through outer classes, superclasses,
 	//     interfaces, etc.
 	if (memberArgsPart==null) { // look for fields.
-	    for (Iterator<FieldDoc> it=cd.fields().iterator(); it.hasNext();) {
-		FieldDoc fd = it.next();
+	    for (FieldDoc fd : cd.fields())
 		if (fd.name().equals(memberNamePart)) return fd;
-	    }
 	} else { // look for methods.
-	    for (Iterator<MethodDoc> it=cd.methods().iterator();it.hasNext();){
-		MethodDoc md = it.next();
+	    for (MethodDoc md : cd.methods())
 		if (md.name().equals(memberNamePart) &&
 		    md.signature().equals(expandSig(memberArgsPart)))
 		    return md;
-	    }
 	}
 	// not found.
 	return null;
