@@ -79,7 +79,7 @@ abstract class PTag
 	    Matcher matcher = pat.matcher(first.text());
 	    if (!matcher.find())
 		throw new TagParseException
-		    (first.position(), "Can't find "+patternDescription+" in "+
+		    (first.position(), "Invalid or missing "+patternDescription+" in "+
 		     "@"+name()+" tag");
 	    ArrayList<Tag> nContents = new ArrayList<Tag>(contents.size());
 	    if (matcher.end()!=first.text().length())
@@ -118,9 +118,8 @@ abstract class PTag
 	try {
 	    if (tagname=="param")
 		return new PParamTag(pos, tagname, contents);
-	/* XXX uncomment when tag subtypes are not abstract.
-	if (tagname=="see") return new PSeeTag(pos, tagname, contents, tagContext);
-	*/
+	    if (tagname=="see")
+		return new PSeeTag(pos, tagname, contents, tagContext);
 	    if (tagname=="serialField")
 		return new PSerialFieldTag(pos, tagname, contents, tagContext);
 	    if (tagname=="throws" || tagname=="exception")
@@ -138,10 +137,13 @@ abstract class PTag
 			    SourcePosition pos, TypeContext tagContext) {
 	DocErrorReporter reporter = tagContext.pc.reporter;
 	tagname=tagname.intern();
-	/* XXX uncomment when PSeeTag is not abstract.
-	if (tagname=="link" || tagname=="linkplain")
-	    return new PSeeTag(pos, tagname, contents, tagContext);
-	*/
+	try {
+	    if (tagname=="link" || tagname=="linkplain")
+		return new PSeeTag(pos, tagname, contents, tagContext);
+	} catch (TagParseException tpe) {
+	    tagContext.pc.reporter.printError
+		(tpe.getPosition(), tpe.getMessage());
+	}
 	return new Inline(pos, tagname, contents);
     }
 
