@@ -1,12 +1,12 @@
 // Main.java, created Sat Mar 15 19:14:23 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc;
+package net.cscott.sinjdoc;
 
-import net.cscott.gjdoc.parser.FileUtil;
-import net.cscott.gjdoc.parser.ParseControl;
-import net.cscott.gjdoc.parser.PRootDoc;
-import net.cscott.gjdoc.html.HTMLDoclet;
+import net.cscott.sinjdoc.parser.FileUtil;
+import net.cscott.sinjdoc.parser.ParseControl;
+import net.cscott.sinjdoc.parser.PRootDoc;
+import net.cscott.sinjdoc.html.HTMLDoclet;
 
 import java.lang.reflect.Modifier;
 import java.io.*;
@@ -35,7 +35,7 @@ public class Main {
      * @return the exit code.
      */
     public static int execute(String[] args) {
-	return execute("gjdoc", args);
+	return execute("sinjdoc", args);
     }
     /** Programmatic interface.
      * @param programName Name of the program, for error messages.

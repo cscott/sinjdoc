@@ -1,12 +1,12 @@
 // TypeVariable.java, created Wed Mar 19 15:03:51 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ArrayType;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.Type;
-import net.cscott.gjdoc.TypeVariable;
+import net.cscott.sinjdoc.ArrayType;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +24,7 @@ import java.util.List;
  * @see java.lang.reflect.TypeVariable
  */
 abstract class PTypeVariable
-    implements net.cscott.gjdoc.TypeVariable {
+    implements net.cscott.sinjdoc.TypeVariable {
     final String name;
     final List<Type> bounds = new ArrayList<Type>(1);
     PTypeVariable(String name) {

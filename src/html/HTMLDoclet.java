@@ -1,14 +1,14 @@
 // HTMLDoclet.java, created Tue Mar 18 14:31:10 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.Doclet;
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.RootDoc;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.Doclet;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.RootDoc;
 
 import java.io.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 import java.io.Reader;
 import java.io.FilterReader;

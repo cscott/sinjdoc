@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 abstract class Comment extends InputElement {
   private StringBuffer comment = new StringBuffer();

@@ -1,7 +1,7 @@
 // SimpleCharSequence.java, created Mon Mar 31 19:23:09 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
 /**
  * The <code>SimpleCharSequence</code> class is a simple and efficient

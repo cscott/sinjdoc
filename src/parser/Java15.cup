@@ -1,10 +1,10 @@
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.lexer.Lexer;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.Parameter;
-import net.cscott.gjdoc.ParameterizedType;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.lexer.Lexer;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.Parameter;
+import net.cscott.sinjdoc.ParameterizedType;
+import net.cscott.sinjdoc.Type;
 import java_cup.runtime.*;
 import java.lang.reflect.Modifier;
 import java.io.BufferedReader;

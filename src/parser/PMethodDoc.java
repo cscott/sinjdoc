@@ -1,11 +1,11 @@
 // MethodDoc.java, created Wed Mar 19 12:19:34 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.MethodDoc;
-import net.cscott.gjdoc.Parameter;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.MethodDoc;
+import net.cscott.sinjdoc.Parameter;
+import net.cscott.sinjdoc.Type;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  * @version $Id$
  */
 class PMethodDoc extends PExecutableMemberDoc
-    implements net.cscott.gjdoc.MethodDoc {
+    implements net.cscott.sinjdoc.MethodDoc {
     final Type returnType;
     <P extends Parameter, T extends Type>
     PMethodDoc(ParseControl pc, PClassDoc containingClass, int modifiers,

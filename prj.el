@@ -36,7 +36,7 @@
      "(funcall jde-gen-boilerplate-function)"
      "\"// Copyright (C) 2003 \" (user-full-name) \" <\" user-mail-address \">\" 'n" 
      "\"// Licensed under the terms of the GNU GPL; see COPYING for details.\" 'n" 
-     "\"package net.cscott.gjdoc\" (harpoon-package-name \"/src\") \";\" 'n 'n" 
+     "\"package net.cscott.sinjdoc\" (harpoon-package-name \"/src\") \";\" 'n 'n" 
      "\"/**\" 'n" 
      "\" * The <code>\"" "(file-name-sans-extension (file-name-nondirectory buffer-file-name))" "\"</code> class...\" 'n" 
      "\" * \" 'n" 

@@ -1,7 +1,7 @@
 // URLContext.java, created Mon Mar 31 14:26:03 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
 import java.io.File;
 import java.util.regex.Matcher;

@@ -1,11 +1,11 @@
 // MethodTypeVariable.java, created Wed Mar 19 15:05:26 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ExecutableMemberDoc;
-import net.cscott.gjdoc.Type;
-import net.cscott.gjdoc.TypeVisitor;
+import net.cscott.sinjdoc.ExecutableMemberDoc;
+import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeVisitor;
 
 import java.util.List;
 /**
@@ -16,7 +16,7 @@ import java.util.List;
  * @version $Id$
  */
 class PMethodTypeVariable extends PTypeVariable
-    implements net.cscott.gjdoc.MethodTypeVariable {
+    implements net.cscott.sinjdoc.MethodTypeVariable {
     // allow changes to this field, as method type variables are seen & used
     // before we know the name of the method they are associated with.
     ExecutableMemberDoc declaringMethod;

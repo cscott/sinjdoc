@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 class TraditionalComment extends Comment {
   TraditionalComment() { }

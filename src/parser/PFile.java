@@ -1,7 +1,7 @@
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.SourcePosition;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.SourcePosition;
 
 import java.io.BufferedReader;
 import java.io.File;

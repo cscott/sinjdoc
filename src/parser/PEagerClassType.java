@@ -1,9 +1,9 @@
 // PEagerClassType.java, created Wed Mar 26 11:55:02 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassTypeVariable;
+import net.cscott.sinjdoc.ClassTypeVariable;
 
 import java.util.Arrays;
 import java.util.Collections;

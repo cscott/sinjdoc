@@ -1,11 +1,11 @@
 // PParameterizedType.java, created Wed Mar 19 15:06:55 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.Type;
-import net.cscott.gjdoc.TypeVisitor;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeVisitor;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,7 +19,7 @@ import java.util.List;
  * @version $Id$
  */
 class PParameterizedType
-    implements net.cscott.gjdoc.ParameterizedType {
+    implements net.cscott.sinjdoc.ParameterizedType {
     final ClassType baseType;
     final List<Type> actualTypeArguments;
     /** Create a new parameterized class type. */

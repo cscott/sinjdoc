@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 abstract class Token extends InputElement {
   abstract java_cup.runtime.Symbol token();

@@ -1,7 +1,7 @@
 // TypeVisitor.java, created Mon Apr  7 12:48:14 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc;
+package net.cscott.sinjdoc;
 
 /**
  * <code>TypeVisitor</code> implements the visitor pattern for

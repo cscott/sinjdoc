@@ -1,15 +1,15 @@
 // SerialFieldTag.java, created Wed Mar 19 13:01:22 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.SerialFieldTag;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.TagVisitor;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.SerialFieldTag;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.TagVisitor;
+import net.cscott.sinjdoc.Type;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 class PSerialFieldTag extends PTag.Trailing
-    implements net.cscott.gjdoc.SerialFieldTag {
+    implements net.cscott.sinjdoc.SerialFieldTag {
     final String fieldName;
     final Type   fieldType;
     final String fieldTypeString;

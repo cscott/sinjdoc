@@ -1,12 +1,12 @@
 // RootDoc.java, created Wed Mar 19 12:56:45 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.SourcePosition;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.SourcePosition;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class PRootDoc extends PDoc
-    implements net.cscott.gjdoc.RootDoc {
+    implements net.cscott.sinjdoc.RootDoc {
     final String overviewText;
     final PSourcePosition overviewPosition;
     final TypeContext overviewContext;

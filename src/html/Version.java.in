@@ -1,5 +1,5 @@
 // -*-java-*-
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
 /**
  * The <code>Version</code> object contains fields naming the current version

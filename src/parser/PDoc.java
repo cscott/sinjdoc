@@ -1,14 +1,14 @@
 // Doc.java, created Wed Mar 19 12:04:15 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.Doc;
-import net.cscott.gjdoc.ProgramElementDoc;
-import net.cscott.gjdoc.SeeTag;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.Tag;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.Doc;
+import net.cscott.sinjdoc.ProgramElementDoc;
+import net.cscott.sinjdoc.SeeTag;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.Tag;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * @author  C. Scott Ananian (cscott@cscott.net)
  * @version $Id$
  */
-abstract class PDoc implements net.cscott.gjdoc.Doc {
+abstract class PDoc implements net.cscott.sinjdoc.Doc {
     final ParseControl pc;
     PDoc(ParseControl pc) {
 	this.pc = pc;

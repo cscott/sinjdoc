@@ -1,10 +1,10 @@
 // FieldDoc.java, created Wed Mar 19 12:17:04 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.SerialFieldTag;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.SerialFieldTag;
+import net.cscott.sinjdoc.Type;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import java.util.List;
  * @version $Id$
  */
 class PFieldDoc extends PMemberDoc
-    implements net.cscott.gjdoc.FieldDoc {
+    implements net.cscott.sinjdoc.FieldDoc {
     final Type type;
     final TypeContext commentContext;
 

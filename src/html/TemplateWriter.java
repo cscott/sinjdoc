@@ -1,23 +1,23 @@
 // TemplateWriter.java, created Mon Mar 31 19:14:35 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassTypeVariable;
-import net.cscott.gjdoc.ConstructorDoc;
-import net.cscott.gjdoc.Doc;
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.ExecutableMemberDoc;
-import net.cscott.gjdoc.FieldDoc;
-import net.cscott.gjdoc.MemberDoc;
-import net.cscott.gjdoc.MethodDoc;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.Parameter;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.Type;
-import net.cscott.gjdoc.TypeVariable;
-import net.cscott.gjdoc.html.ReplayReader.Mark;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassTypeVariable;
+import net.cscott.sinjdoc.ConstructorDoc;
+import net.cscott.sinjdoc.Doc;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.ExecutableMemberDoc;
+import net.cscott.sinjdoc.FieldDoc;
+import net.cscott.sinjdoc.MemberDoc;
+import net.cscott.sinjdoc.MethodDoc;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.Parameter;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeVariable;
+import net.cscott.sinjdoc.html.ReplayReader.Mark;
 
 import java.lang.reflect.Modifier;
 import java.io.*;

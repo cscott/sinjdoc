@@ -1,7 +1,7 @@
 // ProgramElementDoc.java, created Wed Mar 19 12:49:27 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc;
+package net.cscott.sinjdoc;
 
 /**
  * The <code>ProgramElementDoc</code> class represents a java program

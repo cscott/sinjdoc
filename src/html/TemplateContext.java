@@ -1,15 +1,15 @@
 // TemplateContext.java, created Tue Apr  1 11:58:12 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.Doc;
-import net.cscott.gjdoc.ExecutableMemberDoc;
-import net.cscott.gjdoc.MemberDoc;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.RootDoc;
-import net.cscott.gjdoc.TypeVariable;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.Doc;
+import net.cscott.sinjdoc.ExecutableMemberDoc;
+import net.cscott.sinjdoc.MemberDoc;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.RootDoc;
+import net.cscott.sinjdoc.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.List;

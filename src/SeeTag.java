@@ -1,7 +1,7 @@
 // SeeTag.java, created Wed Mar 19 12:59:15 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc;
+package net.cscott.sinjdoc;
 
 import java.util.List;
 /**

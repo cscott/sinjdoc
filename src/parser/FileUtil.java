@@ -1,9 +1,9 @@
 // FileUtil.java, created Thu Mar 20 15:06:21 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.DocErrorReporter;
 
 import java.io.*;
 import java.util.*;

@@ -11,7 +11,7 @@ CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/cup.jar:$$CLASSPATH
 # hack, but a small one.  This prevents a circular dependency between the
 # parser package and the lexer package.
 Sym.java: $(top_srcdir)/src/parser/Sym.java
-	sed -e 's/^package.*$$/package net.cscott.gjdoc.lexer;/' < $< > $@
+	sed -e 's/^package.*$$/package net.cscott.sinjdoc.lexer;/' < $< > $@
 $(top_srcdir)/src/parser/Sym.java: $(top_srcdir)/src/parser/Java15.cup
 	$(MAKE) -C $(top_srcdir)/src/parser Sym.java
 

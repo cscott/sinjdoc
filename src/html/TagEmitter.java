@@ -1,15 +1,15 @@
 // TagEmitter.java, created Fri Apr  4 18:52:33 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian <cscott@cscott.net>
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.ParamTag;
-import net.cscott.gjdoc.SeeTag;
-import net.cscott.gjdoc.SerialFieldTag;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.ThrowsTag;
-import net.cscott.gjdoc.Tag;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.ParamTag;
+import net.cscott.sinjdoc.SeeTag;
+import net.cscott.sinjdoc.SerialFieldTag;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.ThrowsTag;
+import net.cscott.sinjdoc.Tag;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

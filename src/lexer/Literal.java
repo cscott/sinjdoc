@@ -1,3 +1,3 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 abstract class Literal extends Token { }

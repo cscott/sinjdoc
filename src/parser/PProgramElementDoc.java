@@ -1,10 +1,10 @@
 // ProgramElementDoc.java, created Wed Mar 19 12:49:27 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.PackageDoc;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.PackageDoc;
 
 import java.lang.reflect.Modifier;
 /**
@@ -16,7 +16,7 @@ import java.lang.reflect.Modifier;
  * @version $Id$
  */
 abstract class PProgramElementDoc extends PDoc
-    implements net.cscott.gjdoc.ProgramElementDoc {
+    implements net.cscott.sinjdoc.ProgramElementDoc {
     final PPackageDoc containingPackage;
     final PClassDoc containingClass;
     final int modifiers;

@@ -1,17 +1,17 @@
 // SeeTag.java, created Wed Mar 19 12:59:15 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.FieldDoc;
-import net.cscott.gjdoc.MemberDoc;
-import net.cscott.gjdoc.MethodDoc;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.TagVisitor;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.FieldDoc;
+import net.cscott.sinjdoc.MemberDoc;
+import net.cscott.sinjdoc.MethodDoc;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.TagVisitor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 class PSeeTag extends PTag.NonText
-    implements net.cscott.gjdoc.SeeTag {
+    implements net.cscott.sinjdoc.SeeTag {
     final List<Tag> label;
     final String classPart;
     final String memberNamePart;

@@ -1,24 +1,24 @@
 // HTMLUtil.java, created Mon Mar 31 13:43:45 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
-import net.cscott.gjdoc.ArrayType;
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.ClassTypeVariable;
-import net.cscott.gjdoc.ConstructorDoc;
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.ExecutableMemberDoc;
-import net.cscott.gjdoc.FieldDoc;
-import net.cscott.gjdoc.MemberDoc;
-import net.cscott.gjdoc.MethodTypeVariable;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.ParameterizedType;
-import net.cscott.gjdoc.RootDoc;
-import net.cscott.gjdoc.Type;
-import net.cscott.gjdoc.TypeVariable;
-import net.cscott.gjdoc.TypeVisitor;
+import net.cscott.sinjdoc.ArrayType;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.ClassTypeVariable;
+import net.cscott.sinjdoc.ConstructorDoc;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.ExecutableMemberDoc;
+import net.cscott.sinjdoc.FieldDoc;
+import net.cscott.sinjdoc.MemberDoc;
+import net.cscott.sinjdoc.MethodTypeVariable;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.ParameterizedType;
+import net.cscott.sinjdoc.RootDoc;
+import net.cscott.sinjdoc.Type;
+import net.cscott.sinjdoc.TypeVariable;
+import net.cscott.sinjdoc.TypeVisitor;
 
 import java.nio.charset.CharsetEncoder;
 import java.io.BufferedWriter;
@@ -333,7 +333,7 @@ class HTMLUtil {
     }
 
     /** Return a <code>Reader</code> for a resource stored at
-     *  <code>net.cscott.gjdoc.html.templates</code>. */
+     *  <code>net.cscott.sinjdoc.html.templates</code>. */
     static Reader resourceReader(String resource) {
 	InputStream is = HTMLUtil.class.getResourceAsStream
 	    ("templates/"+resource);

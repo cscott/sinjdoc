@@ -1,14 +1,14 @@
 // ExecutableMemberDoc.java, created Wed Mar 19 12:14:29 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.MethodTypeVariable;
-import net.cscott.gjdoc.Parameter;
-import net.cscott.gjdoc.ParamTag;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.ThrowsTag;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.MethodTypeVariable;
+import net.cscott.sinjdoc.Parameter;
+import net.cscott.sinjdoc.ParamTag;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.ThrowsTag;
+import net.cscott.sinjdoc.Type;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
  * @version $Id$
  */
 abstract class PExecutableMemberDoc extends PMemberDoc 
-    implements net.cscott.gjdoc.ExecutableMemberDoc {
+    implements net.cscott.sinjdoc.ExecutableMemberDoc {
     final List<MethodTypeVariable> typeParameters =
 	new ArrayList<MethodTypeVariable>(2);
     final List<Parameter> parameters;

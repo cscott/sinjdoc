@@ -1,13 +1,13 @@
 // ThrowsTag.java, created Wed Mar 19 13:03:46 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.TagVisitor;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.TagVisitor;
+import net.cscott.sinjdoc.Type;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 class PThrowsTag extends PTag.Trailing
-    implements net.cscott.gjdoc.ThrowsTag {
+    implements net.cscott.sinjdoc.ThrowsTag {
     final Type exceptionType;
     final String exceptionName;
     final List<Tag> exceptionComment;

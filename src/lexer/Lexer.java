@@ -3,7 +3,7 @@
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  */
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 import java.io.Reader;
 import java.io.LineNumberReader;

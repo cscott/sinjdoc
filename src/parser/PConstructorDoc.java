@@ -1,10 +1,10 @@
 // ConstructorDoc.java, created Wed Mar 19 12:00:41 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.Parameter;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.Parameter;
+import net.cscott.sinjdoc.Type;
 
 import java.util.List;
 /**
@@ -15,7 +15,7 @@ import java.util.List;
  * @version $Id$
  */
 class PConstructorDoc extends PExecutableMemberDoc 
-    implements net.cscott.gjdoc.ConstructorDoc {
+    implements net.cscott.sinjdoc.ConstructorDoc {
     <P extends Parameter, T extends Type>
     PConstructorDoc(ParseControl pc, PClassDoc containingClass, int modifiers,
 		    PSourcePosition position,

@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.lexer;
+package net.cscott.sinjdoc.lexer;
 
 /** FIFO class.  This helps implement the lookahead we need for JSR-14.
  * Copyright (C) 2002 C. Scott Ananian (cscott@cscott.net)

@@ -1,7 +1,7 @@
 // MemberDoc.java, created Wed Mar 19 12:18:43 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
 import java.lang.reflect.Modifier;
 /**
@@ -15,7 +15,7 @@ import java.lang.reflect.Modifier;
  * @version $Id$
  */
 abstract class PMemberDoc extends PProgramElementDoc
-    implements net.cscott.gjdoc.MemberDoc {
+    implements net.cscott.sinjdoc.MemberDoc {
     final String name;
     final String commentText;
     final PSourcePosition commentPosition;

@@ -1,7 +1,7 @@
 // PCompilationUnit.java, created Mon Mar 24 14:44:10 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ pkgdata_DATA = @PACKAGE_TARNAME@.jar
 # used to be $(shell find classes -name "*.class") 
 @PACKAGE_TARNAME@.jar: $(shell find classes -type f)
 	echo "Manifest-Version: 1.0" > manifest
-	echo "Main-Class: net.cscott.gjdoc.Main" >> manifest
+	echo "Main-Class: net.cscott.sinjdoc.Main" >> manifest
 	echo "Class-Path: lib/jutil.jar lib/cup.jar" >> manifest
 	echo "Implementation-Version: $(VERSION)" >> manifest
 	cd classes && $(JAR) -cfm ../$@ ../manifest net
@@ -25,7 +25,7 @@ run:
 doc-link:
 	$(RM) -rf doc-link
 	mkdir -p doc doc-link/net/cscott/
-	cd doc-link/net/cscott/ ; ln -s ../../../src gjdoc
+	cd doc-link/net/cscott/ ; ln -s ../../../src sinjdoc
 doc:
 	$(MAKE)
 	$(MAKE) doc-link
@@ -39,7 +39,7 @@ doc:
 	   -bottom "Copyright &copy; 2003 C. Scott Ananian" \
 	   -link http://java.sun.com/j2se/1.4/docs/api \
 	   -d doc -sourcepath doc-link \
-	   -subpackages net.cscott.gjdoc -exclude net.cscott.gjdoc.main
+	   -subpackages net.cscott.sinjdoc -exclude net.cscott.sinjdoc.main
 	$(RM) -rf doc-link
 doc-clean:
 	-$(RM) -rf doc doc-link

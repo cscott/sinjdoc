@@ -1,9 +1,9 @@
 // SourcePosition.java, created Tue Mar 18 18:31:42 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.DocErrorReporter;
 import java.io.File;
 
 /**
@@ -16,7 +16,7 @@ import java.io.File;
  * @version $Id$
  */
 class PSourcePosition
-    implements net.cscott.gjdoc.SourcePosition {
+    implements net.cscott.sinjdoc.SourcePosition {
     // Represent source position as a File and a raw character index.
     // calls to the interface accessors lazily convert the index to a
     // line and column number.
@@ -51,8 +51,8 @@ class PSourcePosition
 	return filename+":"+line;
     }
     // lookup line and column and cache.
-    private transient net.cscott.gjdoc.SourcePosition sp=null;
-    private net.cscott.gjdoc.SourcePosition sp() {
+    private transient net.cscott.sinjdoc.SourcePosition sp=null;
+    private net.cscott.sinjdoc.SourcePosition sp() {
 	if (sp==null) sp=pfile.convert(charIndex);
 	assert sp!=null;
 	return sp;

@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.html;
+package net.cscott.sinjdoc.html;
 
 /**
  * Simple strongly-typed pair class.

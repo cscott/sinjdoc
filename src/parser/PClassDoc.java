@@ -1,16 +1,16 @@
 // ClassDoc.java, created Wed Mar 19 11:39:43 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.ClassTypeVariable;
-import net.cscott.gjdoc.ConstructorDoc;
-import net.cscott.gjdoc.FieldDoc;
-import net.cscott.gjdoc.MethodDoc;
-import net.cscott.gjdoc.PackageDoc;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.ClassTypeVariable;
+import net.cscott.sinjdoc.ConstructorDoc;
+import net.cscott.sinjdoc.FieldDoc;
+import net.cscott.sinjdoc.MethodDoc;
+import net.cscott.sinjdoc.PackageDoc;
+import net.cscott.sinjdoc.Type;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
  * @version $Id$
  */
 class PClassDoc extends PProgramElementDoc
-    implements net.cscott.gjdoc.ClassDoc {
+    implements net.cscott.sinjdoc.ClassDoc {
     final TypeContext typeContext, tagContext;
     final List<ClassTypeVariable> typeParameters =
 	new ArrayList<ClassTypeVariable>(2);

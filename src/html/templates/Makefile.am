@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 MAINTAINERCLEANFILES = Makefile.in
 JAVAROOT=$(top_builddir)/classes
-TEMPLATE_ROOT=$(JAVAROOT)/net/cscott/gjdoc/html/templates
+TEMPLATE_ROOT=$(JAVAROOT)/net/cscott/sinjdoc/html/templates
 
 TEMPLATE_FILES = \
 class-page.html \

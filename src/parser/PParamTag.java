@@ -1,12 +1,12 @@
 // ParamTag.java, created Wed Mar 19 12:42:42 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.DocErrorReporter;
-import net.cscott.gjdoc.SourcePosition;
-import net.cscott.gjdoc.Tag;
-import net.cscott.gjdoc.TagVisitor;
+import net.cscott.sinjdoc.DocErrorReporter;
+import net.cscott.sinjdoc.SourcePosition;
+import net.cscott.sinjdoc.Tag;
+import net.cscott.sinjdoc.TagVisitor;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 class PParamTag extends PTag.Trailing
-    implements net.cscott.gjdoc.ParamTag {
+    implements net.cscott.sinjdoc.ParamTag {
     final String parameterName;
     final List<Tag> parameterComment;
     PParamTag(SourcePosition sp, String name, List<Tag> contents)

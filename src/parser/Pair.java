@@ -1,4 +1,4 @@
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
 /**
  * Simple strongly-typed pair class.

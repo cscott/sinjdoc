@@ -1,12 +1,12 @@
 // PLazyClassType.java, created Mon Mar 24 14:08:22 2003 by cananian
 // Copyright (C) 2003 C. Scott Ananian (cscott@cscott.net)
 // Licensed under the terms of the GNU GPL; see COPYING for details.
-package net.cscott.gjdoc.parser;
+package net.cscott.sinjdoc.parser;
 
-import net.cscott.gjdoc.ClassDoc;
-import net.cscott.gjdoc.ClassType;
-import net.cscott.gjdoc.ClassTypeVariable;
-import net.cscott.gjdoc.Type;
+import net.cscott.sinjdoc.ClassDoc;
+import net.cscott.sinjdoc.ClassType;
+import net.cscott.sinjdoc.ClassTypeVariable;
+import net.cscott.sinjdoc.Type;
 
 import java.io.File;
 import java.util.Iterator;
