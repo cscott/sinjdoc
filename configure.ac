@@ -16,7 +16,8 @@ JAVAC=not-found
 CLS=f$$
 echo "abstract class $CLS extends java.util.AbstractList<Integer> { }" \
      > /tmp/$CLS.java
-for jc in jikes javac ${HOME}/jsr14_adding_generics-1_{3,2,0}-ea/scripts/javac ; do
+for jc in jikes javac ${JCC} ${JSR14DISTR:+$JSR14DISTR/scripts/javac} \
+          ${HOME}/jsr14_adding_generics-1_{3,2,0}-ea/scripts/javac ; do
     if $jc -d /tmp -source 1.5 /tmp/$CLS.java 1>/dev/null 2>/dev/null; then
       JAVAC="$jc -source 1.5"
       break
