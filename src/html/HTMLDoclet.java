@@ -184,7 +184,12 @@ public class HTMLDoclet extends Doclet {
 	TemplateContext context = new TemplateContext
 	    (root, options, new URLContext(hu.toURL(cd)),
 	     cd.containingPackage(), cd);
-	// xxx do me.
+	TemplateWriter tw = new TemplateWriter
+	    ("class-page.html"/*resource*/, hu, context);
+	tw.copyToSplit(root);
+	// first split is full contents of class tags.
+	tw.print(transTags(cd.tags()));
+	tw.copyRemainder(root); // done!
     }
 
     public boolean start(RootDoc root) {
