@@ -3,6 +3,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.lexer.Lexer;
 import net.cscott.gjdoc.ClassType;
 import net.cscott.gjdoc.Parameter;
+import net.cscott.gjdoc.ParameterizedType;
 import net.cscott.gjdoc.Type;
 import java_cup.runtime.*;
 import java.lang.reflect.Modifier;
@@ -192,6 +193,11 @@ action code {:
 	  return parser.additionalTypeVariables.get(name);
       return parser.typeContexts.peek().lookupTypeName(name, true/*lazy*/);
   }
+  ParameterizedType joinWithParam(ParameterizedType pt, String inner) {
+      return new PParameterizedType(new PLazyInnerClassType
+				    (parser.rootDoc.pc, pt.getBaseType(),
+				     inner), pt.getActualTypeArguments());
+  }
   void addTypeVariable(String name) {
       // are we in method or class context?
       if (parser.isClassTypeVariable) { // class context
@@ -255,7 +261,7 @@ terminal BOOLEAN; // primitive_type
 terminal BYTE, SHORT, INT, LONG, CHAR; // integral_type
 terminal FLOAT, DOUBLE; // floating_point_type
 terminal LBRACK, RBRACK; // array_type
-terminal String IDENTIFIER; // name
+terminal java.lang.String IDENTIFIER; // name
 terminal DOT; // qualified_name
 terminal SEMICOLON, MULT, COMMA, LBRACE, RBRACE, EQ, LPAREN, RPAREN, COLON;
 terminal PACKAGE; // package_declaration
@@ -409,7 +415,7 @@ non terminal assert_statement;
 non terminal primary, primary_no_new_array;
 non terminal class_instance_creation_expression;
 non terminal argument_list_opt, argument_list;
-non terminal array_creation_expression;
+non terminal array_creation_init, array_creation_uninit;
 non terminal dim_exprs, dim_expr;
 non terminal Integer dims_opt, dims;
 non terminal field_access, method_invocation, array_access;
@@ -427,6 +433,7 @@ non terminal assignment;
 non terminal assignment_operator;
 non terminal expression;
 // JSR-14 2.1) Type Syntax 2.3) Handling Consecutive Type Brackets
+non terminal ParameterizedType class_or_interface_nn;
 non terminal String type_variable;
 non terminal TypeList type_arguments, type_arguments_opt;
 non terminal TypeList reference_type_list;
@@ -548,12 +555,31 @@ type_variable ::=
 		IDENTIFIER:id
 		{: RESULT=id; addTypeVariable(id); :}
 	;
+class_or_interface_nn ::=
+		name:n1 type_arguments:tl DOT name:n2
+		{: RESULT=joinWithParam
+		         (new PParameterizedType(lookupClassType(n1), tl), n2);
+		:}
+	|	class_or_interface_nn:ty type_arguments:tl DOT name:n
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
+		   RESULT=joinWithParam
+		         (new PParameterizedType(ty.getBaseType(), tl), n);
+		:}
+	;
 class_or_interface_type ::=
 		name:n type_arguments_opt:tl
 		{: if (tl.size()==0) RESULT=lookupType(n);
 		   else {
 		       tl.trimToSize();
 		       RESULT=new PParameterizedType(lookupClassType(n), tl);
+		   }
+		:}
+	|	class_or_interface_nn:ty type_arguments_opt:tl
+		{: if (tl.size()==0) RESULT=ty;
+		   else {
+		       tl.addAll(0, ty.getActualTypeArguments());
+		       tl.trimToSize();
+		       RESULT=new PParameterizedType(ty.getBaseType(), tl);
 		   }
 		:}
 	;
@@ -569,8 +595,12 @@ array_type ::=	primitive_type:ty dims:d
 		{: RESULT=arrayType(ty, d.intValue()); :}
 	|	name:n dims:d
 		{: RESULT=arrayType(lookupType(n), d.intValue()); :}
+	|	class_or_interface_nn:ty dims:d
+		{: RESULT=arrayType(ty, d.intValue()); :}
 	|	name:n type_arguments:tl dims:d
 		{: tl.trimToSize(); RESULT=arrayType(new PParameterizedType(lookupClassType(n), tl), d.intValue()); :}
+	|	class_or_interface_nn:ty type_arguments:tl dims:d
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize(); RESULT=arrayType(new PParameterizedType(ty.getBaseType(), tl), d.intValue()); :}
 	;
 
 type_arguments_opt ::= type_arguments:tl
@@ -615,6 +645,12 @@ reference_type_1 ::=
 		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_2:tl
 		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+	|	class_or_interface_nn:ty LT reference_type_list_2:tl
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
+		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+	|	class_or_interface_nn:ty PLT reference_type_list_2:tl
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
+		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
 	;
 reference_type_2 ::=
 		reference_type:ty RSHIFT
@@ -623,6 +659,12 @@ reference_type_2 ::=
 		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
 	|	name:n PLT reference_type_list_3:tl
 		{: tl.trimToSize(); RESULT=new PParameterizedType(lookupClassType(n), tl); :}
+	|	class_or_interface_nn:ty LT reference_type_list_3:tl
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
+		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
+	|	class_or_interface_nn:ty PLT reference_type_list_3:tl
+		{: tl.addAll(0, ty.getActualTypeArguments()); tl.trimToSize();
+		   RESULT=new PParameterizedType(ty.getBaseType(), tl); :}
 	;
 reference_type_3 ::=
 		reference_type:ty URSHIFT
@@ -927,8 +969,8 @@ constructor_body ::=
 explicit_constructor_invocation ::=
 		THIS LPAREN argument_list_opt RPAREN SEMICOLON
 	|	SUPER LPAREN argument_list_opt RPAREN SEMICOLON
-	|	primary DOT THIS LPAREN argument_list_opt RPAREN SEMICOLON
 	|	primary DOT SUPER LPAREN argument_list_opt RPAREN SEMICOLON
+	|	name DOT SUPER LPAREN argument_list_opt RPAREN SEMICOLON
 	;
 
 // 19.9) Interfaces
@@ -966,6 +1008,7 @@ interface_member_declaration ::=
 	|	abstract_method_declaration
 	|	class_declaration
 	|	interface_declaration
+	|	SEMICOLON
 	;
 constant_declaration ::=
 		field_declaration
@@ -1193,7 +1236,8 @@ assert_statement ::=
 
 // 19.12) Expressions
 primary ::=	primary_no_new_array
-	|	array_creation_expression
+	|	array_creation_init
+	|	array_creation_uninit
 	;
 primary_no_new_array ::=
 		literal
@@ -1208,13 +1252,13 @@ primary_no_new_array ::=
 	|	VOID DOT CLASS
 	// "Type DOT CLASS", but expanded
 	|	primitive_type DOT CLASS
-	|	name DOT CLASS
+	|	name DOT CLASS // not 'class_or_interface'?
 // this production *might* be valid, but introduces conflicts.
-//	|	name type_arguments DOT CLASS
+//	|	class_or_interface type_arguments DOT CLASS
 	|	primitive_type dims DOT CLASS
-	|	name dims DOT CLASS
+	|	name dims DOT CLASS // not 'class_or_interface'?
 // this production *might* be valid, but introduces conflicts.
-//	|	name type_arguments dims DOT CLASS
+//	|	class_or_interface type_arguments dims DOT CLASS
 	;
 class_instance_creation_expression ::=
 	// actually only class_type is valid in the next production, but
@@ -1235,6 +1279,15 @@ class_instance_creation_expression ::=
 		   midTypeDeclaration(); :}
 		class_body
 		{: endTypeDeclaration(); endUnnamedContext(); :}
+	|	name DOT NEW IDENTIFIER type_arguments_opt
+			LPAREN argument_list_opt RPAREN
+	|	name DOT NEW IDENTIFIER:id type_arguments_opt
+			LPAREN argument_list_opt RPAREN
+		{: startUnnamedContext();
+		   startTypeDeclaration(0, newAnonClassName(), false, idleft);
+		   midTypeDeclaration(); :}
+		class_body
+		{: endTypeDeclaration(); endUnnamedContext(); :}
 	;
 argument_list_opt ::=
 	|	argument_list
@@ -1243,10 +1296,12 @@ argument_list ::=
 		expression_l
 	|	argument_list COMMA expression
 	;
-array_creation_expression ::=
+array_creation_uninit ::=
 		NEW primitive_type dim_exprs dims_opt
 	|	NEW class_or_interface_type dim_exprs dims_opt
-	|	NEW primitive_type dims array_initializer
+	;
+array_creation_init ::=
+		NEW primitive_type dims array_initializer
 	|	NEW class_or_interface_type dims array_initializer
 	;
 dim_exprs ::=	dim_expr
@@ -1278,6 +1333,7 @@ method_invocation ::=
 array_access ::=
 		name LBRACK expression RBRACK
 	|	primary_no_new_array LBRACK expression RBRACK
+	|	array_creation_init LBRACK expression RBRACK
 	;
 postfix_expression ::=
 		primary
@@ -1316,6 +1372,10 @@ cast_expression ::=
 	|	LPAREN name PLT reference_type_list_1 RPAREN unary_expression_not_plus_minus
 	|	LPAREN name dims RPAREN unary_expression_not_plus_minus
 	|	LPAREN name PLT reference_type_list_1 dims RPAREN unary_expression_not_plus_minus
+	|	LPAREN class_or_interface_nn RPAREN unary_expression_not_plus_minus
+	|	LPAREN class_or_interface_nn PLT reference_type_list_1 RPAREN unary_expression_not_plus_minus
+	|	LPAREN class_or_interface_nn dims RPAREN unary_expression_not_plus_minus
+	|	LPAREN class_or_interface_nn PLT reference_type_list_1 dims RPAREN unary_expression_not_plus_minus
 	;
 multiplicative_expression ::=
 		unary_expression
@@ -1379,10 +1439,10 @@ assignment_expression ::=
 		conditional_expression
 	|	assignment
 	;
-assignment ::=
-		name         assignment_operator assignment_expression
-	|	field_access assignment_operator assignment_expression
-	|	array_access assignment_operator assignment_expression
+// semantic check necessary here to ensure a valid left-hand side.
+// allowing a parenthesized variable here on the lhs was introduced in
+// JLS 2; thanks to Eric Blake for pointing this out.
+assignment ::=	postfix_expression assignment_operator assignment_expression
 	;
 assignment_operator ::=
 		EQ
@@ -1593,6 +1653,10 @@ cast_expression_l ::=
 	|	LPAREN name PLT reference_type_list_1 RPAREN unary_expression_not_plus_minus_l
 	|	LPAREN name dims RPAREN unary_expression_not_plus_minus_l
 	|	LPAREN name PLT reference_type_list_1 dims RPAREN unary_expression_not_plus_minus_l
+	|	LPAREN class_or_interface_nn RPAREN unary_expression_not_plus_minus_l
+	|	LPAREN class_or_interface_nn PLT reference_type_list_1 RPAREN unary_expression_not_plus_minus_l
+	|	LPAREN class_or_interface_nn dims RPAREN unary_expression_not_plus_minus_l
+	|	LPAREN class_or_interface_nn PLT reference_type_list_1 dims RPAREN unary_expression_not_plus_minus_l
 	;
 multiplicative_expression_l ::=
 		unary_expression_l
@@ -1659,10 +1723,10 @@ assignment_expression_l ::=
 		conditional_expression_l
 	|	assignment_l
 	;
-assignment_l ::=
-		name         assignment_operator assignment_expression_l
-	|	field_access assignment_operator assignment_expression_l
-	|	array_access assignment_operator assignment_expression_l
+// semantic check necessary here to ensure a valid left-hand side.
+// allowing a parenthesized variable here on the lhs was introduced in
+// JLS 2; thanks to Eric Blake for pointing this out.
+assignment_l ::= postfix_expression assignment_operator assignment_expression_l
 	;
 expression_l ::=	assignment_expression_l
 	;
