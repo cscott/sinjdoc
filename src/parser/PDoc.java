@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The <code>PDoc</code> class is the abstract base class representing
@@ -29,6 +31,14 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     PDoc(ParserControl pc) { this.pc = pc; }
     PDoc() { /* temporary kludge */ this.pc=null; }
     public abstract String getRawCommentText();
+    /** Return a <code>PSourcePosition</code> object corresponding to the
+     *  position of the raw comment text. */
+    public abstract PSourcePosition getRawCommentPosition();
+    /** Return true if leading stars should be stripped from the raw
+     *  comment text for this doc item.
+     * @return true
+     */
+    public boolean shouldStripStars() { return true; }
     public boolean isClass() { return false; }
     public boolean isConstructor() { return false; }
     public boolean isError() { return false; }
@@ -41,9 +51,90 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     public abstract String name();
     public SourcePosition position() { return PSourcePosition.NO_INFO; }
 
-    // xxx parse raw comment text into tags.  use regexp?
-    public abstract List<Tag> tags();
+    // parse raw comment text into tags using regexp.
+    public List<Tag> tags() {
+	List<Tag> result = new ArrayList<Tag>();
+	String raw = getRawCommentText();
+	PSourcePosition sp = getRawCommentPosition();
+	boolean stripStars = shouldStripStars();
+	// pull out all the non-inline tags.
+	Pattern tagPattern = (stripStars?TAGPATSS:TAGPAT);
+	Matcher tagMatcher = tagPattern.matcher(raw);
+	int start = tagMatcher.find() ? tagMatcher.start() : raw.length();
+	String firstPart = raw.substring(0,start); // doc comment.
+	String lastPart = raw.substring(start); // tag portion.
+	// create the initial 'text' section.
+	result.addAll(parseInline(firstPart, sp, stripStars));
+	// now the tags.
+	sp = sp.add(start);
+	int lastTagStart=0, lastTagEnd=0;  String lastTagName=null;
+	tagMatcher = tagPattern.matcher(lastPart);
+	while (tagMatcher.find()) {
+	    // last tag went from lastTagStart to tagMatcher.start()
+	    if (lastTagName!=null) {
+		List<Tag> contents =
+		    parseInline(lastPart.substring
+				(lastTagEnd, tagMatcher.start()),
+				sp.add(lastTagEnd), stripStars);;
+		result.add(PTag.newTag(lastTagName, contents,
+					  sp.add(lastTagStart)));
+	    }
+	    lastTagStart= tagMatcher.start();
+	    lastTagEnd  = tagMatcher.end();
+	    lastTagName = tagMatcher.group(1);
+	}
+	// last tag went from lastTagStart to lastPart.length()
+	if (lastTagName!=null) {
+	    List<Tag> contents =
+		parseInline(lastPart.substring(lastTagEnd),
+			    sp.add(lastTagEnd), stripStars);;
+	    result.add(PTag.newTag(lastTagName, contents,
+				      sp.add(lastTagStart)));
+	}
+	// done!
+	return Collections.unmodifiableList(result);
+    }
+    private static final Pattern TAGPAT = Pattern.compile
+	("^\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
+    private static final Pattern TAGPATSS = Pattern.compile
+	("^(?:\\p{Blank}*[*]+)?\\p{Blank}*@(\\S+)", Pattern.MULTILINE);
+    /** Parse the raw text into a series of 'Text' and 'inline' tags. */
+    private static List<Tag> parseInline(String rawText, PSourcePosition sp,
+					 boolean stripStars) {
+	List<Tag> result = new ArrayList<Tag>();
+	Matcher tagMatcher = INLINE.matcher(rawText);
+	int pos=0;
+	while (tagMatcher.find()) {
+	    int start = tagMatcher.start();
+	    // section between pos and start becomes a text tag.
+	    if (pos<start) {
+		String text = rawText.substring(pos, start);
+		if (stripStars) text = removeLeadingStars(text);
+		result.add(PTag.newTextTag(text, sp.add(pos)));
+	    }
+	    // now this section becomes an inline tag.
+	    String text = tagMatcher.group(2);
+	    if (stripStars) text = removeLeadingStars(text);
+	    result.add(PTag.newInlineTag(tagMatcher.group(1), text,
+					 sp.add(tagMatcher.start(1))));
+	    pos = tagMatcher.end();
+	}
+	// any trailing text becomes a text tag.
+	if (pos < rawText.length()) {
+	    String text = rawText.substring(pos);
+	    if (stripStars) text = removeLeadingStars(text);
+	    result.add(PTag.newTextTag(text, sp.add(pos)));
+	}
+	// done!
+	return Collections.unmodifiableList(result);
+    }
+    private static final Pattern INLINE = Pattern.compile
+	("{@(\\S+)(?:\\s+([^}]*))?}");
 
+    // parse inlineTags() list into first sentence tags using breakiterator.
+    // note that we look for the sentence boundary by throwing away all
+    // inline tag text, which means that the boundary can never fall in
+    // the middle of an inline tag.  This is probably not an issue.
     public List<Tag> firstSentenceTags() {
 	List<Tag> itags = inlineTags();
 	// create a plain-text version of these tags.
@@ -126,4 +217,11 @@ abstract class PDoc implements net.cscott.gjdoc.Doc {
     public final int compareTo(Object/*Doc*/ d) {
 	return name().compareTo(((Doc)d).name());
     }
+    /** Convenience method: remove leading stars, as from comment text. */
+    static String removeLeadingStars(String str) {
+	return LEADSTAR.matcher(str).replaceAll("");
+    }
+    /** Pattern used by <code>removeLeadingStars()</code> method. */
+    private static final Pattern LEADSTAR = Pattern.compile
+	("^[\\p{Blank}]*[*]+", Pattern.MULTILINE);
 }

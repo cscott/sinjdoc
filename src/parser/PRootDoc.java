@@ -25,6 +25,8 @@ public abstract class PRootDoc extends PDoc
 	this.overviewText =
 	    FileUtil.rawFileText(pc.overview, pc.reporter, pc.encoding);
     }
+    /** @return false */
+    public boolean shouldStripStars() { return false; }
 
     public List<List<String>> options() { return options; }
     public void setOptions(List<List<String>> options) {
