@@ -14,14 +14,6 @@ import java.util.List;
  */
 public interface ClassType extends Type {
     /**
-     * Returns a list of <code>ClassTypeVariable</code> objects that
-     * represent the type variables declared by this class or interface
-     * represented by this <code>ClassDoc</code> object, in declaration
-     * order.  Returns a zero-length list if the underlying class or
-     * interface declares no type variables.
-     */
-    public List<ClassTypeVariable> typeParameters();
-    /**
      * Return the <code>ClassDoc</code> corresponding to this type,
      * ignoring any array dimensions or parameters.  Returns
      * <code>null</code> if it is a primitive type, or if the

@@ -6,6 +6,7 @@ package net.cscott.gjdoc.parser;
 import net.cscott.gjdoc.ArrayType;
 import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.ClassType;
+import net.cscott.gjdoc.ClassTypeVariable;
 import net.cscott.gjdoc.ParameterizedType;
 import net.cscott.gjdoc.Type;
 import net.cscott.gjdoc.TypeVisitor;
@@ -13,6 +14,7 @@ import net.cscott.gjdoc.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -192,13 +194,21 @@ abstract class TypeUtil {
      *  <code>Type</code>s based on the given <code>ParameterizedType</code>.
      */
     private static Map<TypeVariable,Type> makeSubstMap(ParameterizedType pt) {
-	return makeSubstMap(pt.getBaseType().typeParameters(),
-			    pt.getActualTypeArguments());
+	// iterate through all enclosing classes, accumulating type parameters
+	ClassDoc cd = pt.getBaseType().asClassDoc();
+	if (cd==null) return Collections.EMPTY_MAP;
+	List<ClassTypeVariable> l = new LinkedList<ClassTypeVariable>();
+	while (cd!=null) {
+	    l.addAll(0, cd.typeParameters());
+	    cd = cd.containingClass();
+	}
+	return makeSubstMap(l, pt.getActualTypeArguments());
     }
     // make generic to work on methodtypevariables, too.
     private static <TV extends TypeVariable> Map<TypeVariable,Type>
 			       makeSubstMap(List<TV> parameters,
 					    List<Type> args) {
+	assert parameters.size() == args.size();
 	Map<TypeVariable,Type> substMap = new HashMap<TypeVariable,Type>();
 	Iterator<TV> paramI = parameters.iterator();
 	Iterator<Type> argI = args.iterator();

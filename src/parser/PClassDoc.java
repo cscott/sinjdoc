@@ -72,7 +72,7 @@ class PClassDoc extends PProgramElementDoc
 	String outerClass = (containingClass()==null) ? "" :
 	    containingClass().name()+".";
 	return new PEagerClassType(pc, containingPackage().name(),
-				   outerClass+name(), typeParameters());
+				   outerClass+name());
     }
     public List<ConstructorDoc> constructors() {
 	return Collections.unmodifiableList(constructors);

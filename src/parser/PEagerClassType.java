@@ -18,24 +18,11 @@ import java.util.List;
 class PEagerClassType extends PClassType {
     final String packageName;
     final String className; // dots here indicate inner classes.
-    final List<ClassTypeVariable> typeParameters;
     PEagerClassType(ParseControl pc,
-		    String packageName, String className,
-		    List<ClassTypeVariable> typeParameters) {
+		    String packageName, String className) {
 	super(pc);
 	this.packageName = packageName.intern();
 	this.className = className.intern();
-	this.typeParameters = typeParameters;
-    }
-    PEagerClassType(ParseControl pc,
-		    String packageName, String className) {
-	this(pc, packageName, className, NO_VARS);
-    }
-    private static final List<ClassTypeVariable> NO_VARS =
-	Arrays.asList(new ClassTypeVariable[0]);
-
-    public List<ClassTypeVariable> typeParameters() {
-	return Collections.unmodifiableList(typeParameters);
     }
     public String typeName() { return className; }
     public String canonicalTypeName() {

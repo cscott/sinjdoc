@@ -33,10 +33,6 @@ class PLazyClassType extends PClassType {
 	this.typeName = typeName;
 	assert isValid();
     }
-    public List<ClassTypeVariable> typeParameters() {
-	if (cache==null) lookup();
-	return cache.typeParameters();
-    }
     public String canonicalTypeName() {
 	if (cache==null) lookup();
 	return cache.canonicalTypeName();
