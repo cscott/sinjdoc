@@ -27,4 +27,16 @@ abstract class PTag
 	if (isInline()) str = "{"+str+"}";
 	return str;
     }
+    /** Convenience method to create a new 'Tag' representing plain-text;
+     *  i.e. it has kind()=="Text". */
+    static Tag newTextTag(final String text, final SourcePosition pos) {
+	return new Tag() {
+		public String toString() { return text; }
+		public String text() { return text; }
+		public String kind() { return "Text"; }
+		public String name() { return ""; }
+		public boolean isInline() { return false; }
+		public SourcePosition position() { return pos; }
+	    };
+    }
 }
