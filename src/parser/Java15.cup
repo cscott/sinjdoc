@@ -122,7 +122,8 @@ parser code  {:
 	  (new BufferedReader(FileUtil.fileReader
                               (file, rootDoc.pc.encoding, rootDoc)),
            rootDoc.pc.sourceVersion);
-      this.startPos = new PSourcePosition(file, rootDoc.pc.encoding, rootDoc);
+      this.startPos = new PSourcePosition(file, rootDoc.pc.encoding, true,
+					  rootDoc);
       this.expectedPackage = expectedPackage;
   }
 

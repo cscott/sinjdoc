@@ -42,7 +42,8 @@ class PPackageDoc extends PDoc
 	    if (!packageTextFile.exists()) packageTextFile=null;
 	}
 	Pair<String,PSourcePosition> pair =
-	    FileUtil.rawFileText(packageTextFile, pc.encoding, pc.reporter);
+	    FileUtil.rawFileText(packageTextFile, pc.encoding,
+				 false/*not unicode escaped*/, pc.reporter);
 	this.packageText = pair.left;
 	this.packagePosition = pair.right;
 	this.packageContext = new TypeContext(pc, this);

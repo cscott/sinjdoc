@@ -39,7 +39,7 @@ public class PRootDoc extends PDoc
     PRootDoc(ParseControl pc) {
 	super(pc);
 	Pair<String,PSourcePosition> pair =
-	    FileUtil.rawFileText(pc.overview, pc.encoding, pc.reporter);
+	    FileUtil.rawFileText(pc.overview, pc.encoding, false, pc.reporter);
 	this.overviewText = pair.left;
 	this.overviewPosition = pair.right;
 	this.overviewContext = new TypeContext(pc);

@@ -23,16 +23,21 @@ import java.util.regex.Pattern;
 public class PFile {
     public final File file;
     public final String encoding;
+    public final boolean isUnicodeEscaped;
     public final DocErrorReporter reporter;
-    public PFile (File file, String encoding, DocErrorReporter reporter) {
-	this.file = file; this.encoding = encoding; this.reporter = reporter;
+    public PFile (File file, String encoding, boolean isUnicodeEscaped,
+		  DocErrorReporter reporter) {
+	this.file = file; this.encoding = encoding;
+	this.isUnicodeEscaped = isUnicodeEscaped;
+	this.reporter = reporter;
     }
 
     /** Build the line-starting position and tab-position tables. */
     private void buildTables() {
 	assert lineStarts==null && tabIndex==null;
 	List<String> lines = new ArrayList<String>();
-	String contents = FileUtil.snarf(file, encoding, reporter).left;
+	String contents = FileUtil.snarf(file, encoding, isUnicodeEscaped,
+					 reporter).left;
 	IntVector lineStartsVec = new IntVector();
 	IntVector tabIndexVec = new IntVector();
 	Matcher lineMatch = LINES.matcher(contents);
@@ -111,7 +116,8 @@ public class PFile {
 		public int column() { return COLUMN; }
 	    };
     }
-    static PFile get(File f, String encoding, DocErrorReporter reporter) {
+    static PFile get(File f, String encoding, boolean isUnicodeEscaped,
+		     DocErrorReporter reporter) {
 	File canon;
 	try { // canonicalize if possible.
 	    canon = f.getCanonicalFile();
@@ -123,7 +129,8 @@ public class PFile {
 	synchronized(cache) {
 	    if (!cache.containsKey(canon))
 		cache.put(canon, new PFile(f/* preserve original name */,
-					   encoding, reporter));
+					   encoding, isUnicodeEscaped,
+					   reporter));
 	    return cache.get(canon);
 	}
     }

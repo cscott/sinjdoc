@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.sinjdoc.parser;
 
+import net.cscott.sinjdoc.lexer.EscapedUnicodeReader;
 import net.cscott.sinjdoc.DocErrorReporter;
 
 import java.io.*;
@@ -165,8 +166,10 @@ public class FileUtil {
     /** Extract the text between &lt;body&gt; and &lt;/body&gt; tags
      *  in the given file. */
     static Pair<String,PSourcePosition> rawFileText
-	(File f, String encoding, DocErrorReporter reporter) {
-	Pair<String,PSourcePosition> pair = snarf(f, encoding, reporter);
+	(File f, String encoding, boolean isUnicodeEscaped,
+	 DocErrorReporter reporter) {
+	Pair<String,PSourcePosition> pair = snarf(f, encoding,
+						  isUnicodeEscaped, reporter);
 	Matcher matcher = BODY_PATTERN.matcher(pair.left);
 	if (!matcher.find()) return pair; // return unchanged.
 	return new Pair<String,PSourcePosition>
@@ -178,18 +181,21 @@ public class FileUtil {
 
     /** Snarf up the contents of a file as a string. */
     static Pair<String,PSourcePosition> snarf
-	(File f, String encoding, DocErrorReporter reporter) {
+	(File f, String encoding, boolean isUnicodeEscaped,
+	 DocErrorReporter reporter) {
 	if (f==null)
 	    return new Pair<String,PSourcePosition>
 		("", PSourcePosition.NO_INFO);
 	if (!(f.exists() && f.isFile())) {
 	    reporter.printError("Can't open file: "+f);
 	    return new Pair<String,PSourcePosition>
-		("", new PSourcePosition(f, encoding, reporter));
+		("", new PSourcePosition(f, encoding, isUnicodeEscaped,
+					 reporter));
 	}
 	StringBuffer sb=new StringBuffer();
 	try {
 	    Reader reader = fileReader(f, encoding, reporter);
+	    if (isUnicodeEscaped) reader = new EscapedUnicodeReader(reader);
 	    char[] buf=new char[8192];
 	    int len;
 	    while (-1!=(len=reader.read(buf)))
@@ -199,7 +205,8 @@ public class FileUtil {
 	    reporter.printError("Trouble reading "+f+": "+e);
 	}
 	return new Pair<String,PSourcePosition>
-	    (sb.toString(), new PSourcePosition(f, encoding, reporter));
+	    (sb.toString(), new PSourcePosition(f, encoding, isUnicodeEscaped,
+						reporter));
     }
     /** Return a <code>Reader</code> for the given file using the given
      *  encoding.  Reports any encoding errors using the given reporter. */

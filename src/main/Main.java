@@ -3,6 +3,7 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.sinjdoc;
 
+import net.cscott.sinjdoc.lexer.EscapedUnicodeReader;
 import net.cscott.sinjdoc.parser.FileUtil;
 import net.cscott.sinjdoc.parser.ParseControl;
 import net.cscott.sinjdoc.parser.PRootDoc;
@@ -521,7 +522,8 @@ public class Main {
 		String line=null;
 		try {
 		    BufferedReader reader = new BufferedReader
-			(FileUtil.fileReader(pos.file(), encoding, this));
+			(new EscapedUnicodeReader
+			 (FileUtil.fileReader(pos.file(), encoding, this)));
 		    for (int i=1; i<pos.line(); i++)
 			if (null==reader.readLine()) break;
 		    line = reader.readLine();

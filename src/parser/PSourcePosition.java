@@ -21,8 +21,9 @@ class PSourcePosition
     // calls to the interface accessors lazily convert the index to a
     // line and column number.
     final PFile pfile; final int charIndex;
-    PSourcePosition(File file, String encoding, DocErrorReporter reporter) {
-	this(PFile.get(file, encoding, reporter), 0);
+    PSourcePosition(File file, String encoding, boolean isUnicodeEscaped,
+		    DocErrorReporter reporter) {
+	this(PFile.get(file, encoding, isUnicodeEscaped, reporter), 0);
     }
     private PSourcePosition(PFile pfile, int charIndex) {
 	this.pfile = pfile; this.charIndex = charIndex;
