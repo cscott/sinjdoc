@@ -46,6 +46,13 @@ class TypeContext {
     public TypeContext(ParseControl pc, PPackageDoc packageScope) {
 	this(pc, packageScope, null, null, null);
     }
+    public String toString() {
+	return "TypeContext["+
+	    "packageScope="+packageScope+", "+
+	    "compilationUnit="+compilationUnit+", "+
+	    "classScope="+classScope+", "+
+	    "methodScope="+methodScope+"]";
+    }
 
     // type resolution methods.
 
@@ -114,7 +121,7 @@ class TypeContext {
 	    for (Iterator<String> it = compilationUnit.singleTypeImport
 		     .iterator(); it.hasNext(); ) {
 		String qualName = it.next();
-		if (qualName.endsWith(id))
+		if (("."+qualName).endsWith("."+id))
 		    return new TypeContext(pc).lookupClassTypeName
 			(qualName, false/* don't be lazy */);
 	    }
