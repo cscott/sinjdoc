@@ -7,6 +7,7 @@ JAVAROOT=$(top_builddir)/classes
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(top_srcdir)/lib/cup.jar:$(top_srcdir)/lib/jutil.jar:$$CLASSPATH
 
 noinst_JAVA = \
+Pair.java \
 Java15.java \
 Sym.java \
 Lexer.java \
