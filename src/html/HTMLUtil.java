@@ -3,10 +3,13 @@
 // Licensed under the terms of the GNU GPL; see COPYING for details.
 package net.cscott.gjdoc.html;
 
+import net.cscott.gjdoc.ClassDoc;
 import net.cscott.gjdoc.DocErrorReporter;
+import net.cscott.gjdoc.PackageDoc;
 
 import java.nio.charset.*;
 import java.io.*;
+import java.util.regex.Pattern;
 /**
  * The <code>HTMLUtil</code> class encapsulates several generally-used
  * functions used by the <code>HTMLDoclet</code>.
@@ -19,6 +22,47 @@ class HTMLUtil {
     DocErrorReporter reporter;
     HTMLUtil(DocErrorReporter reporter) { this.reporter = reporter; }
 
+    /** Construct the URL for a page corresponding to the specified class. */
+    public static String toURL(ClassDoc c) {
+	StringBuffer sb = new StringBuffer();
+	for (ClassDoc p=c; p!=null; ) {
+	    sb.insert(0, p.name());
+	    p = p.containingClass();
+	    if (p!=null) sb.insert(0, '.');
+	}
+	sb.insert(0, toBaseURL(c.containingPackage()));
+	sb.append(".html");
+	return sb.toString();
+    }
+    /** Construct the URL for the package-summary page for the given
+     *  package. */
+    public static String toURL(PackageDoc p) {
+	return toBaseURL(p)+"package-summary.html";
+    }
+    /** Construct the URL representing the *directory* information
+     *  regarding the specified package (including pages for classes
+     *  in that package) should be stored in. */
+    public static String toBaseURL(PackageDoc p) {
+	String name = p.name();
+	if (name.length()==0) return name;
+	return name.replace('.','/')+"/";
+    }
+    /** Return a link to the specified package-related page in the package.
+     *  The pageName parameter should be one of "package-summary.html",
+     *  "package-frame.html", or "package-tree.html". */
+    public static String toLink(PackageDoc p, String pageName) {
+	assert Pattern.matches("package-(summary|frame|tree)\\.html",pageName);
+	StringBuffer sb = new StringBuffer("<a href=\"");
+	sb.append(toBaseURL(p));
+	sb.append(pageName);
+	sb.append("\" class=\"packageRef\">");
+	if (p.name().length()==0)
+	    sb.append("&lt;unnamed package&gt;");
+	else
+	    sb.append(p.name());
+	sb.append("</a>");
+	return sb.toString();
+    }
     /** Copy the contents of a <code>Reader</code> to a <code>Writer</code>.
      */
     void copy(Reader r, Writer w) {
@@ -58,6 +102,7 @@ class HTMLUtil {
      *  <code>URLContext</code>. */
     PrintWriter fileWriter(URLContext url, HTMLOptions options) {
 	File f = new File(options.docRoot, url.toFile().toString());
+	reporter.printNotice("Generating "+f+"...");
 	// make directory for file.
 	if (f.getParentFile()!=null)
 	    f.getParentFile().mkdirs();
