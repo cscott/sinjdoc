@@ -18,9 +18,8 @@ import java.util.List;
 class PClassTypeVariable extends PTypeVariable
     implements net.cscott.gjdoc.ClassTypeVariable {
     final ClassDoc declaringClass;
-    PClassTypeVariable(ClassDoc declaringClass,
-		       String name, List<Type> bounds) {
-	super(name, bounds);
+    PClassTypeVariable(ClassDoc declaringClass, String name) {
+	super(name);
 	this.declaringClass = declaringClass;
     }
     public ClassDoc declaringClass() { return declaringClass; }

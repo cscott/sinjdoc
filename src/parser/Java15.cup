@@ -192,24 +192,30 @@ action code {:
 	  return parser.additionalTypeVariables.get(name);
       return parser.typeContexts.peek().lookupTypeName(name, true/*lazy*/);
   }
-  void addTypeVariable(String name, List<Type> bounds) {
-      // if bounds list is zero-length, fabricate a one-element list
-      // with the type for java.lang.Object.
-      if (bounds.size()==0)
-	  bounds = new TypeList(lookupClassType("java.lang.Object"));
+  void addTypeVariable(String name) {
       // are we in method or class context?
       if (parser.isClassTypeVariable) { // class context
 	  PClassDoc parent = parser.outerClasses.peek();
-	  PClassTypeVariable ctv = new PClassTypeVariable
-	      (parent, name, bounds);
+	  PClassTypeVariable ctv = new PClassTypeVariable(parent, name);
 	  parent.typeParameters.add(ctv);
 	  parser.additionalTypeVariables.put(name, ctv);
       } else {  // method context
-	  PMethodTypeVariable mtv = new PMethodTypeVariable(name, bounds);
+	  PMethodTypeVariable mtv = new PMethodTypeVariable(name);
 	  parser.additionalTypeVariables.put(name, mtv);
 	  // have to wait until we see the name of the method and create
 	  // the methodDoc before we can add set the declaringMethod field
       }
+  }
+  void addTypeVariableBounds(String name, List<Type> bounds) {
+      // find the type variable corresponding to 'name'.
+      assert parser.additionalTypeVariables.containsKey(name);
+      PTypeVariable tv = parser.additionalTypeVariables.get(name);
+      // if bounds list is zero-length, fabricate a one-element list
+      // with the type for java.lang.Object.
+      if (bounds.size()==0)
+	  bounds = new TypeList(lookupClassType("java.lang.Object"));
+      // add bounds to type variable.
+      tv.addBounds(bounds);
   }
   Type arrayType(Type ty, int dims) {
       assert dims>=0;
@@ -540,7 +546,7 @@ reference_type ::=
 	;
 type_variable ::=
 		IDENTIFIER:id
-		{: RESULT=id; :}
+		{: RESULT=id; addTypeVariable(id); :}
 	;
 class_or_interface_type ::=
 		name:n type_arguments_opt:tl
@@ -1410,13 +1416,13 @@ type_parameter_list_1 ::=
 	;
 type_parameter ::=
 		type_variable:id type_bound_opt:tl
-		{: addTypeVariable(id, tl); :}
+		{: addTypeVariableBounds(id, tl); :}
 	;
 type_parameter_1 ::=
 		type_variable:id GT
-		{: addTypeVariable(id, new TypeList()); :}
+		{: addTypeVariableBounds(id, new TypeList()); :}
 	|	type_variable:id type_bound_1:tl
-		{: addTypeVariable(id, tl); :}
+		{: addTypeVariableBounds(id, tl); :}
 // I don't think this production is really meant to be used.
 //	|	type_variable IMPLEMENTS reference_type_1
 	;

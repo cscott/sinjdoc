@@ -20,8 +20,8 @@ class PMethodTypeVariable extends PTypeVariable
     // allow changes to this field, as method type variables are seen & used
     // before we know the name of the method they are associated with.
     ExecutableMemberDoc declaringMethod;
-    PMethodTypeVariable(String name, List<Type> bounds) {
-	super(name, bounds);
+    PMethodTypeVariable(String name) {
+	super(name);
     }
     public ExecutableMemberDoc declaringMethod() {
 	assert declaringMethod!=null; // should be set by now.

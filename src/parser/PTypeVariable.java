@@ -27,11 +27,13 @@ import java.util.List;
 abstract class PTypeVariable
     implements net.cscott.gjdoc.TypeVariable {
     final String name;
-    final List<Type> bounds;
-    PTypeVariable(String name, List<Type> bounds) {
+    final List<Type> bounds = new ArrayList<Type>(1);
+    PTypeVariable(String name) {
 	this.name = name;
-	this.bounds = bounds;
-	assert bounds.size()>0;
+    }
+    <T extends Type> void addBounds(List<T> bounds) {
+	this.bounds.addAll(bounds);
+	assert this.bounds.size()>0;
 	assert boundsValid();
     }
     /** Check that the bounds specified for the Type Variable are legit. */
@@ -49,6 +51,8 @@ abstract class PTypeVariable
     }
     public String getName() { return name; }
     public List<Type> getBounds() {
+	assert bounds.size()>0;
+	assert boundsValid();
 	return Collections.unmodifiableList(bounds);
     }
     public String signature() {
