@@ -20,7 +20,10 @@ class PSourcePosition
     // calls to the interface accessors lazily convert the index to a
     // line and column number.
     final PFile pfile; final int charIndex;
-    PSourcePosition(PFile pfile, int charIndex) {
+    PSourcePosition(File file, int charIndex) {
+	this(PFile.get(file), charIndex);
+    }
+    private PSourcePosition(PFile pfile, int charIndex) {
 	this.pfile = pfile; this.charIndex = charIndex;
 	assert charIndex >= 0;
     }

@@ -167,10 +167,10 @@ public class FileUtil {
 	if (matcher.find())
 	    return new Pair<String,PSourcePosition>
 		(matcher.group(1), new PSourcePosition
-		 (new PFile(f), matcher.start(1)));
+		 (f, matcher.start(1)));
 	// okay, just copy it all then.
 	return new Pair<String,PSourcePosition>
-	    (contents, new PSourcePosition(new PFile(f), 0));
+	    (contents, new PSourcePosition(f, 0));
     }
     private final static Pattern BODY_PATTERN = Pattern.compile
 	("<\\s*body[^>]*>(.*)</\\s*body",
