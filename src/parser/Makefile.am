@@ -27,6 +27,7 @@ PExecutableMemberDoc.java \
 PFile.java \
 PFieldDoc.java \
 PLazyClassType.java \
+PLazyInnerClassType.java \
 PMemberDoc.java \
 PMethodDoc.java \
 PMethodTypeVariable.java \
